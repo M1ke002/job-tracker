@@ -32,7 +32,11 @@ const Navbar = () => {
       <div className="mx-auto max-w-[1450px] md:flex md:justify-between px-4">
         <div className="flex items-center min-h-[60px] justify-between md:justify-around">
           <a href="/">
-            <svg
+            {/* JobTracker text as logo, blue color*/}
+            <h1 className="text-[#2164f3] text-2xl font-semibold tracking-wider">
+              JobTracker
+            </h1>
+            {/* <svg
               height="35px"
               viewBox="-.118 -.109 251.871 92.31644088"
               xmlns="http://www.w3.org/2000/svg"
@@ -46,7 +50,7 @@ const Navbar = () => {
                 fill="#2164f3"
                 fillRule="evenodd"
               />
-            </svg>
+            </svg> */}
           </a>
           <div className="flex items-center">
             <div className="md:hidden flex items-center">

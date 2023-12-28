@@ -13,7 +13,10 @@ import GoogleIcon from "@/assets/google-icon.svg";
 const Login = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
-      <svg
+      <h1 className="text-[#2164f3] text-3xl font-semibold tracking-wider">
+        JobTracker
+      </h1>
+      {/* <svg
         height="42px"
         viewBox="-.118 -.109 251.871 92.31644088"
         xmlns="http://www.w3.org/2000/svg"
@@ -27,7 +30,7 @@ const Login = () => {
           fill="#2164f3"
           fillRule="evenodd"
         />
-      </svg>
+      </svg> */}
       <div className="max-w-[30rem] w-[90%] pt-5">
         <Card className="border-[1px] border-[#d4d2d0] px-1  text-center">
           <CardHeader className="mb-3">
