@@ -1,9 +1,13 @@
 import React from "react";
 
-const DocumentListTitle = () => {
+interface DocumentListTitleProps {
+  title: string;
+}
+
+const DocumentListTitle = ({ title }: DocumentListTitleProps) => {
   return (
-    <div className="mt-6">
-      <p className="font-semibold text-lg text-[#3d3d3d]">Resumes</p>
+    <div>
+      <p className="font-semibold text-lg text-[#3d3d3d]">{title}</p>
     </div>
   );
 };

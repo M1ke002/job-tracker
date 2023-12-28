@@ -29,7 +29,7 @@ const Applications = () => {
 
           {/* Add btn */}
           <div className="px-3 mb-auto">
-            <button className="flex items-center p-3 w-[250px] rounded-lg bg-[#ebf4ff] shadow-md border-[1px] border-[#c3dafe] hover:border-blue-400">
+            <button className="flex items-center p-3 w-[250px] rounded-lg bg-[#fff] shadow-md border-[1px] border-[#c3dafe] hover:border-blue-400">
               <Plus size={20} className="mr-2" />
               <span className="text-sm font-medium text-[#3d3d3d]">
                 Add Stage

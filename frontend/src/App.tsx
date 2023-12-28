@@ -6,6 +6,8 @@ import JobListing from "./pages/JobListing";
 import Landing from "./pages/Landing";
 import Applications from "./pages/Applications";
 import Documents from "./pages/Documents";
+import SavedJobs from "./pages/SavedJobs";
+import JobDetails from "./pages/JobDetails";
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route element={<ProtectedRoutes />}>
           <Route path="/jobs" element={<JobListing />} />
+          <Route path="/saved-jobs" element={<SavedJobs />} />
+          <Route path="/saved-jobs/:id" element={<JobDetails />} />
           <Route path="/applications" element={<Applications />} />
           <Route path="/documents" element={<Documents />} />
         </Route>

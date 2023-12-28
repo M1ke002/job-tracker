@@ -116,7 +116,7 @@ const Navbar = () => {
             to="/documents"
             className={({ isActive }) =>
               isActive
-                ? "md:underline underline-offset-[7px] decoration-blue-500 decoration-2"
+                ? "md:underline underline-offset-[7px] decoration-blue-500 decoration-2 text-blue-500"
                 : "text-black dark:text-white hover:text-zinc-500"
             }
           >
