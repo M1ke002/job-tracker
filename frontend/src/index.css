@@ -74,6 +74,7 @@
   }
   body {
     @apply bg-[#f7fafc] text-foreground;
+    /* font-family: Poppins,Helvetica Neue,Roboto,Arial,sans-serif,"Apple Color Emoji" */
   }
 }
 

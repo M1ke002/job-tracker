@@ -18,7 +18,7 @@ export const columns: ColumnDef<Document>[] = [
       return (
         <Button
           variant="ghost"
-          className="flex items-center hover:bg-[#ebf4ff] p-1"
+          className="flex items-center hover:bg-[#ebf4ff] p-1 font-semibold"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Name
@@ -41,7 +41,7 @@ export const columns: ColumnDef<Document>[] = [
       return (
         <Button
           variant="ghost"
-          className="flex items-center hover:bg-[#ebf4ff] p-1"
+          className="flex items-center hover:bg-[#ebf4ff] p-1 font-semibold"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Uploaded
