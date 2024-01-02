@@ -36,7 +36,6 @@ const ApplicationStageBoxItem = ({
     transform: CSS.Translate.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : undefined,
-    border: isDragging ? "1px solid #ccc" : undefined,
   };
 
   return (
@@ -47,7 +46,8 @@ const ApplicationStageBoxItem = ({
       ref={setNodeRef}
       {...listeners}
       className={cn(
-        "flex flex-col relative group bg-white border-[1px] border-[#dce6f8] rounded-md p-3 mb-2 drop-shadow-sm hover:border-blue-400 hover:bg-[#f0f7fd] cursor-pointer"
+        "flex flex-col relative group bg-white border-[1px] border-[#dce6f8] rounded-md p-3 mb-2 drop-shadow-sm hover:border-blue-400 hover:bg-[#f0f7fd] cursor-pointer",
+        isDragging && "border-blue-500"
       )}
     >
       <p className="font-semibold">{title}</p>
