@@ -23,7 +23,7 @@ const Navbar = () => {
   return (
     <header
       className={cn(
-        "fixed w-full z-50 dark:z-50 dark:border-[#1e2029] bg-white",
+        "fixed top-0 right-0 left-0 w-full z-50 dark:z-50 dark:border-[#1e2029] bg-white",
         {
           "border-[#dedede] border-b-[1px] shadow-sm": !isTop,
         }

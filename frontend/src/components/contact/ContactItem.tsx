@@ -3,7 +3,7 @@ import React from "react";
 
 const ContactItem = () => {
   return (
-    <div className="relative flex flex-col my-3 p-3 rounded-md border border-[#c3dafe] shadow-sm">
+    <div className="relative flex flex-col my-3 p-3 rounded-md bg-[#f1f6fa] border border-[#c3dafe] shadow-sm">
       <div className="flex items-center space-x-1 mb-1">
         <h3 className="text-lg text-gray-700 font-semibold">Mark Zuckerberg</h3>
         <span className="text-gray-500">-</span>

@@ -36,11 +36,11 @@ const TaskItem = ({ type }: TaskItemProps) => {
           {type === "completed" ? "Completed" : "Mark as completed"}
         </Button>
         <div className="flex items-center space-x-2">
-          <Switch />
+          <Switch className="data-[state=checked]:bg-blue-500" />
           <span className="text-sm">Remind me</span>
         </div>
       </div>
-      <div className="absolute top-3 right-3 flex items-center space-x-1">
+      <div className="absolute top-2 right-2 flex items-center space-x-1">
         <button className="border-none focus:outline-none ">
           <MoreVertical size={20} />
         </button>

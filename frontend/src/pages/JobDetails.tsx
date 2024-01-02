@@ -14,11 +14,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import React from "react";
-import { Separator } from "@/components/ui/separator";
-import ContactItem from "@/components/contact/ContactItem";
-import { Button } from "@/components/ui/button";
 import Note from "@/components/note/Note";
-import TaskItem from "@/components/task/TaskItem";
+import Contact from "@/components/contact/Contact";
+import Task from "@/components/task/Task";
+import JobDescription from "@/components/job-description/JobDescription";
 
 const JobDetails = () => {
   return (
@@ -26,18 +25,16 @@ const JobDetails = () => {
       {/* header (company name, job details) */}
       <div className="flex flex-col p-6 bg-white border border-[#dbe9ff] w-full shadow-sm">
         <div className="flex items-center justify-between mb-2">
-          <div className="flex items-end space-x-4">
+          <div className="flex items-end space-x-3">
             <h2 className="text-3xl font-semibold">
               Full Stack Software Engineer
             </h2>
-            <div className="flex items-center space-x-2">
-              <button className="flex items-center border-none focus:outline-none text-blue-700 hover:text-blue-700/80">
-                Edit
-                <FileEdit className="ml-1" size={20} />
+            <div className="flex items-center space-x-1">
+              <button className="border-none focus:outline-none text-blue-700 hover:text-blue-700/80">
+                <FileEdit size={20} />
               </button>
-              <button className="flex items-center border-none focus:outline-none text-rose-500 hover:text-rose-500/80">
-                Delete
-                <Trash className="ml-1" size={20} />
+              <button className="border-none focus:outline-none text-rose-500 hover:text-rose-500/80">
+                <Trash size={20} />
               </button>
             </div>
           </div>
@@ -103,93 +100,15 @@ const JobDetails = () => {
       <div className="lg:grid grid-cols-5 gap-4 w-full">
         {/* left col */}
         <div className="col-span-3 space-y-4 mb-4 lg:mb-0">
-          <div className="p-6 bg-white border border-[#dbe9ff] w-full shadow-sm min-h-[460px] h-fit">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2 mb-2">
-                <h2 className="text-xl font-semibold">Job Description</h2>
-                <button className="border-none focus:outline-none text-blue-700 hover:text-blue-700/80">
-                  <FileEdit size={20} />
-                </button>
-              </div>
-              <ChevronDownCircle className="text-blue-600" size={23} />
-            </div>
-            <hr className="my-2 border-[#d6eaff]" />
-            <p className="text-gray-700">
-              Position title: Application Developer
-              <br /> <br />
-              Department: IT Status: Full Time, Non-Exempt
-              <br /> <br />
-              Location: Remote
-              <br /> <br />
-              Reports to: Sr. Director of IT & Volunteer Services Works with:
-              AHG Staff and Volunteers Pay range: $22 - $24 per hour
-              <br /> <br />
-              Position Description
-              <br /> <br />
-              Exhibits a Christ-like servant leadership spirit while developing
-              and maintaining all databases and websites in the environment.
-              This role is the primary administrator for all development
-              applications and projects.
-            </p>
-          </div>
-          <div className="p-6 bg-white border border-[#dbe9ff] w-full shadow-sm">
-            <div>
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold mb-2">Tasks</h2>
-                <ChevronDownCircle className="text-blue-600" size={23} />
-              </div>
-              <hr className="my-2 border-[#d6eaff]" />
-              <div>
-                <TaskItem type="completed" />
-                <TaskItem type="overdue" />
-              </div>
-              <Button variant="primary" className="mt-2 w-full">
-                Add a task
-              </Button>
-            </div>
-          </div>
+          <JobDescription />
+          <Task />
         </div>
 
         {/* right col */}
         <div className="col-span-2 space-y-4">
-          {/* <div className="p-6 bg-white border border-[#dbe9ff] w-full shadow-sm">
-            <div>
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold mb-2">Tasks</h2>
-                <ChevronDownCircle className="text-blue-600" size={23} />
-              </div>
-              <hr className="my-2 border-[#d6eaff]" />
-              <Button variant="primary" className="mt-2 w-full">
-                Add a task
-              </Button>
-            </div>
-          </div> */}
           <div className="p-6 bg-white border border-[#dbe9ff] w-full shadow-sm space-y-4">
-            <div>
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold mb-2">Notes</h2>
-                <ChevronDownCircle className="text-blue-600" size={23} />
-              </div>
-              <hr className="mt-2 mb-3 border-[#d6eaff]" />
-              <Note />
-              {/* <Button variant="primary" className="mt-2 w-full">
-                Add a note
-              </Button> */}
-            </div>
-            <div>
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold mb-2">Contacts</h2>
-                <ChevronDownCircle className="text-blue-600" size={23} />
-              </div>
-              <hr className="mt-2 mb-3 border-[#d6eaff]" />
-              <div>
-                <ContactItem />
-                <ContactItem />
-              </div>
-              <Button variant="primary" className="mt-2 w-full">
-                Add contact
-              </Button>
-            </div>
+            <Note />
+            <Contact />
           </div>
         </div>
       </div>
