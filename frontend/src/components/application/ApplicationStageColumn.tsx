@@ -73,7 +73,7 @@ const ApplicationStageColumn = ({
           "flex flex-col p-3 w-[340px] rounded-lg bg-[#fff] shadow-md border-[1px] border-[#c3dafe]",
           isDragging && "border-blue-500",
           name === "Applied" && "border-[#c3dafe]",
-          name === "Interview" && "border-yellow-300",
+          name === "Interview" && "border-amber-200",
           name === "Offer" && "border-green-300",
           name === "Rejected" && "border-rose-300"
         )}
