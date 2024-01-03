@@ -2,7 +2,12 @@ import { X, AlignJustify, Bell, CircleUserRound } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import UserAvatar from "../UserAvatar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import Notification from "../notification/Notification";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -127,8 +132,23 @@ const Navbar = () => {
         </div>
 
         <div className="hidden md:flex md:items-center">
-          <Bell className="h-6 w-6 text-black dark:text-white mr-5" />
-          <CircleUserRound className="h-6 w-6 text-black dark:text-white" />
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="border-none focus:outline-none text-black dark:text-white p-1 mr-2">
+                <Bell className="h-6 w-6" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent
+              className="p-0 m-0 rounded-md shadow-md w-[350px] mr-2"
+              sideOffset={6}
+            >
+              <Notification />
+            </PopoverContent>
+          </Popover>
+
+          <button className="border-none focus:outline-none text-black dark:text-white p-1">
+            <CircleUserRound className="h-6 w-6" />
+          </button>
         </div>
       </div>
     </header>

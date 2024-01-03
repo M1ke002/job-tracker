@@ -5,7 +5,15 @@ import { columns, Document } from "@/components/document/DocumentTableColumns";
 import DocumentListTitle from "@/components/document/DocumentListTitle";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { AlignJustify, Plus, Search } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { AlignJustify, Plus, Search, Settings } from "lucide-react";
 
 const fakeData: Document[] = [
   {
@@ -37,13 +45,28 @@ const Documents = () => {
       {/* <div className="flex items-center justify-between border-[1px] border-[#c3dafe] bg-[#f0f4f7] p-4 mt-3 rounded-md w-full"> */}
       <div className="flex items-center justify-end space-x-3 w-full mt-5">
         <div className="flex items-center">
-          <Button
-            variant="outlinePrimary"
-            className="flex items-center bg-white"
-          >
-            <AlignJustify size={20} className="mr-2" />
-            Menu
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outlinePrimary"
+                className="flex items-center bg-white"
+              >
+                <AlignJustify size={20} className="mr-2" />
+                Menu
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent side="left">
+              <DropdownMenuItem className="flex items-center ">
+                <Plus size={18} className="mr-2 text-blue-500" />
+                Add type
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="flex items-center ">
+                <Settings size={18} className="mr-2 text-blue-700" />
+                Edit type
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         <div className="relative flex items-center justify-between">
           <input

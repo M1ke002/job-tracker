@@ -9,6 +9,15 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "../ui/separator";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -16,6 +25,9 @@ import {
   MoreVertical,
   ArrowRightCircle,
   ArrowUpRightSquare,
+  Settings,
+  Trash,
+  FileEdit,
 } from "lucide-react";
 
 interface JobItemProps {
@@ -54,22 +66,30 @@ const JobItem = ({ type }: JobItemProps) => {
       </CardContent>
       <CardFooter className="flex justify-between">
         <div className="flex items-center space-x-2">
-          <Button
-            variant="primary"
-            className="mr-2 flex items-center justify-center"
-            onClick={() => {
-              if (type === "savedJob") {
-                navigate("/saved-jobs/1");
-              }
-            }}
-          >
-            <span className="mr-2">View</span>
-            {type === "job" ? (
-              <ArrowUpRightSquare size={20} />
-            ) : (
-              <ArrowRightCircle size={20} />
+          <div className="flex items-center space-x-3">
+            <Button
+              variant="primary"
+              className="mr-2 flex items-center justify-center"
+              onClick={() => {
+                if (type === "savedJob") {
+                  navigate("/saved-jobs/1");
+                }
+              }}
+            >
+              <span className="mr-2">View</span>
+              {type === "job" ? (
+                <ArrowUpRightSquare size={20} />
+              ) : (
+                <ArrowRightCircle size={20} />
+              )}
+            </Button>
+            {type === "savedJob" && (
+              <Badge className="text-xs bg-green-400 hover:bg-initial">
+                Applied
+              </Badge>
             )}
-          </Button>
+          </div>
+
           {type === "job" && (
             <Button
               variant="outlinePrimary"
@@ -80,7 +100,26 @@ const JobItem = ({ type }: JobItemProps) => {
             </Button>
           )}
         </div>
-        {type === "savedJob" && <MoreVertical size={20} />}
+        {type === "savedJob" && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="p-2 rounded-md border-none focus:outline-none hover:text-zinc-600">
+                <MoreVertical size={20} />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem className="flex items-center ">
+                <FileEdit size={18} className="mr-2 text-blue-500" />
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="flex items-center ">
+                <Trash size={18} className="mr-2 text-rose-500" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </CardFooter>
     </Card>
   );

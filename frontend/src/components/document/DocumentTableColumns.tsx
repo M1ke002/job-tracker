@@ -1,6 +1,12 @@
 import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { Trash, ArrowUpDown, MoreHorizontal, FileDown } from "lucide-react";
+import {
+  Trash,
+  ArrowUpDown,
+  MoreHorizontal,
+  FileDown,
+  FileEdit,
+} from "lucide-react";
 import { Button } from "../ui/button";
 
 export type Document = {
@@ -64,6 +70,14 @@ export const columns: ColumnDef<Document>[] = [
             }}
           >
             <FileDown size={18} />
+          </button>
+          <button
+            className="text-blue-700 focus:outline-none"
+            onClick={() => {
+              // deleteDocument(row.original.id);
+            }}
+          >
+            <FileEdit size={18} />
           </button>
           <button
             className="text-rose-500 focus:outline-none"

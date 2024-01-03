@@ -1,6 +1,14 @@
 import React from "react";
 import { Separator } from "../ui/separator";
-import { MoreHorizontal, Plus } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { FileEdit, MoreHorizontal, Plus, Trash } from "lucide-react";
 import JobCard from "./JobCard";
 import {
   SortableContext,
@@ -9,6 +17,9 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { cn } from "@/lib/utils";
+
+import { useModal } from "@/hooks/zustand/useModal";
 
 interface ApplicationStageColumnProps {
   id: number;
@@ -19,7 +30,6 @@ interface ApplicationStageColumnProps {
     title: string;
     company: string;
     stageId: number;
-    isPlaceholder?: boolean;
   }[];
 }
 
@@ -46,6 +56,8 @@ const ApplicationStageColumn = ({
     },
   });
 
+  const { onOpen } = useModal();
+
   const style = {
     transform: CSS.Translate.toString(transform),
     transition,
@@ -56,7 +68,16 @@ const ApplicationStageColumn = ({
   return (
     <div ref={setNodeRef} style={style} className="px-3 h-full">
       {/* #ebf4ff instead of #fff???? */}
-      <div className="flex flex-col p-3 w-[340px] rounded-lg bg-[#fff] shadow-md border-[1px] border-[#c3dafe]">
+      <div
+        className={cn(
+          "flex flex-col p-3 w-[340px] rounded-lg bg-[#fff] shadow-md border-[1px] border-[#c3dafe]",
+          isDragging && "border-blue-500",
+          name === "Applied" && "border-[#c3dafe]",
+          name === "Interview" && "border-yellow-300",
+          name === "Offer" && "border-green-300",
+          name === "Rejected" && "border-rose-300"
+        )}
+      >
         <div
           {...listeners}
           {...attributes}
@@ -69,24 +90,46 @@ const ApplicationStageColumn = ({
               2
             </div>
           </span>
-          <MoreHorizontal size={20} />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="p-2 rounded-md border-none focus:outline-none hover:text-zinc-600">
+                <MoreHorizontal size={20} />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem className="flex items-center cursor-pointer">
+                <FileEdit size={18} className="mr-2 text-blue-500" />
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="flex items-center cursor-pointer"
+                onClick={() => {
+                  onOpen("deleteApplicationStage", {
+                    confirmModalTitle: "Delete stage",
+                    confirmModalMessage:
+                      "Are you sure you want to delete this stage?",
+                    confirmModalConfirmButtonText: "Delete",
+                    confirmModalAction: () => {
+                      console.log("delete stage");
+                    },
+                  });
+                }}
+              >
+                <Trash size={18} className="mr-2 text-rose-500" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <Separator className="my-2 bg-[#d6eaff]" />
 
         <SortableContext
-          // items={jobs.map((job) => `job-${job.id}`) || [`placeholder-${id}`]}
-          items={jobs.map((job) => {
-            if (job.isPlaceholder) {
-              return `placeholderJob-${job.id}`;
-            } else {
-              return `job-${job.id}`;
-            }
-          })}
+          items={jobs.map((job) => `job-${job.id}`)}
           strategy={verticalListSortingStrategy}
         >
           <div className="max-h-[360px] overflow-y-auto">
-            {/* if empty jobs arr -> render placeholder card */}
             {jobs.map((job, index) => (
               <JobCard
                 key={job.id}

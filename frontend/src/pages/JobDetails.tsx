@@ -19,7 +19,10 @@ import Contact from "@/components/contact/Contact";
 import Task from "@/components/task/Task";
 import JobDescription from "@/components/job-description/JobDescription";
 
+import { useModal } from "@/hooks/zustand/useModal";
+
 const JobDetails = () => {
+  const { onOpen } = useModal();
   return (
     <div className="mx-auto my-4 px-4 flex flex-col items-center max-w-[1450px] space-y-4">
       {/* header (company name, job details) */}
@@ -33,7 +36,18 @@ const JobDetails = () => {
               <button className="border-none focus:outline-none text-blue-700 hover:text-blue-700/80">
                 <FileEdit size={20} />
               </button>
-              <button className="border-none focus:outline-none text-rose-500 hover:text-rose-500/80">
+              <button
+                className="border-none focus:outline-none text-rose-500 hover:text-rose-500/80"
+                onClick={() => {
+                  onOpen("deleteJob", {
+                    confirmModalTitle: "Delete job",
+                    confirmModalMessage:
+                      "Are you sure you want to delete this job?",
+                    confirmModalAction: () => {},
+                    confirmModalConfirmButtonText: "Delete",
+                  });
+                }}
+              >
                 <Trash size={20} />
               </button>
             </div>
