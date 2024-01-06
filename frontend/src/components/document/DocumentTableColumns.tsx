@@ -62,7 +62,7 @@ export const columns: ColumnDef<Document>[] = [
     // action to delete a document (trash icon)
     cell: ({ row }) => {
       return (
-        <div className="flex items-center justify-center space-x-1">
+        <div className="flex items-center justify-center space-x-2">
           <button
             className="text-blue-500 focus:outline-none"
             onClick={() => {

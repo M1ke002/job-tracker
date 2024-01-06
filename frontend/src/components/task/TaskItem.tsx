@@ -24,16 +24,17 @@ const TaskItem = ({ type }: TaskItemProps) => {
   return (
     <div
       className={cn(
-        "relative flex flex-col my-3 p-3 border rounded-sm shadow-sm space-y-2",
-        type === "completed" && "border-[#c3dafe]",
-        type === "incomplete" && "border-[#c3dafe]",
-        type === "overdue" && "border-[#f87171]"
+        "relative flex flex-col my-3 p-3 border rounded-sm shadow-sm space-y-2 border-[#c3dafe]"
       )}
     >
       <div className="flex items-center space-x-1">
         <h3 className=" text-gray-700 font-semibold">Do mock interview</h3>
         <span className="text-gray-500">-</span>
-        <span className="text-gray-500">Due: 29/12/2023</span>
+        <span
+          className={cn("text-gray-500", type === "overdue" && "text-rose-500")}
+        >
+          Due: 29/12/2023
+        </span>
       </div>
       <div className="flex items-center space-x-5">
         <Button
@@ -41,10 +42,10 @@ const TaskItem = ({ type }: TaskItemProps) => {
           variant="outlinePrimary"
           className={cn(
             type === "completed" &&
-              " border-green-500 hover:bg-green-500 hover:text-white"
+              "border-blue-500 bg-blue-500 hover:bg-blue-500/80 text-white"
           )}
         >
-          {type === "completed" ? "Completed" : "Mark as completed"}
+          {type === "completed" ? "Completed" : "Mark as done"}
         </Button>
         <div className="flex items-center space-x-2">
           <Switch className="data-[state=checked]:bg-blue-500" />

@@ -55,7 +55,7 @@ const Documents = () => {
                 Menu
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent side="left">
+            <DropdownMenuContent side="bottom">
               <DropdownMenuItem className="flex items-center ">
                 <Plus size={18} className="mr-2 text-blue-500" />
                 Add type

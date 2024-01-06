@@ -303,10 +303,10 @@ const Applications = () => {
           <ApplicationStage stage="Offer" count={0} />
           <ApplicationStage stage="Rejected" count={0} />
 
-          <button className="flex items-center justify-center bg-[#f1f6fa] min-w-[150px] h-[64px] text-sm tracking-wider uppercase border-[1px] border-[#c3dafe] font-semibold text-[#3d3d3d] px-3 py-2 mr-2 hover:border-blue-400">
+          {/* <button className="flex items-center justify-center bg-[#f1f6fa] min-w-[150px] h-[64px] text-sm tracking-wider uppercase border-[1px] border-[#c3dafe] font-semibold text-[#3d3d3d] px-3 py-2 mr-2 hover:border-blue-400">
             <Plus size={20} className="mr-2" />
             <span>Add Status</span>
-          </button>
+          </button> */}
         </div>
       </div>
       <div className="overflow-x-auto h-[calc(100vh-60px-101px)]">
