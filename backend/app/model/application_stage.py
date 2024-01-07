@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from .db import db
@@ -10,6 +10,9 @@ class ApplicationStage(db.Model):
     stage_name: so.Mapped[str] = so.mapped_column(sa.String(150))
     color: so.Mapped[str] = so.mapped_column(sa.String(150))
     position: so.Mapped[int] = so.mapped_column(sa.Integer)
+
+    #relationship
+    jobs: so.Mapped[List["SavedJob"]] = so.relationship("SavedJob", back_populates="stage", lazy=True)
 
     def __repr__(self) -> str:
         return f"<ApplicationStage {self.stage_name}>"

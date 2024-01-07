@@ -1,11 +1,14 @@
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # uncomment the line below for postgres database url from environment variable
 # postgres_local_base = os.environ['DATABASE_URL']
 
 database_config = {
-    "username": 'root',
-    "password": 'root',
+    "username": os.getenv('DB_USERNAME'),
+    "password": os.getenv('DB_PASSWORD'),
     "host": 'localhost',
     "port": '3306',
     "database": 'job_tracker'

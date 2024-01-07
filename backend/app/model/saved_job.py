@@ -1,7 +1,10 @@
-from typing import Optional
+from typing import Optional, List, TYPE_CHECKING
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from .db import db
+
+# if TYPE_CHECKING:
+#     from .application_stage import ApplicationStage
 
 class SavedJob(db.Model):
     __tablename__ = "saved_jobs"
@@ -20,6 +23,12 @@ class SavedJob(db.Model):
     posted_date: so.Mapped[Optional[str]] = so.mapped_column(sa.String(100))
     notes: so.Mapped[Optional[str]] = so.mapped_column(sa.String(1000))
     position: so.Mapped[int] = so.mapped_column(sa.Integer)
+
+    #relationship
+    stage: so.Mapped[Optional["ApplicationStage"]] = so.relationship("ApplicationStage", back_populates="jobs")
+    #delete all tasks and contacts associated with this job when job is deleted
+    tasks: so.Mapped[List["Task"]] = so.relationship(cascade="all, delete-orphan", lazy=True)
+    contacts: so.Mapped[List["Contact"]] = so.relationship(cascade="all, delete-orphan", lazy=True)
 
     def __repr__(self) -> str:
         return f"<SavedJob {self.job_title} {self.company_name}>"
