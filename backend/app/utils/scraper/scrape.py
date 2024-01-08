@@ -1,14 +1,14 @@
 import requests
 from bs4 import BeautifulSoup
-from url_builder import ausgradUrlBuilder, seekUrlBuilder
-from constants import BASE_URL_AUS_GRAD, BASE_URL_SEEK
+from .url_builder import ausgradUrlBuilder, seekUrlBuilder
+from .constants import BASE_URL_AUS_GRAD, BASE_URL_SEEK
 from .helper import addPageNumberToUrl
 
 def getAusGradJobPostings(soup: BeautifulSoup):
-    jobs = []
+    jobs_dict = {}
     jobListContainer = soup.find("div", class_="jobs-container")
 
-    if (jobListContainer == None): return jobs
+    if (jobListContainer == None): return []
     job_listings = jobListContainer.find_all("div", class_="outer-container")
 
     for job in job_listings:
@@ -40,6 +40,7 @@ def getAusGradJobPostings(soup: BeautifulSoup):
         jobType = job.find("p", class_="ellipsis-text-paragraph")
         if (jobType != None): jobType = jobType.text.strip()
 
+
         print('title: '+jobTitle)
         print('company: '+companyName)
         print('job type: '+jobType)
@@ -49,25 +50,32 @@ def getAusGradJobPostings(soup: BeautifulSoup):
         print('deadline: '+ jobDeadline)
         # print(jobSalary)
         print("")
+        
+        if (jobTitle and companyName and jobLink):
 
-        jobs.append({   
-            'job_title': jobTitle,
-            'company': companyName,
-            'location': location,
-            'jobListingDate': jobDeadline,
-            'jobDescription': jobDescription,
-            'jobSalary': 'None',
-            'link': jobLink
-        })
+            if (jobLink in jobs_dict):
+                continue
 
+            jobs_dict[jobLink] = {
+                'job_title': jobTitle,
+                'company': companyName,
+                'location': location,
+                'jobListingDate': jobDeadline,
+                'jobDescription': jobDescription,
+                'jobSalary': 'None',
+                'link': jobLink
+            }
+
+    jobs = list(jobs_dict.values())
     return jobs
 
 def getSeekJobPostings(soup: BeautifulSoup):
-    jobs = []
+    jobs_dict = {}
     job_listings = soup.find_all('div', class_='_1wkzzau0 a1msqi6m')
     print(f'Job Listings: {len(job_listings)}')
     for job in job_listings:
         # job_title_element = job.find('h3', class_='_1wkzzau0 a1msqi4y lnocuo0 lnocuol _1d0g9qk4 lnocuov lnocuo21')
+        job_title = None
         job_title_element = job.find(attrs={"data-automation": "jobTitle"})
         if job_title_element:
             job_title = job_title_element.text.strip()       
@@ -94,23 +102,29 @@ def getSeekJobPostings(soup: BeautifulSoup):
             jobSalary = jobSalary.find('span').text.strip()
         
         link = job.find('a')
+        actual_job_link = None
         if link:
             # Access the 'href' attribute value
             job_link = link.get('href')
             actual_job_link = BASE_URL_SEEK + job_link
 
-        print(f"Job Title: {job_title}\nCompany: {company}\nLocation : {location}\nPosted date: {jobListingDate}\nJob description: {jobDescription}\nJob salary: {jobSalary}\nLink : {actual_job_link}\n--------------------------------")
-        
-        jobs.append({
-            'job_title': job_title,
-            'company': company,
-            'location': location,
-            'jobListingDate': jobListingDate,
-            'jobDescription': jobDescription,
-            'jobSalary': jobSalary,
-            'link': actual_job_link
-        })
+        if job_title and company and actual_job_link:
+            #add job to dict if not already in dict
+            if (actual_job_link in jobs_dict):
+                continue
 
+            jobs_dict[actual_job_link] = {
+                'job_title': job_title,
+                'company': company,
+                'location': location,
+                'jobListingDate': jobListingDate,
+                'jobDescription': jobDescription,
+                'jobSalary': jobSalary,
+                'link': actual_job_link
+            }
+            # print(f"Job Title: {job_title}\nCompany: {company}\nLocation : {location}\nPosted date: {jobListingDate}\nJob description: {jobDescription}\nJob salary: {jobSalary}\nLink : {actual_job_link}\n--------------------------------")
+
+    jobs = list(jobs_dict.values())
     return jobs
 
 def getAllJobListings(
@@ -130,10 +144,10 @@ def getAllJobListings(
             return jobs
         
         soup = BeautifulSoup(response.content, 'html.parser')
-        if (website == 'ausgrad'):
-            jobs.extend(getAusGradJobPostings(soup, max_pages))
-        elif (website == 'seek'):
-            jobs.extend(getSeekJobPostings(soup, max_pages))
+        if (website == 'Grad Connection'):
+            jobs.extend(getAusGradJobPostings(soup))
+        elif (website == 'Seek'):
+            jobs.extend(getSeekJobPostings(soup))
 
         print(f'=======================================End of page {page+1}=======================================')
     print(f'jobs length: {len(jobs)}')
@@ -141,7 +155,8 @@ def getAllJobListings(
 
 if __name__ == '__main__':
     search_url = ausgradUrlBuilder(keyword='Software Engineer', jobType='internships', discipline='engineering-software', location='sydney')
+    # search_url = seekUrlBuilder(keyword='Software Engineer', classification='information-communication-technology', location='All Sydney NSW')
     print(search_url)
     # getAllJobListings('ausgrad', 'https://au.gradconnection.com/internships/sydney/?title=Software+Engineer&ordering=-recent_job_created', 3)
-    jobs = getAllJobListings('ausgrad', search_url, 1)
+    jobs = getAllJobListings('Grad Connection', search_url, 1)
 

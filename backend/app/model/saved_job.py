@@ -32,3 +32,27 @@ class SavedJob(db.Model):
 
     def __repr__(self) -> str:
         return f"<SavedJob {self.job_title} {self.company_name}>"
+    
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "stage_id": self.stage_id,
+            "job_title": self.job_title,
+            "company_name": self.company_name,
+            "location": self.location,
+            "job_description": self.job_description,
+            "additional_info": self.additional_info,
+            "job_type": self.job_type,
+            "salary": self.salary,
+            "job_url": self.job_url,
+            "posted_date": self.posted_date,
+            "notes": self.notes,
+            "position": self.position,
+            #for stage only need id and stage_name
+            "stage": {
+                "id": self.stage.id,
+                "stage_name": self.stage.stage_name
+            } if self.stage else None,
+            "tasks": [task.to_dict() for task in self.tasks],
+            "contacts": [contact.to_dict() for contact in self.contacts]
+        }

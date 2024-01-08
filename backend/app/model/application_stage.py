@@ -16,3 +16,12 @@ class ApplicationStage(db.Model):
 
     def __repr__(self) -> str:
         return f"<ApplicationStage {self.stage_name}>"
+    
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "stage_name": self.stage_name,
+            "color": self.color,
+            "position": self.position,
+            "jobs": [job.to_dict() for job in self.jobs]
+        }

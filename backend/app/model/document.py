@@ -20,3 +20,14 @@ class Document(db.Model):
 
     def __repr__(self) -> str:
         return f"<Document {self.document_name}>"
+    
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "document_type_id": self.document_type_id,
+            "job_id": self.job_id,
+            "document_name": self.document_name,
+            "date_uploaded": self.date_uploaded,
+            "document_type": self.document_type.to_dict(),
+            "job": self.job.to_dict()
+        }

@@ -16,3 +16,14 @@ class Contact(db.Model):
 
     def __repr__(self) -> str:
         return f"<Contact {self.person_name} {self.person_position}>"
+    
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "job_id": self.job_id,
+            "person_name": self.person_name,
+            "person_position": self.person_position,
+            "person_linkedin": self.person_linkedin,
+            "person_email": self.person_email,
+            "note": self.note
+        }

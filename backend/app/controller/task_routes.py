@@ -1,24 +1,30 @@
-from flask import Blueprint
+from flask import Blueprint, jsonify, request
+
+from app.service.task_service import get_all_tasks
+from app.service.task_service import delete_task
 
 task_routes = Blueprint('task_routes', __name__)
 
 # get all tasks
 @task_routes.route('', methods=['GET'])
-def get_all_tasks():
-    return 'get all tasks'
+def handle_get_all_tasks():
+    tasks = get_all_tasks()
+    return jsonify(tasks), 200
 
 # create a task
 @task_routes.route('', methods=['POST'])
-def create_task():
+def handle_create_task():
     return 'create a task'
 
 # edit a task
 @task_routes.route('/<int:task_id>', methods=['PUT'])
-def edit_task(task_id):
+def handle_edit_task(task_id):
     return 'edit a task'
 
 # delete a task
 @task_routes.route('/<int:task_id>', methods=['DELETE'])
-def delete_task(task_id):
-    return 'delete a task'
-
+def handle_delete_task(task_id):
+    task = delete_task(task_id)
+    if task is None:
+        return jsonify({}), 404
+    return jsonify(task), 200

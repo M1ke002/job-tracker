@@ -15,3 +15,12 @@ class Notification(db.Model):
 
     def __repr__(self) -> str:
         return f"<Notification {self.message}>"
+    
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "scraped_site_id": self.scraped_site_id,
+            "message": self.message,
+            "created_at": self.created_at,
+            "is_read": self.is_read
+        }

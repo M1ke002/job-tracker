@@ -1,24 +1,30 @@
-from flask import Blueprint
+from flask import Blueprint, jsonify, request
+
+from app.service.document_type_service import get_all_document_types
+from app.service.document_type_service import delete_document_type
 
 document_type_routes = Blueprint('document_type_routes', __name__)
 
 # get all document types
 @document_type_routes.route('', methods=['GET'])
-def get_all_document_types():
-    return 'get all document types'
+def handle_get_all_document_types():
+    document_types = get_all_document_types()
+    return jsonify(document_types), 200
 
 # create a document type
 @document_type_routes.route('', methods=['POST'])
-def create_document_type():
+def handle_create_document_type():
     return 'create a document type'
 
 # edit a document type
 @document_type_routes.route('/<int:document_type_id>', methods=['PUT'])
-def edit_document_type(document_type_id):
+def handle_edit_document_type(document_type_id):
     return 'edit a document type'
 
 # delete a document type
 @document_type_routes.route('/<int:document_type_id>', methods=['DELETE'])
-def delete_document_type(document_type_id):
-    return 'delete a document type'
-
+def handle_delete_document_type(document_type_id):
+    document_type = delete_document_type(document_type_id)
+    if document_type is None:
+        return jsonify({}), 404
+    return jsonify(document_type), 200

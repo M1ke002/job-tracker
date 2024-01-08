@@ -10,3 +10,9 @@ class DocumentType(db.Model):
 
     def __repr__(self) -> str:
         return f"<DocumentType {self.type_name}>"
+    
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "type_name": self.type_name
+        }

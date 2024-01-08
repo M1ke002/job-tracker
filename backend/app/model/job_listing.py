@@ -21,3 +21,19 @@ class JobListing(db.Model):
 
     def __repr__(self) -> str:
         return f"<JobListing {self.job_title} {self.company_name}>"
+    
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "scraped_site_id": self.scraped_site_id,
+            "job_title": self.job_title,
+            "company_name": self.company_name,
+            "location": self.location,
+            "job_description": self.job_description,
+            "additional_info": self.additional_info,
+            "job_type": self.job_type,
+            "salary": self.salary,
+            "job_url": self.job_url,
+            "posted_date": self.posted_date,
+            "is_new": self.is_new
+        }

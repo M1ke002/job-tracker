@@ -20,3 +20,16 @@ class Task(db.Model):
 
     def __repr__(self) -> str:
         return f"<Task {self.task_name} {self.due_date}>"
+    
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "job_id": self.job_id,
+            "task_name": self.task_name,
+            "due_date": self.due_date,
+            "is_completed": self.is_completed,
+            "is_reminder_enabled": self.is_reminder_enabled,
+            "reminder_date": self.reminder_date,
+            "is_notify_email": self.is_notify_email,
+            "is_notify_notification": self.is_notify_notification
+        }

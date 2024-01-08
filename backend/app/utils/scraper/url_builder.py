@@ -1,13 +1,13 @@
-from constants import BASE_URL_AUS_GRAD, BASE_URL_SEEK
+from .constants import BASE_URL_AUS_GRAD, BASE_URL_SEEK
 
 """
     keyword: string. ex: "software engineer"
     jobType: string. ex: "internships / graduate jobs". default: "all job types, displayed as (jobs)"
     discipline: string. ex: "engineering-software". default: "engineering-software"
-    location: string. ex: "sydney". default: ""
+    location: string. ex: "sydney". default: "australia"
 """
 def ausgradUrlBuilder(keyword, jobType, discipline, location):
-    url = BASE_URL_AUS_GRAD
+    url = BASE_URL_AUS_GRAD + "/"
 
     if (jobType == ""): jobType = "jobs"
     url += jobType.replace(" ", "-") + "/"
@@ -31,7 +31,7 @@ def ausgradUrlBuilder(keyword, jobType, discipline, location):
     location: string. ex: "All Australia / All Sydney NSW / All Melbourne VIC". default: ""
 """
 def seekUrlBuilder(keyword, workType, classification, location):
-    url = BASE_URL_SEEK
+    url = BASE_URL_SEEK + "/"
     if (keyword != ""): url += keyword.replace(" ", "-") + "-jobs"
     else: url += "jobs"
 

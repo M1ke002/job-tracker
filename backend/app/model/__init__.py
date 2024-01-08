@@ -8,4 +8,5 @@ from .contact import Contact
 from .document import Document
 from .document_type import DocumentType
 from .scraped_site import ScrapedSite
+from .scraped_site_settings import ScrapedSiteSettings
 from .notification import Notification

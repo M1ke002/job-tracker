@@ -47,10 +47,10 @@ if __name__ == '__main__':
     connection = connectDB()
     cursor = connection.cursor()
 
-    # get all scraped sites
+    # get all scraped sites settings
     scraped_sites = fetchAllScrapedSites(connection, cursor)
 
-    if (len(scraped_sites) == 0):
+    if (scraped_sites == None):
         print('No scraped sites found')
         cursor.close()
         connection.close()

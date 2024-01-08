@@ -20,7 +20,7 @@ from .controller import document_type_routes
 from .controller import notification_routes
 
 #import models
-from .model import db, User, ApplicationStage, SavedJob, JobListing, Task, Contact, Document, DocumentType, ScrapedSite, Notification
+from .model import db, User, ApplicationStage, SavedJob, JobListing, Task, Contact, Document, DocumentType, ScrapedSite, ScrapedSiteSettings ,Notification
 
 app = Flask(__name__)
 app.config.from_object(config_by_name['dev'])
