@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify, request
 from app.service.saved_job_service import get_all_saved_jobs
 from app.service.saved_job_service import get_saved_job
 from app.service.saved_job_service import delete_saved_job
+from app.service.saved_job_service import create_saved_job
 
 saved_job_routes = Blueprint('saved_job_routes', __name__)
 
@@ -23,7 +24,13 @@ def handle_get_saved_job(saved_job_id):
 #create a saved job
 @saved_job_routes.route('', methods=['POST'])
 def handle_create_saved_job():
-    return 'create a saved job'
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'No data provided'}), 400
+    job = create_saved_job(data)
+    if job is None:
+        return jsonify({'error': 'Cannot save job'}), 400
+    return jsonify(job), 200
 
 #edit a saved job
 @saved_job_routes.route('/<int:saved_job_id>', methods=['PUT'])

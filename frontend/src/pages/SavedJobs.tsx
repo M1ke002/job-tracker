@@ -31,11 +31,66 @@ const SavedJobs = () => {
       </div>
       <Separator className="my-3" />
       <div className="grid md:grid-cols-2 gap-2 grid-cols-1 justify-items-center">
-        <JobItem type="savedJob" />
-        <JobItem type="savedJob" />
-        <JobItem type="savedJob" />
-        <JobItem type="savedJob" />
-        <JobItem type="savedJob" />
+        <JobItem
+          key={0}
+          type="savedJob"
+          jobTitle={"2024 Software Development Internship - Sydney"}
+          jobDescription={
+            "SIG’s technology team builds some of the most powerful trading systems in the financial industry. This includes large scale computations, real-time systems, high performance computing and petabytes of data."
+          }
+          location={"Sydney"}
+          jobUrl={""}
+          companyName={"Google"}
+          additionalInfo={"Graduate jobs"}
+          jobDate={"Closing in 2 days"}
+          salary={"$100,000 - $120,000 a year"}
+          isNewJob={true}
+        />
+        <JobItem
+          key={1}
+          type="savedJob"
+          jobTitle={"2024 Software Development Internship - Sydney"}
+          jobDescription={
+            "SIG’s technology team builds some of the most powerful trading systems in the financial industry. This includes large scale computations, real-time systems, high performance computing and petabytes of data."
+          }
+          location={"Sydney"}
+          jobUrl={""}
+          companyName={"Google"}
+          additionalInfo={"Graduate jobs"}
+          jobDate={"Closing in 2 days"}
+          salary={"$100,000 - $120,000 a year"}
+          isNewJob={true}
+        />
+        <JobItem
+          key={2}
+          type="savedJob"
+          jobTitle={"2024 Software Development Internship - Sydney"}
+          jobDescription={
+            "SIG’s technology team builds some of the most powerful trading systems in the financial industry. This includes large scale computations, real-time systems, high performance computing and petabytes of data."
+          }
+          location={"Sydney"}
+          jobUrl={""}
+          companyName={"Google"}
+          additionalInfo={"Graduate jobs"}
+          jobDate={"Closing in 2 days"}
+          salary={"$100,000 - $120,000 a year"}
+          isNewJob={true}
+        />
+        <JobItem
+          key={3}
+          type="savedJob"
+          jobTitle={"2024 Software Development Internship - Sydney"}
+          jobDescription={
+            "SIG’s technology team builds some of the most powerful trading systems in the financial industry. This includes large scale computations, real-time systems, high performance computing and petabytes of data."
+          }
+          location={"Sydney"}
+          jobUrl={""}
+          companyName={"Google"}
+          additionalInfo={"Graduate jobs"}
+          jobDate={"Closing in 2 days"}
+          salary={"$100,000 - $120,000 a year"}
+          isNewJob={true}
+        />
       </div>
       <Button className="mx-auto mt-4 mb-3 px-7" variant="primary">
         Load More

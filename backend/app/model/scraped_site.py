@@ -15,7 +15,7 @@ class ScrapedSite(db.Model):
     #relationship
     scraped_site_settings: so.Mapped["ScrapedSiteSettings"] = so.relationship(
         "ScrapedSiteSettings", back_populates="scraped_site")
-    job_listings: so.Mapped[List["JobListing"]] = so.relationship(lazy=True)
+    job_listings: so.Mapped[List["JobListing"]] = so.relationship(back_populates="scraped_site", lazy=True)
     
     def __repr__(self) -> str:
         return f"<ScrapedSite {self.website_name}>"

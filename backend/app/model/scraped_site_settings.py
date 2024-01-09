@@ -11,11 +11,11 @@ class ScrapedSiteSettings(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     is_scrape_enabled: so.Mapped[bool] = so.mapped_column(sa.Boolean)
     #scrape frequency in days
-    scrape_frequency: so.Mapped[int] = so.mapped_column(sa.Integer)
-    max_pages_to_scrape: so.Mapped[int] = so.mapped_column(sa.Integer)
-    is_notification_enabled: so.Mapped[bool] = so.mapped_column(sa.Boolean)
-    is_notify_email: so.Mapped[bool] = so.mapped_column(sa.Boolean)
-    is_notify_notification: so.Mapped[bool] = so.mapped_column(sa.Boolean)
+    scrape_frequency: so.Mapped[int] = so.mapped_column(sa.Integer, default=1)
+    max_pages_to_scrape: so.Mapped[int] = so.mapped_column(sa.Integer, default=1)
+    is_notification_enabled: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=True)
+    is_notify_email: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=False)
+    is_notify_notification: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=True)
 
     #url query settings
     search_keyword: so.Mapped[Optional[str]] = so.mapped_column(sa.String(150))

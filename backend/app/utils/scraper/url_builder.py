@@ -1,4 +1,4 @@
-from .constants import BASE_URL_AUS_GRAD, BASE_URL_SEEK
+from .constants import BASE_URL_GRAD_CONNECTION, BASE_URL_SEEK
 
 """
     keyword: string. ex: "software engineer"
@@ -7,7 +7,7 @@ from .constants import BASE_URL_AUS_GRAD, BASE_URL_SEEK
     location: string. ex: "sydney". default: "australia"
 """
 def ausgradUrlBuilder(keyword, jobType, discipline, location):
-    url = BASE_URL_AUS_GRAD + "/"
+    url = BASE_URL_GRAD_CONNECTION + "/"
 
     if (jobType == ""): jobType = "jobs"
     url += jobType.replace(" ", "-") + "/"

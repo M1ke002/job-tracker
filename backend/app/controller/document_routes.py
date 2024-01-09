@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 
 from app.service.document_service import get_all_documents
 from app.service.document_service import delete_document
+from app.service.document_service import create_document
 
 document_routes = Blueprint('document_routes', __name__)
 
@@ -19,7 +20,13 @@ def handle_edit_document(document_id):
 # create a document
 @document_routes.route('', methods=['POST'])
 def handle_create_document():
-    return 'create a document'
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'No data provided'}), 400
+    document = create_document(data)
+    if document is None:
+        return jsonify({'error': 'Cannot create document'}), 400
+    return jsonify(document), 200
 
 # delete a document
 @document_routes.route('/<int:document_id>', methods=['DELETE'])

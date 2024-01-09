@@ -13,11 +13,14 @@ class JobListing(db.Model):
     location: so.Mapped[Optional[str]] = so.mapped_column(sa.String(250))
     job_description: so.Mapped[Optional[str]] = so.mapped_column(sa.String(1000))
     additional_info: so.Mapped[Optional[str]] = so.mapped_column(sa.String(1000))
-    job_type: so.Mapped[Optional[str]] = so.mapped_column(sa.String(100))
     salary: so.Mapped[Optional[str]] = so.mapped_column(sa.String(100))
     job_url: so.Mapped[str] = so.mapped_column(sa.String(1000))
-    posted_date: so.Mapped[Optional[str]] = so.mapped_column(sa.String(100))
-    is_new: so.Mapped[bool] = so.mapped_column(sa.Boolean)
+    job_date: so.Mapped[Optional[str]] = so.mapped_column(sa.String(100))
+    is_new: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=True)
+
+    #relationship
+    scraped_site: so.Mapped["ScrapedSite"] = so.relationship(
+        "ScrapedSite", back_populates="job_listings", lazy=True)
 
     def __repr__(self) -> str:
         return f"<JobListing {self.job_title} {self.company_name}>"
@@ -31,9 +34,8 @@ class JobListing(db.Model):
             "location": self.location,
             "job_description": self.job_description,
             "additional_info": self.additional_info,
-            "job_type": self.job_type,
             "salary": self.salary,
             "job_url": self.job_url,
-            "posted_date": self.posted_date,
+            "job_date": self.job_date,
             "is_new": self.is_new
         }

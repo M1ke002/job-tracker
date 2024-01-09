@@ -23,6 +23,7 @@ from .controller import notification_routes
 from .model import db, User, ApplicationStage, SavedJob, JobListing, Task, Contact, Document, DocumentType, ScrapedSite, ScrapedSiteSettings ,Notification
 
 app = Flask(__name__)
+CORS(app, origins=["http://localhost:5173"], supports_credentials=True)
 app.config.from_object(config_by_name['dev'])
 
 #initialize login manager
@@ -34,7 +35,6 @@ app.config.from_object(config_by_name['dev'])
 
 # enable CORS because we need to access this API from a different server localhost:3000 to localhost:5000
 #if same url and port, CORS is not needed
-CORS(app)
 
 #register blueprints
 app.register_blueprint(test_routes, url_prefix='/')

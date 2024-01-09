@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -19,7 +19,21 @@ import JobItem from "@/components/jobs/JobItem";
 import { Separator } from "@/components/ui/separator";
 import PaginationBox from "@/components/PaginationBox";
 
+import axios from "@/lib/axiosConfig";
+import ScrapedSite from "@/types/ScrapedSite";
+
 const JobList = () => {
+  const [scrapedSites, setScrapedSites] = useState<ScrapedSite[]>([]);
+
+  useEffect(() => {
+    const fetchScrapedSites = async () => {
+      const res = await axios.get("/scraped-sites");
+      console.log(res.data);
+      setScrapedSites(res.data);
+    };
+    fetchScrapedSites();
+  }, []);
+
   return (
     <div className="h-full">
       <div className="border-[#dce6f8] border-b-[1px] bg-white h-[64px]">
@@ -54,18 +68,28 @@ const JobList = () => {
         <div className="w-full flex items-center justify-between">
           <div>
             <p className="text-sm font-medium">
-              15 jobs on{" "}
+              {scrapedSites.length > 0 && scrapedSites[0].job_listings.length}{" "}
+              jobs on{" "}
               <a
-                href="https://au.indeed.com/"
+                href={
+                  scrapedSites.length > 0
+                    ? scrapedSites[0].website_name === "Grad Connection"
+                      ? "https://au.gradconnection.com/"
+                      : "https://www.seek.com.au/"
+                    : ""
+                }
                 target="_blank"
                 className="underline text-blue-500"
               >
-                Indeed
+                {scrapedSites.length > 0 && scrapedSites[0].website_name}{" "}
               </a>
             </p>
           </div>
           <div className="flex items-center space-x-2">
-            <p className="text-sm font-medium">Last updated: 2 days ago</p>
+            <p className="text-sm font-medium">
+              Last updated:{" "}
+              {scrapedSites.length > 0 && scrapedSites[0].last_scrape_date}
+            </p>
             <Button
               className="text-sm font-medium text-[#3d3d3d] hover:text-[#3d3d3d] px-2 bg-white"
               variant="outlinePrimary"
@@ -84,11 +108,24 @@ const JobList = () => {
         {/* grid 2 cols */}
         {/* <div className="flex items-center flex-wrap justify-around"> */}
         <div className="grid md:grid-cols-2 gap-2 grid-cols-1 justify-items-center">
-          <JobItem type="job" />
-          <JobItem type="job" />
-          <JobItem type="job" />
-          <JobItem type="job" />
-          <JobItem type="job" />
+          {scrapedSites.length > 0 &&
+            scrapedSites[0].job_listings.map((job, index) => {
+              return (
+                <JobItem
+                  key={index}
+                  type="jobListing"
+                  jobTitle={job.job_title}
+                  jobDescription={job.job_description}
+                  location={job.location}
+                  jobUrl={job.job_url}
+                  companyName={job.company_name}
+                  additionalInfo={job.additional_info}
+                  jobDate={job.job_date}
+                  salary={job.salary}
+                  isNewJob={job.is_new}
+                />
+              );
+            })}
         </div>
         <PaginationBox />
       </div>

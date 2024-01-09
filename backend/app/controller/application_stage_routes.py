@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 
 from app.service.application_stage_service import get_all_application_stages
 from app.service.application_stage_service import delete_application_stage
+from app.service.application_stage_service import create_application_stage
 
 
 application_stage_routes = Blueprint('application_stage_routes', __name__)
@@ -15,7 +16,13 @@ def handle_get_all_application_stages():
 # create an application stage
 @application_stage_routes.route('', methods=['POST'])
 def handle_create_application_stage():
-    return 'create an application stage'
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'No data provided'}), 400
+    application_stage = create_application_stage(data)
+    if application_stage is None:
+        return jsonify({'error': 'cant create application stage'}), 400
+    return jsonify(application_stage), 200
 
 # edit an application stage
 @application_stage_routes.route('/<int:application_stage_id>', methods=['PUT'])

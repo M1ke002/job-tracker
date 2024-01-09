@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from .url_builder import ausgradUrlBuilder, seekUrlBuilder
-from .constants import BASE_URL_AUS_GRAD, BASE_URL_SEEK
+from .constants import BASE_URL_GRAD_CONNECTION, BASE_URL_SEEK, GRAD_CONNECTION, SEEK
 from .helper import addPageNumberToUrl
 
 def getAusGradJobPostings(soup: BeautifulSoup):
@@ -19,8 +19,8 @@ def getAusGradJobPostings(soup: BeautifulSoup):
         if (companyName != None): companyName = companyName.text.strip()
 
         location = job.find("div", class_="ellipsis-text-paragraph location-name")
-        if (location != None): location = location.text.strip()
-        else: location = job.find("p", class_="ellipsis-text-paragraph location-name").text.strip()
+        if (location != None): location = location.text.strip().split(" ")[0]
+        else: location = job.find("p", class_="ellipsis-text-paragraph location-name").text.strip().split(" ")[0]
 
         jobDescription = job.find("p", class_="box-description-para")
         if (jobDescription != None): jobDescription = jobDescription.text.strip()
@@ -28,7 +28,7 @@ def getAusGradJobPostings(soup: BeautifulSoup):
         jobLink = job.find("a", class_="box-header-title")
         if (jobLink != None): 
             jobLink = jobLink.get("href")
-            jobLink = BASE_URL_AUS_GRAD + jobLink
+            jobLink = BASE_URL_GRAD_CONNECTION + jobLink
 
         jobDeadline = job.find("span", class_="closing-in closing-in-button")
         if (jobDeadline != None):
@@ -58,12 +58,14 @@ def getAusGradJobPostings(soup: BeautifulSoup):
 
             jobs_dict[jobLink] = {
                 'job_title': jobTitle,
-                'company': companyName,
+                'company_name': companyName,
                 'location': location,
-                'jobListingDate': jobDeadline,
-                'jobDescription': jobDescription,
-                'jobSalary': 'None',
-                'link': jobLink
+                'job_date': jobDeadline,
+                'job_description': jobDescription,
+                'additional_info': jobType,
+                'salary': '',
+                'job_url': jobLink,
+                'is_new': False
             }
 
     jobs = list(jobs_dict.values())
@@ -115,12 +117,14 @@ def getSeekJobPostings(soup: BeautifulSoup):
 
             jobs_dict[actual_job_link] = {
                 'job_title': job_title,
-                'company': company,
+                'company_name': company,
                 'location': location,
-                'jobListingDate': jobListingDate,
-                'jobDescription': jobDescription,
-                'jobSalary': jobSalary,
-                'link': actual_job_link
+                'job_date': jobListingDate,
+                'job_description': jobDescription,
+                'additional_info': '',
+                'salary': jobSalary,
+                'job_url': actual_job_link,
+                'is_new': False
             }
             # print(f"Job Title: {job_title}\nCompany: {company}\nLocation : {location}\nPosted date: {jobListingDate}\nJob description: {jobDescription}\nJob salary: {jobSalary}\nLink : {actual_job_link}\n--------------------------------")
 
@@ -128,14 +132,14 @@ def getSeekJobPostings(soup: BeautifulSoup):
     return jobs
 
 def getAllJobListings(
-        website: str,
+        website_name: str,
         search_url: str,
         max_pages: int = 1
     ):
     jobs = []
 
     for page in range(max_pages):
-        search_url_with_page = addPageNumberToUrl(search_url, page+1, website)
+        search_url_with_page = addPageNumberToUrl(search_url, page+1, website_name)
         print(search_url_with_page)
         response = requests.get(search_url_with_page)
 
@@ -144,9 +148,9 @@ def getAllJobListings(
             return jobs
         
         soup = BeautifulSoup(response.content, 'html.parser')
-        if (website == 'Grad Connection'):
+        if (website_name == GRAD_CONNECTION):
             jobs.extend(getAusGradJobPostings(soup))
-        elif (website == 'Seek'):
+        elif (website_name == SEEK):
             jobs.extend(getSeekJobPostings(soup))
 
         print(f'=======================================End of page {page+1}=======================================')
@@ -158,5 +162,5 @@ if __name__ == '__main__':
     # search_url = seekUrlBuilder(keyword='Software Engineer', classification='information-communication-technology', location='All Sydney NSW')
     print(search_url)
     # getAllJobListings('ausgrad', 'https://au.gradconnection.com/internships/sydney/?title=Software+Engineer&ordering=-recent_job_created', 3)
-    jobs = getAllJobListings('Grad Connection', search_url, 1)
+    jobs = getAllJobListings(GRAD_CONNECTION, search_url, 1)
 

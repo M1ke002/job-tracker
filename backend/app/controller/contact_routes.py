@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 
 from app.service.contact_service import get_all_contacts
 from app.service.contact_service import delete_contact
+from app.service.contact_service import create_contact
 
 contact_routes = Blueprint('contact_routes', __name__)
 
@@ -14,7 +15,13 @@ def handle_get_all_contacts():
 # create a contact
 @contact_routes.route('', methods=['POST'])
 def handle_create_contact():
-    return 'create a contact'
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'No data provided'}), 400
+    contact = create_contact(data)
+    if contact is None:
+        return jsonify({'error': 'Cant create contact'}), 400
+    return jsonify(contact), 200
 
 # edit a contact
 @contact_routes.route('/<int:contact_id>', methods=['PUT'])

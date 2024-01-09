@@ -4,6 +4,21 @@ def get_all_document_types():
     document_types = DocumentType.query.all()
     return [document_type.to_dict() for document_type in document_types]
 
+def create_document_type(data):
+    type_name = data.get('typeName')
+
+    if not type_name:
+        return None
+    
+    document_type = DocumentType(
+        type_name=type_name,
+    )
+
+    db.session.add(document_type)
+    db.session.commit()
+
+    return document_type.to_dict()
+
 def delete_document_type(document_type_id):
     document_type = DocumentType.query.get(document_type_id)
     if document_type is None:

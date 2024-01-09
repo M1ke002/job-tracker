@@ -33,4 +33,6 @@ def handle_scrape_site(scraped_site_id):
     # find new job listings
     # update db with scraped job listings
     jobs = scrape_site(scraped_site_id)
+    if jobs is None:
+        return jsonify({'error': 'Something wrong while scraping site'}), 400
     return jsonify(jobs), 200
