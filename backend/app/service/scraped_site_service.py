@@ -2,7 +2,7 @@ from app.model import db, ScrapedSite, ScrapedSiteSettings, JobListing
 
 from app.utils.scraper.scrape import getAllJobListings
 from app.utils.scraper.url_builder import ausgradUrlBuilder, seekUrlBuilder
-from app.utils.scraper.helper import findNewJobListings
+from app.utils.scraper.helper import findNewJobListings, jobObjectToDict
 from app.utils.scraper.constants import GRAD_CONNECTION, SEEK
 
 from datetime import datetime, timezone
@@ -78,9 +78,10 @@ def scrape_site(scrape_site_id):
 
     # get existing job listings from db
     existing_job_listings = JobListing.query.filter_by(scraped_site_id=scrapedSite.id).all()
+    existing_job_dict = [jobObjectToDict(job) for job in existing_job_listings]
 
     # find new job listings
-    [updated_job_listings, found_new_jobs] = findNewJobListings(existing_job_listings, scraped_jobs)
+    [updated_job_listings, found_new_jobs] = findNewJobListings(existing_job_dict, scraped_jobs)
 
     if (not found_new_jobs):
         #save changes of scraped site to db

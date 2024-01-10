@@ -8,6 +8,21 @@ def addPageNumberToUrl(url: str, page: int, website_name: str):
         return url + f'&page={page}'
     else:
         return url
+    
+def jobObjectToDict(job):
+    return {
+        'id': job.id,
+        'scraped_site_id': job.scraped_site_id,
+        'job_title': job.job_title,
+        'company_name': job.company_name,
+        'location': job.location,
+        'job_description': job.job_description,
+        'additional_info': job.additional_info,
+        'salary': job.salary,
+        'job_url': job.job_url,
+        'job_date': job.job_date,
+        'is_new': False
+    }
 
 #compare the newly scraped job listings with the existing job listings in the db
 #compare by job title, company name, and job url
@@ -23,7 +38,7 @@ def findNewJobListings(oldJobs, newJobs):
         isNew = True
         for oldJob in oldJobs:
             #newJob is of type dict, oldJob is of type object
-            if (newJob['job_title'] == oldJob.job_title and newJob['company_name'] == oldJob.company_name and newJob['job_url'] == oldJob.job_url):
+            if (newJob['job_title'] == oldJob['job_title'] and newJob['company_name'] == oldJob['company_name'] and newJob['job_url'] == oldJob['job_url']):
                 isNew = False
                 break
         if (isNew):

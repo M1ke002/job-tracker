@@ -21,11 +21,13 @@ class ScrapedSite(db.Model):
         return f"<ScrapedSite {self.website_name}>"
     
     def to_dict(self) -> dict:
+        #sort job listings by is_new so that new jobs are at the top
+        sorted_job_listings = sorted(self.job_listings, key=lambda job_listing: job_listing.is_new, reverse=True)
         return {
             "id": self.id,
             "scraped_site_settings_id": self.scraped_site_settings_id,
             "website_name": self.website_name,
             "last_scrape_date": self.last_scrape_date,
             "scraped_site_settings": self.scraped_site_settings.to_dict(),
-            "job_listings": [job_listing.to_dict() for job_listing in self.job_listings]
+            "job_listings": [job_listing.to_dict() for job_listing in sorted_job_listings]
         }

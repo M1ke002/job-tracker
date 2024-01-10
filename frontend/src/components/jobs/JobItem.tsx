@@ -61,7 +61,7 @@ const JobItem = ({
     <Card
       className={cn(
         "relative max-w-[680px] my-2 border-[#c3dafe] w-full",
-        isNewJob ? "border-[#fabcbf]" : "border-[#c3dafe]"
+        isNewJob ? "border-[#f1969b]" : "border-[#c3dafe]"
       )}
     >
       <CardHeader>
@@ -73,15 +73,17 @@ const JobItem = ({
           <span className="text-sm font-semibold py-1 px-2 border border-blue-400 rounded-md">
             {companyName}
           </span>
-          <span className="ml-3 text-xs uppercase text-rose-700 bg-rose-100 p-1 px-2 rounded-md font-bold">
-            {jobDate}
-          </span>
+          {jobDate && (
+            <span className="ml-3 text-xs uppercase text-rose-700 bg-rose-100 p-1 px-2 rounded-md font-bold">
+              {jobDate}
+            </span>
+          )}
         </div>
       </CardHeader>
       <CardContent className="mb-[77px] pb-3">
         <div className="mb-2">
           <p className="text-sm font-semibold">
-            {location} · {additionalInfo}
+            {location} {additionalInfo && `· ${additionalInfo}`}
           </p>
           <p className="text-sm">{salary}</p>
         </div>
