@@ -10,6 +10,10 @@ import "react-quill/dist/quill.snow.css";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 
+interface JobDescriptionProps {
+  jobDescription: string;
+}
+
 const JobDescription = () => {
   const [rotateChevron, setRotateChevron] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);

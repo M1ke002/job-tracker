@@ -25,16 +25,42 @@ import ScrapedSite from "@/types/ScrapedSite";
 const JobList = () => {
   const [scrapedSites, setScrapedSites] = useState<ScrapedSite[]>([]);
   const [currentScrapedSite, setCurrentScrapedSite] = useState<ScrapedSite>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchScrapedSites = async () => {
+      setIsLoading(true);
       const res = await axios.get("/scraped-sites");
+      setIsLoading(false);
       console.log(res.data);
       setScrapedSites(res.data);
       setCurrentScrapedSite(res.data[0]);
     };
     fetchScrapedSites();
   }, []);
+
+  const scrapeSite = async () => {
+    try {
+      setIsLoading(true);
+      const res = await axios.get(
+        `/scraped-sites/${currentScrapedSite?.id}/scrape`
+      );
+      setIsLoading(false);
+      const updatedScrapedSite = res.data;
+
+      //update scrapedSites and currentScrapedSite
+      const updatedScrapedSites = scrapedSites.map((site) => {
+        if (site.id === updatedScrapedSite.id) {
+          return updatedScrapedSite;
+        }
+        return site;
+      });
+      setScrapedSites(updatedScrapedSites);
+      setCurrentScrapedSite(updatedScrapedSite);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   if (scrapedSites.length === 0 || !currentScrapedSite) {
     return null;
@@ -108,6 +134,8 @@ const JobList = () => {
             <Button
               className="text-sm font-medium text-[#3d3d3d] hover:text-[#3d3d3d] px-2 bg-white"
               variant="outlinePrimary"
+              disabled={isLoading}
+              onClick={scrapeSite}
             >
               <RefreshCcw size={20} />
             </Button>

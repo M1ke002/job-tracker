@@ -20,24 +20,26 @@ import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
 
 import { useModal } from "@/hooks/zustand/useModal";
+import ApplicationStage from "@/types/ApplicationStage";
 
-interface ApplicationStageColumnProps {
-  id: number;
-  name: string;
-  jobOrderIds: number[];
-  jobs: {
-    id: number;
-    title: string;
-    company: string;
-    stageId: number;
-  }[];
-}
+// interface ApplicationStageColumnProps {
+//   id: number;
+//   name: string;
+//   jobOrderIds: number[];
+//   jobs: {
+//     id: number;
+//     title: string;
+//     company: string;
+//     stageId: number;
+//   }[];
+// }
 
 const ApplicationStageColumn = ({
   id,
-  name,
+  stage_name,
+  position,
   jobs,
-}: ApplicationStageColumnProps) => {
+}: ApplicationStage) => {
   const {
     attributes,
     listeners,
@@ -51,7 +53,7 @@ const ApplicationStageColumn = ({
     data: {
       id: `stage-${id}`,
       type: "applicationStage",
-      name,
+      stage_name,
       jobs,
     },
   });
@@ -66,16 +68,16 @@ const ApplicationStageColumn = ({
 
   //#f1f2f4
   return (
-    <div ref={setNodeRef} style={style} className="px-3 h-full">
+    <div ref={setNodeRef} style={style} className="px-2 h-full">
       {/* #ebf4ff instead of #fff???? */}
       <div
         className={cn(
           "flex flex-col p-3 w-[340px] rounded-lg bg-[#fff] shadow-md border-[1px] border-[#c3dafe]",
-          isDragging && "border-blue-500",
-          name === "Applied" && "border-[#c3dafe]",
-          name === "Interview" && "border-amber-200",
-          name === "Offer" && "border-green-300",
-          name === "Rejected" && "border-rose-300"
+          stage_name === "Applied" && "border-[#c3dafe]",
+          stage_name === "O.A." && "border-[#a3e8f8]",
+          stage_name === "Interview" && "border-amber-200",
+          stage_name === "Offer" && "border-green-300",
+          stage_name === "Rejected" && "border-rose-300"
         )}
       >
         <div
@@ -85,9 +87,9 @@ const ApplicationStageColumn = ({
           className="flex items-center justify-between touch-none"
         >
           <span className="font-medium">
-            {name}
+            {stage_name}
             <div className="bg-[#c0dbf7] rounded-full text-center px-2 py-1 text-xs font-semibold ml-2 inline-block">
-              2
+              {jobs.length}
             </div>
           </span>
           <DropdownMenu>
@@ -134,8 +136,8 @@ const ApplicationStageColumn = ({
               <JobCard
                 key={job.id}
                 id={job.id}
-                title={job.title}
-                company={job.company}
+                title={job.job_title}
+                company={job.company_name}
               />
             ))}
           </div>

@@ -25,24 +25,40 @@ import { applicationData } from "@/components/fake-data/constant";
 import JobCard from "@/components/application/JobCard";
 import ApplicationStageType from "@/types/ApplicationStage";
 import Job from "@/types/Job";
+import axios from "@/lib/axiosConfig";
+import { getApplicationStatusCount } from "@/utils/utils";
+import SavedJob from "@/types/SavedJob";
 
 const Applications = () => {
   const [applicationStageColumns, setApplicationStageColumns] = useState<
     ApplicationStageType[]
   >([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchApplicationStages = async () => {
+      try {
+        const res = await axios.get("/application-stages");
+        setApplicationStageColumns(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchApplicationStages();
+  }, []);
 
   //the data of the item being dragged
   const [activeColumnData, setActiveColumnData] =
     useState<ApplicationStageType | null>(null);
-  const [activeCardData, setActiveCardData] = useState<Job | null>(null);
+  const [activeCardData, setActiveCardData] = useState<SavedJob | null>(null);
 
   const { setNodeRef } = useDroppable({
     id: `application-stages`,
   });
 
-  useEffect(() => {
-    setApplicationStageColumns(applicationData.applicationStages);
-  }, []);
+  // useEffect(() => {
+  //   setApplicationStageColumns(applicationData.applicationStages);
+  // }, []);
 
   const dropAnimation: DropAnimation = {
     sideEffects: defaultDropAnimationSideEffects({
@@ -153,9 +169,8 @@ const Applications = () => {
           );
           targetColumn.jobs.splice(overIndex, 0, {
             id: parseInt(active.id.split("-")[1]),
-            title: active.data.current.title,
-            company: active.data.current.company,
-            stageId: targetColumn.id,
+            stage_id: targetColumn.id,
+            ...active.data.current,
           });
 
           return [...applicationStageColumns];
@@ -213,9 +228,8 @@ const Applications = () => {
           if (targetColumn.jobs.length === 0) {
             targetColumn.jobs.push({
               id: parseInt(active.id.split("-")[1]),
-              title: active.data.current.title,
-              company: active.data.current.company,
-              stageId: targetColumn.id,
+              stage_id: targetColumn.id,
+              ...active.data.current,
             });
           } else {
             //check if the user is dragging the job card to the top or bottom of the column
@@ -225,17 +239,15 @@ const Applications = () => {
               console.log("top!");
               targetColumn.jobs.splice(0, 0, {
                 id: parseInt(active.id.split("-")[1]),
-                title: active.data.current.title,
-                company: active.data.current.company,
-                stageId: targetColumn.id,
+                stage_id: targetColumn.id,
+                ...active.data.current,
               });
             } else {
               //dragging to the bottom of the column
               targetColumn.jobs.push({
                 id: parseInt(active.id.split("-")[1]),
-                title: active.data.current.title,
-                company: active.data.current.company,
                 stageId: targetColumn.id,
+                ...active.data.current,
               });
             }
           }
@@ -298,15 +310,15 @@ const Applications = () => {
     <div className="bg-[#f7fafc]">
       <div className="border-[#dce6f8] border-b-[1px] bg-white">
         <div className="flex items-center justify-between max-w-[1450px] px-4 mx-auto py-2 overflow-y-auto h-[100px]">
-          <ApplicationStage stage="Applied" count={3} />
-          <ApplicationStage stage="Interview" count={1} />
-          <ApplicationStage stage="Offer" count={0} />
-          <ApplicationStage stage="Rejected" count={0} />
-
-          {/* <button className="flex items-center justify-center bg-[#f1f6fa] min-w-[150px] h-[64px] text-sm tracking-wider uppercase border-[1px] border-[#c3dafe] font-semibold text-[#3d3d3d] px-3 py-2 mr-2 hover:border-blue-400">
-            <Plus size={20} className="mr-2" />
-            <span>Add Status</span>
-          </button> */}
+          {getApplicationStatusCount(applicationStageColumns).map(
+            (status, index) => (
+              <ApplicationStage
+                key={index}
+                stage={status.name}
+                count={status.count}
+              />
+            )
+          )}
         </div>
       </div>
       <div className="overflow-x-auto h-[calc(100vh-60px-101px)]">
@@ -329,8 +341,8 @@ const Applications = () => {
                 <ApplicationStageColumn
                   key={stage.id}
                   id={stage.id}
-                  name={stage.name}
-                  jobOrderIds={stage.jobOrderIds}
+                  stage_name={stage.stage_name}
+                  position={stage.position}
                   jobs={stage.jobs}
                 />
               ))}
@@ -338,28 +350,28 @@ const Applications = () => {
                 {activeColumnData && (
                   <ApplicationStageColumn
                     id={activeColumnData.id}
-                    name={activeColumnData.name}
+                    stage_name={activeColumnData.stage_name}
+                    position={activeColumnData.position}
                     jobs={activeColumnData.jobs}
-                    jobOrderIds={activeColumnData.jobOrderIds}
                   />
                 )}
                 {activeCardData && (
                   <JobCard
                     id={activeCardData.id}
-                    title={activeCardData.title}
-                    company={activeCardData.company}
+                    title={activeCardData.job_title}
+                    company={activeCardData.company_name}
                   />
                 )}
               </DragOverlay>
               {/* Add btn */}
-              <div className="px-3 mb-auto">
+              {/* <div className="px-3 mb-auto">
                 <button className="flex items-center p-3 w-[250px] rounded-lg bg-[#fff] shadow-md border-[1px] border-[#c3dafe] hover:border-blue-400">
                   <Plus size={20} className="mr-2" />
                   <span className="text-sm font-medium text-[#3d3d3d]">
                     Add Stage
                   </span>
                 </button>
-              </div>
+              </div> */}
             </div>
           </SortableContext>
         </DndContext>

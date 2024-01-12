@@ -2,6 +2,7 @@ from typing import Optional
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from .db import db
+from datetime import datetime, timezone
 
 class JobListing(db.Model):
     __tablename__ = "job_listings"
@@ -17,6 +18,7 @@ class JobListing(db.Model):
     job_url: so.Mapped[str] = so.mapped_column(sa.String(1000))
     job_date: so.Mapped[Optional[str]] = so.mapped_column(sa.String(100))
     is_new: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=True)
+    created_at: so.Mapped[datetime] = so.mapped_column(default=datetime.utcnow)
 
     #relationship
     scraped_site: so.Mapped["ScrapedSite"] = so.relationship(
@@ -37,5 +39,6 @@ class JobListing(db.Model):
             "salary": self.salary,
             "job_url": self.job_url,
             "job_date": self.job_date,
-            "is_new": self.is_new
+            "is_new": self.is_new,
+            "created_at": self.created_at
         }

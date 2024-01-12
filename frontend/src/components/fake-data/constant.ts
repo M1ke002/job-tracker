@@ -28,7 +28,7 @@ const applicationData = {
     },
     {
       id: 1,
-      name: "Interview",
+      name: "O.A.",
       jobOrderIds: [3, 4, 5],
       jobs: [
         {
@@ -53,8 +53,8 @@ const applicationData = {
     },
     {
       id: 2,
-      name: "Offer",
-      jobOrderIds: [6, 7, 8, 9, 10],
+      name: "Interview",
+      jobOrderIds: [6, 7, 8],
       jobs: [
         {
           id: 6,
@@ -74,30 +74,55 @@ const applicationData = {
           company: "Apple",
           stageId: 2,
         },
-        {
-          id: 9,
-          title: "Job 9",
-          company: "Apple",
-          stageId: 2,
-        },
-        {
-          id: 10,
-          title: "Job 10",
-          company: "Apple",
-          stageId: 2,
-        },
       ],
     },
     {
       id: 3,
-      name: "Rejected",
-      jobOrderIds: [11],
+      name: "Offer",
+      jobOrderIds: [9, 10, 11, 12, 13],
       jobs: [
+        {
+          id: 9,
+          title: "Job 9",
+          company: "Google",
+          stageId: 3,
+        },
+        {
+          id: 10,
+          title: "Job 10",
+          company: "Facebook",
+          stageId: 3,
+        },
         {
           id: 11,
           title: "Job 11",
-          company: "Google",
+          company: "Apple",
           stageId: 3,
+        },
+        {
+          id: 12,
+          title: "Job 12",
+          company: "Apple",
+          stageId: 3,
+        },
+        {
+          id: 13,
+          title: "Job 13",
+          company: "Apple",
+          stageId: 3,
+        },
+      ],
+    },
+    {
+      id: 4,
+      name: "Rejected",
+      jobOrderIds: [14],
+      jobs: [
+        {
+          id: 14,
+          title: "Job 14",
+          company: "Google",
+          stageId: 4,
         },
       ],
     },

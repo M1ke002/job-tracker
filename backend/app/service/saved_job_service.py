@@ -1,4 +1,4 @@
-from app.model import db, SavedJob
+from app.model import db, SavedJob, ApplicationStage
 
 def get_all_saved_jobs():
     saved_jobs = SavedJob.query.all()
@@ -23,6 +23,12 @@ def create_saved_job(data):
     if not job_title or not company_name or not job_url:
         return None
     
+    #check if a job with same title, company, and url already exists
+    existing_job = SavedJob.query.filter_by(job_title=job_title, company_name=company_name, job_url=job_url).first()
+    if existing_job:
+        print("Job already exists")
+        return None
+    
     job = SavedJob(
         job_title = job_title,
         company_name = company_name,
@@ -37,6 +43,22 @@ def create_saved_job(data):
     db.session.add(job)
     db.session.commit()
 
+    return job.to_dict()
+
+def update_job_stage(job_id, stage_name):
+    job = SavedJob.query.get(job_id)
+    if job is None:
+        return None
+    if (stage_name == "None"):
+        job.stage_id = None
+        db.session.commit()
+        return job.to_dict()
+    #search for application stage with stage_name
+    stage = ApplicationStage.query.filter_by(stage_name=stage_name).first()
+    if stage is None:
+        return None
+    job.stage_id = stage.id
+    db.session.commit()
     return job.to_dict()
 
 def delete_saved_job(saved_job_id):

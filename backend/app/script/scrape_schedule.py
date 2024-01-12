@@ -7,7 +7,7 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 print(sys.path)
 
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import json
 import pymysql
 from app.utils.scraper.scrape import getAllJobListings
@@ -49,16 +49,27 @@ def fetchAllJobListings(connection, cursor, scraped_site_id):
     job_listings = cursor.fetchall()
     return job_listings
 
-def clearAndInsertJobListings(connection, cursor, jobs, scraped_site_id):
-    # clear all old job listings
-    query = f"DELETE FROM job_listings WHERE scraped_site_id = {scraped_site_id}"
-    cursor.execute(query)
+#update the is_new field of the job listings to false
+def updateJobListing(connection, cursor, jobs):
+    for job in jobs:
+        if (job['is_new'] == False): continue
+        query = f"UPDATE job_listings SET is_new = 0 WHERE id = {job['id']}"
+        cursor.execute(query)
+
     connection.commit()
 
+#delete all old job listings where created_at is older than 3 days
+def deleteOldJobListings(connection, cursor):
+    cutoff_date = datetime.utcnow() - timedelta(days=3)
+    sql = "DELETE FROM job_listings WHERE created_at < %s"
+    cursor.execute(sql, (cutoff_date,))
+    connection.commit()
+
+def addJobListings(connection, cursor, jobs, scraped_site_id):
     # insert new job listings
     for job in jobs:
         cursor.execute(
-            "INSERT INTO job_listings (scraped_site_id, job_title, company_name, location, job_description, additional_info, salary, job_url, is_new, job_date) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            "INSERT INTO job_listings (scraped_site_id, job_title, company_name, location, job_description, additional_info, salary, job_url, is_new, job_date, created_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)",
             (scraped_site_id, job['job_title'], job['company_name'], job['location'], job['job_description'], job['additional_info'], job['salary'], job['job_url'], job['is_new'], job['job_date'])
         )
     connection.commit()
@@ -67,6 +78,9 @@ def clearAndInsertJobListings(connection, cursor, jobs, scraped_site_id):
 if __name__ == '__main__':
     connection = connectDB()
     cursor = connection.cursor()
+
+    #delete all old job listings where created_at is older than 1 week
+    deleteOldJobListings(connection, cursor)
 
     # get all scraped sites settings
     scraped_sites = fetchAllScrapedSites(connection, cursor)
@@ -127,15 +141,13 @@ if __name__ == '__main__':
                 'job_url': job[8],
                 'is_new': job[9] == 1,
                 'job_date': job[10],
+                'created_at': job[11]
             })
 
         # find new job listings
-        [new_jobs, found_new_jobs] = findNewJobListings(old_jobs_dict, scraped_jobs)
+        new_jobs = findNewJobListings(old_jobs_dict, scraped_jobs)
 
-        total_new_jobs_count = 0
-        for job in new_jobs:
-            if (job['is_new']):
-                total_new_jobs_count += 1
+        total_new_jobs_count = len(new_jobs)
 
         file_name = f'{website_name}.json'
         write_to_file(new_jobs, file_name)
@@ -146,9 +158,10 @@ if __name__ == '__main__':
             dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
             f.write(f"Scheduled job ran at {dt_string}. Found {total_new_jobs_count} new jobs for site: {website_name}\n")
 
-        # clear all old job listings and insert new job listings
-        # TODO: instead of clearing all old job listings, only clear old jobs that are older than 1 month
-        clearAndInsertJobListings(connection, cursor, new_jobs, site_id)
+        # update the is_new field of the existing job listings to false
+        updateJobListing(connection, cursor, old_jobs_dict)
+        # insert new job listings
+        addJobListings(connection, cursor, new_jobs, site_id)
     
         #update the last scraped date
         now = datetime.now()

@@ -13,25 +13,56 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Note from "@/components/note/Note";
 import Contact from "@/components/contact/Contact";
 import Task from "@/components/task/Task";
 import JobDescription from "@/components/job-description/JobDescription";
 
 import { useModal } from "@/hooks/zustand/useModal";
+import axios from "@/lib/axiosConfig";
+import SavedJob from "@/types/SavedJob";
+import { useParams } from "react-router-dom";
 
 const JobDetails = () => {
+  const [job, setJob] = useState<SavedJob | null>(null);
+  const [isLoading, setLoading] = useState(false);
+  const { id } = useParams<{ id: string }>();
   const { onOpen } = useModal();
+
+  useEffect(() => {
+    const fetchJobDetails = async () => {
+      try {
+        const res = await axios.get(`/saved-jobs/${id}`);
+        setJob(res.data);
+        console.log(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchJobDetails();
+  }, []);
+
+  const changeJobStage = async (stage_name: string) => {
+    try {
+      setLoading(true);
+      const res = await axios.put(`/saved-jobs/${id}/stage`, {
+        stageName: stage_name,
+      });
+      setLoading(false);
+      setJob(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="mx-auto my-4 px-4 flex flex-col items-center max-w-[1450px] space-y-4">
       {/* header (company name, job details) */}
       <div className="flex flex-col p-6 bg-white border border-[#dbe9ff] w-full shadow-sm">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-end space-x-3">
-            <h2 className="text-3xl font-semibold">
-              Full Stack Software Engineer
-            </h2>
+            <h2 className="text-3xl font-semibold">{job?.job_title}</h2>
             <div className="flex items-center space-x-1">
               <button className="border-none focus:outline-none text-blue-700 hover:text-blue-700/80">
                 <FileEdit size={20} />
@@ -53,16 +84,22 @@ const JobDetails = () => {
             </div>
           </div>
 
-          <Select>
-            <SelectTrigger className="w-[150px] border-blue-200">
-              <SelectValue placeholder="Status: Not set" />
+          <Select onValueChange={(value) => changeJobStage(value)}>
+            <SelectTrigger
+              className="w-[150px] border-blue-200"
+              disabled={isLoading}
+            >
+              <SelectValue
+                placeholder={job?.stage?.stage_name || "Status: Not set"}
+              />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="none">Not set</SelectItem>
-              <SelectItem value="applied">Applied</SelectItem>
-              <SelectItem value="interview">Interview</SelectItem>
-              <SelectItem value="offer">Offer</SelectItem>
-              <SelectItem value="rejected">Rejected</SelectItem>
+              <SelectItem value="None">Not set</SelectItem>
+              <SelectItem value="Applied">Applied</SelectItem>
+              <SelectItem value="O.A.">O.A.</SelectItem>
+              <SelectItem value="Interview">Interview</SelectItem>
+              <SelectItem value="Offer">Offer</SelectItem>
+              <SelectItem value="Rejected">Rejected</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -70,12 +107,10 @@ const JobDetails = () => {
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center space-x-2">
             <h3 className="text-lg text-gray-700 font-semibold">
-              Susquehanna International Group, LLP (SIG)
+              {job?.company_name}
             </h3>
             <span className="text-gray-700">—</span>
-            <span className="text-gray-700">
-              Sydney, New South Wales, Australia
-            </span>
+            <span className="text-gray-700">{job?.location}</span>
           </div>
         </div>
 
@@ -84,7 +119,7 @@ const JobDetails = () => {
             <div>
               {/* <span className="text-gray-700 mr-1">View job posting</span> */}
               <a
-                href="https://au.indeed.com/"
+                href={job?.job_url}
                 target="_blank"
                 className="text-blue-700 underline hover:text-blue-700/80"
               >
@@ -94,17 +129,19 @@ const JobDetails = () => {
 
             <div className="flex items-center">
               <MapPin className="mr-2 text-blue-700" size={18} />
-              <span className="text-gray-700">Sydney, NSW</span>
+              <span className="text-gray-700">{job?.location || "N/A"}</span>
             </div>
 
             <div className="flex items-center">
               <CircleDollarSign className="mr-2 text-blue-700" size={18} />
-              <span className="text-gray-700">$60,000 - $70,000 a year</span>
+              <span className="text-gray-700">{job?.salary || "N/A"}</span>
             </div>
 
             <div className="flex items-center">
               <Briefcase className="mr-2 text-blue-700" size={18} />
-              <span className="text-gray-700">Internship, full-time</span>
+              <span className="text-gray-700">
+                {job?.additional_info || "N/A"}
+              </span>
             </div>
           </div>
         </div>

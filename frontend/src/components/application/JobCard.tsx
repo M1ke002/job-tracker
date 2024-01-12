@@ -3,6 +3,7 @@ import React from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
+import SavedJob from "@/types/SavedJob";
 
 interface ApplicationStageBoxItemProps {
   id: number;
@@ -27,8 +28,8 @@ const ApplicationStageBoxItem = ({
     data: {
       id: `job-${id}`,
       type: "job",
-      title,
-      company,
+      job_title: title,
+      company_name: company,
     },
   });
 

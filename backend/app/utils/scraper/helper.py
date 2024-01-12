@@ -21,29 +21,31 @@ def jobObjectToDict(job):
         'salary': job.salary,
         'job_url': job.job_url,
         'job_date': job.job_date,
-        'is_new': False
+        'is_new': False,
+        'created_at': job.created_at
     }
 
 #compare the newly scraped job listings with the existing job listings in the db
 #compare by job title, company name, and job url
-def findNewJobListings(oldJobs, newJobs):
-    found_new_jobs = False
+def findNewJobListings(oldJobs, scrapedJobs):
+    newJobs = []
+
+    #all jobs are new
     if (len(oldJobs) == 0): 
-        for newJob in newJobs:
-            newJob['is_new'] = True
-        found_new_jobs = True
-        return [newJobs, found_new_jobs]
+        for scrapedJob in scrapedJobs:
+            scrapedJob['is_new'] = True
+        return scrapedJobs
     
-    for newJob in newJobs:
+    for scrapedJob in scrapedJobs:
         isNew = True
         for oldJob in oldJobs:
             #newJob is of type dict, oldJob is of type object
-            if (newJob['job_title'] == oldJob['job_title'] and newJob['company_name'] == oldJob['company_name'] and newJob['job_url'] == oldJob['job_url']):
+            if (scrapedJob['job_title'] == oldJob['job_title'] and scrapedJob['company_name'] == oldJob['company_name'] and scrapedJob['job_url'] == oldJob['job_url']):
                 isNew = False
                 break
         if (isNew):
-            newJob['is_new'] = True
-            found_new_jobs = True
+            scrapedJob['is_new'] = True
+            newJobs.append(scrapedJob)
 
-    return [newJobs, found_new_jobs]
+    return newJobs
 

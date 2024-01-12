@@ -4,6 +4,7 @@ from app.service.saved_job_service import get_all_saved_jobs
 from app.service.saved_job_service import get_saved_job
 from app.service.saved_job_service import delete_saved_job
 from app.service.saved_job_service import create_saved_job
+from app.service.saved_job_service import update_job_stage
 
 saved_job_routes = Blueprint('saved_job_routes', __name__)
 
@@ -36,6 +37,20 @@ def handle_create_saved_job():
 @saved_job_routes.route('/<int:saved_job_id>', methods=['PUT'])
 def handle_edit_saved_job(saved_job_id):
     return 'edit a saved job'
+
+#edit a saved job's stage
+@saved_job_routes.route('/<int:saved_job_id>/stage', methods=['PUT'])
+def handle_edit_saved_job_stage(saved_job_id):
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'No data provided'}), 400
+    stage_name = data.get('stageName')
+    if not stage_name:
+        return jsonify({'error': 'No stage name provided'}), 400
+    job = update_job_stage(saved_job_id, stage_name)
+    if job is None:
+        return jsonify({'error': 'Cannot update job stage'}), 400
+    return jsonify(job), 200
 
 #delete a saved job
 @saved_job_routes.route('/<int:saved_job_id>', methods=['DELETE'])

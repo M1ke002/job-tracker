@@ -1,10 +1,11 @@
 import Job from "./Job";
+import SavedJob from "./SavedJob";
 
 interface ApplicationStage {
   id: number;
-  name: string;
-  jobOrderIds: number[];
-  jobs: Job[];
+  stage_name: string;
+  position: number;
+  jobs: SavedJob[];
 }
 
 export default ApplicationStage;

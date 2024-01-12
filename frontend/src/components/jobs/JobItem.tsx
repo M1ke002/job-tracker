@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
@@ -30,8 +30,10 @@ import {
   FileEdit,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import axios from "@/lib/axiosConfig";
 
 interface JobItemProps {
+  id?: number;
   type: "jobListing" | "savedJob";
   jobTitle: string;
   companyName: string;
@@ -41,10 +43,11 @@ interface JobItemProps {
   jobDescription: string;
   jobUrl: string;
   jobDate: string;
-  isNewJob: boolean;
+  isNewJob?: boolean;
 }
 
 const JobItem = ({
+  id,
   type,
   jobTitle,
   companyName,
@@ -56,7 +59,26 @@ const JobItem = ({
   jobDate,
   isNewJob,
 }: JobItemProps) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
+
+  const onSave = async () => {
+    try {
+      const res = await axios.post("/saved-jobs", {
+        jobTitle,
+        companyName,
+        location,
+        jobDescription,
+        additionalInfo,
+        salary,
+        jobUrl,
+        jobDate,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <Card
       className={cn(
@@ -109,7 +131,7 @@ const JobItem = ({
                 className="mr-2 flex items-center justify-center"
                 onClick={() => {
                   if (type === "savedJob") {
-                    navigate("/saved-jobs/1");
+                    navigate(`/saved-jobs/${id}`);
                   } else {
                     window.open(jobUrl, "_blank");
                   }
@@ -131,6 +153,8 @@ const JobItem = ({
                 <Button
                   variant="outlinePrimary"
                   className="mr-2 flex items-center justify-center"
+                  disabled={isLoading}
+                  onClick={onSave}
                 >
                   <span className="mr-2">Save</span>
                   <Bookmark size={20} />

@@ -5,7 +5,7 @@ from app.utils.scraper.url_builder import ausgradUrlBuilder, seekUrlBuilder
 from app.utils.scraper.helper import findNewJobListings, jobObjectToDict
 from app.utils.scraper.constants import GRAD_CONNECTION, SEEK
 
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 def get_all_scraped_sites():
     scrapedSites = ScrapedSite.query.all()
@@ -74,28 +74,26 @@ def scrape_site(scrape_site_id):
     scraped_jobs = getAllJobListings(scrapedSite.website_name, search_url, scrapedSiteSettings.max_pages_to_scrape)
 
     # update scraped site last scrape date to db
-    scrapedSite.last_scrape_date = datetime.now(timezone.utc)
+    scrapedSite.last_scrape_date = datetime.utcnow()
 
     # get existing job listings from db
     existing_job_listings = JobListing.query.filter_by(scraped_site_id=scrapedSite.id).all()
     existing_job_dict = [jobObjectToDict(job) for job in existing_job_listings]
 
     # find new job listings
-    [updated_job_listings, found_new_jobs] = findNewJobListings(existing_job_dict, scraped_jobs)
+    new_jobs = findNewJobListings(existing_job_dict, scraped_jobs)
 
-    if (not found_new_jobs):
-        #save changes of scraped site to db
-        db.session.commit()
-        return [existing_job_listing.to_dict() for existing_job_listing in existing_job_listings]
-
-    # remove all old job listings
-    for job_listing in existing_job_listings:
-        db.session.delete(job_listing)
-
-    result = []
+    # update is_new to False for existing jobs, but delete it if its created_at is more than 3 days ago
+    for existing_job_listing in existing_job_listings:
+        cut_off_date = datetime.utcnow() - timedelta(days=3)
+        if (existing_job_listing.created_at < cut_off_date):
+            db.session.delete(existing_job_listing)
+        else:
+            if (existing_job_listing.is_new): 
+                existing_job_listing.is_new = False
 
     # add new job listings to db
-    for job_listing in updated_job_listings:
+    for job_listing in new_jobs:
         job_listing = JobListing(
             scraped_site_id=scrapedSite.id,
             job_title=job_listing['job_title'],
@@ -108,9 +106,14 @@ def scrape_site(scrape_site_id):
             job_date=job_listing['job_date'],
             is_new=job_listing['is_new']
         )
-        result.append(job_listing.to_dict())
         db.session.add(job_listing)
 
     db.session.commit()
-    return result
+
+    #get new scraped site
+    scrapedSite = ScrapedSite.query.get(scrape_site_id)
+    if scrapedSite is None:
+        return None
+    
+    return scrapedSite.to_dict()
     

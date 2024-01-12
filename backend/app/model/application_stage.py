@@ -8,7 +8,6 @@ class ApplicationStage(db.Model):
 
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     stage_name: so.Mapped[str] = so.mapped_column(sa.String(150))
-    color: so.Mapped[str] = so.mapped_column(sa.String(150))
     position: so.Mapped[int] = so.mapped_column(sa.Integer)
 
     #relationship
@@ -21,7 +20,6 @@ class ApplicationStage(db.Model):
         return {
             "id": self.id,
             "stage_name": self.stage_name,
-            "color": self.color,
             "position": self.position,
             "jobs": [job.to_dict() for job in self.jobs]
         }
