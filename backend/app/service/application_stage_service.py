@@ -1,4 +1,4 @@
-from app.model import db, ApplicationStage
+from app.model import db, ApplicationStage, SavedJob
 
 def get_all_application_stages():
     application_stages = ApplicationStage.query.all()
@@ -34,6 +34,25 @@ def create_application_stage(data):
     db.session.commit()
 
     return application_stage.to_dict()
+
+def update_stage_order(data):
+    stage_positions = data.get('stagePositions')
+    # sample: [{'id': 2, 'position': 0}, {'id': 1, 'position': 1}, {'id': 3, 'position': 2}, {'id': 4, 'position': 3}, {'id': 5, 'position': 4}]}
+    for stage_position in stage_positions:
+        application_stage = ApplicationStage.query.get(stage_position['id'])
+        application_stage.position = stage_position['position']
+    db.session.commit()
+    return "updated stage order successfully"
+
+def update_job_order(data):
+    job_positions = data.get('jobPositions')
+    # sample: [{id: 1, stage_id: 1, position: 0}, {id: 2, stage_id: 1, position: 1}, ...]
+    for job_position in job_positions:
+        job = SavedJob.query.get(job_position['id'])
+        job.stage_id = job_position['stage_id']
+        job.position = job_position['position']
+    db.session.commit()
+    return "updated job order successfully"
 
 def delete_application_stage(application_stage_id):
     application_stage = ApplicationStage.query.get(application_stage_id)

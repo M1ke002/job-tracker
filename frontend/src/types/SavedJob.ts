@@ -4,7 +4,6 @@ import Task from "./Task";
 
 interface SavedJob {
   id: number;
-  stage_id: number;
   job_title: string;
   company_name: string;
   location: string;
@@ -17,6 +16,7 @@ interface SavedJob {
   position: number;
   tasks: Task[];
   contacts: Contact[];
+  stage_id: number;
   stage: ApplicationStage | null;
 }
 

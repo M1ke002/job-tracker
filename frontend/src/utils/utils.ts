@@ -19,7 +19,7 @@ export const getApplicationStatusCount = (
       case "O.A.":
         applicationStageMap["O.A."] += stage.jobs.length;
         break;
-      case "Interview":
+      case "Interviewing":
         applicationStageMap["Interview"] += stage.jobs.length;
         break;
       case "Offer":

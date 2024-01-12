@@ -21,13 +21,21 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable";
 
-import { applicationData } from "@/components/fake-data/constant";
 import JobCard from "@/components/application/JobCard";
 import ApplicationStageType from "@/types/ApplicationStage";
-import Job from "@/types/Job";
 import axios from "@/lib/axiosConfig";
 import { getApplicationStatusCount } from "@/utils/utils";
 import SavedJob from "@/types/SavedJob";
+
+const sortStagesByPosition = (
+  applicationStageColumns: ApplicationStageType[]
+) => {
+  return applicationStageColumns.sort((a, b) => a.position - b.position);
+};
+
+const sortJobsByPosition = (jobs: SavedJob[]) => {
+  return jobs.sort((a, b) => a.position - b.position);
+};
 
 const Applications = () => {
   const [applicationStageColumns, setApplicationStageColumns] = useState<
@@ -35,40 +43,35 @@ const Applications = () => {
   >([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  //the data of the item being dragged
+  const [activeColumnData, setActiveColumnData] =
+    useState<ApplicationStageType | null>(null);
+  const [activeCardData, setActiveCardData] = useState<SavedJob | null>(null);
+
+  //set the initial and target column id when dragging a job card
+  const [initialJobColumnId, setInitialJobColumnId] = useState<string>("");
+  const [targetJobColumnId, setTargetJobColumnId] = useState<string>("");
+
+  const { setNodeRef } = useDroppable({
+    id: `application-stages`,
+  });
+
   useEffect(() => {
     const fetchApplicationStages = async () => {
       try {
         const res = await axios.get("/application-stages");
-        setApplicationStageColumns(res.data);
+        const orderedStages = sortStagesByPosition(res.data);
+        //sort jobs by position
+        orderedStages.forEach((stage) => {
+          stage.jobs = sortJobsByPosition(stage.jobs);
+        });
+        setApplicationStageColumns(orderedStages);
       } catch (error) {
         console.log(error);
       }
     };
     fetchApplicationStages();
   }, []);
-
-  //the data of the item being dragged
-  const [activeColumnData, setActiveColumnData] =
-    useState<ApplicationStageType | null>(null);
-  const [activeCardData, setActiveCardData] = useState<SavedJob | null>(null);
-
-  const { setNodeRef } = useDroppable({
-    id: `application-stages`,
-  });
-
-  // useEffect(() => {
-  //   setApplicationStageColumns(applicationData.applicationStages);
-  // }, []);
-
-  const dropAnimation: DropAnimation = {
-    sideEffects: defaultDropAnimationSideEffects({
-      styles: {
-        active: {
-          opacity: "0.5",
-        },
-      },
-    }),
-  };
 
   const pointerSensor = useSensor(PointerSensor, {
     // Require the mouse to move by 10 pixels before activating
@@ -91,6 +94,59 @@ const Applications = () => {
   });
   const sensors = useSensors(mouseSensor, touchSensor);
 
+  const updateStageOrder = async (newStageColumns: ApplicationStageType[]) => {
+    try {
+      //send an array of [{id: 1, position: 0}, {id: 2, position: 1}, ...]
+      const stagePositions = newStageColumns.map((stage) => ({
+        id: stage.id,
+        position: stage.position,
+      }));
+      console.log(stagePositions);
+      const res = await axios.put("/application-stages/reorder-stages", {
+        stagePositions,
+      });
+      console.log(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const updateJobOrder = async (affectedStages: ApplicationStageType[]) => {
+    try {
+      //send an array of jobs [{id: 1, stage_id: 1, position: 0}, {id: 2, stage_id: 1, position: 1}, ...]
+      const jobPositions: {
+        id: number;
+        stage_id: number;
+        position: number;
+      }[] = [];
+      affectedStages.forEach((stage) => {
+        stage.jobs.forEach((job, index) => {
+          jobPositions.push({
+            id: job.id,
+            stage_id: stage.id,
+            position: index,
+          });
+        });
+      });
+      console.log(jobPositions);
+      const res = await axios.put("/application-stages/reorder-jobs", {
+        jobPositions,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const dropAnimation: DropAnimation = {
+    sideEffects: defaultDropAnimationSideEffects({
+      styles: {
+        active: {
+          opacity: "0.5",
+        },
+      },
+    }),
+  };
+
   const findColumnByJobId = (jobId: string) => {
     console.log(applicationStageColumns, jobId);
     const column = applicationStageColumns.find((stage) =>
@@ -103,7 +159,7 @@ const Applications = () => {
 
   const findColumnByStageId = (stageId: string) => {
     const column = applicationStageColumns.find(
-      (stage) => stage.id === parseInt(stageId.split("-")[1])
+      (stage) => stage.id === parseInt(stageId)
     );
     return column;
   };
@@ -113,6 +169,7 @@ const Applications = () => {
 
     if (e?.active?.data?.current?.type === "job") {
       setActiveCardData(e.active.data.current);
+      console.log(e.active.data.current);
     } else if (e?.active?.data?.current?.type === "applicationStage") {
       setActiveColumnData(e.active.data.current);
     }
@@ -146,6 +203,10 @@ const Applications = () => {
 
         if (!initialColumn || !targetColumn) return applicationStageColumns;
 
+        //set the initial and target column id
+        setInitialJobColumnId(initialColumn.id.toString());
+        setTargetJobColumnId(targetColumn.id.toString());
+
         const activeIndex = initialColumn.jobs.findIndex(
           (job) => job.id === parseInt(active.id.split("-")[1])
         );
@@ -168,10 +229,24 @@ const Applications = () => {
             (job) => job.id !== parseInt(active.id.split("-")[1])
           );
           targetColumn.jobs.splice(overIndex, 0, {
+            ...active.data.current,
             id: parseInt(active.id.split("-")[1]),
             stage_id: targetColumn.id,
-            ...active.data.current,
           });
+
+          //update the position of jobs
+          initialColumn.jobs = initialColumn.jobs.map((job, index) => ({
+            ...job,
+            stage_id: initialColumn.id,
+            stage: initialColumn,
+            position: index,
+          }));
+          targetColumn.jobs = targetColumn.jobs.map((job, index) => ({
+            ...job,
+            stage_id: targetColumn.id,
+            stage: targetColumn,
+            position: index,
+          }));
 
           return [...applicationStageColumns];
         }
@@ -185,6 +260,12 @@ const Applications = () => {
 
         //update the active application stage
         initialColumn.jobs = newOrderedJobList;
+
+        //update the position of jobs
+        initialColumn.jobs = initialColumn.jobs.map((job, index) => ({
+          ...job,
+          position: index,
+        }));
 
         return [...applicationStageColumns];
       });
@@ -207,6 +288,10 @@ const Applications = () => {
 
         if (!initialColumn || !targetColumn) return applicationStageColumns;
 
+        //set the initial and target column id
+        setInitialJobColumnId(initialColumn.id.toString());
+        setTargetJobColumnId(targetColumn.id.toString());
+
         const activeIndex = initialColumn.jobs.findIndex(
           (job) => job.id === parseInt(active.id.split("-")[1])
         );
@@ -227,9 +312,9 @@ const Applications = () => {
 
           if (targetColumn.jobs.length === 0) {
             targetColumn.jobs.push({
+              ...active.data.current,
               id: parseInt(active.id.split("-")[1]),
               stage_id: targetColumn.id,
-              ...active.data.current,
             });
           } else {
             //check if the user is dragging the job card to the top or bottom of the column
@@ -238,19 +323,33 @@ const Applications = () => {
             if (active.rect.current.translated.top <= over.rect.top) {
               console.log("top!");
               targetColumn.jobs.splice(0, 0, {
+                ...active.data.current,
                 id: parseInt(active.id.split("-")[1]),
                 stage_id: targetColumn.id,
-                ...active.data.current,
               });
             } else {
               //dragging to the bottom of the column
               targetColumn.jobs.push({
+                ...active.data.current,
                 id: parseInt(active.id.split("-")[1]),
                 stageId: targetColumn.id,
-                ...active.data.current,
               });
             }
           }
+
+          //update the position of jobs
+          initialColumn.jobs = initialColumn.jobs.map((job, index) => ({
+            ...job,
+            stage_id: initialColumn.id,
+            stage: initialColumn,
+            position: index,
+          }));
+          targetColumn.jobs = targetColumn.jobs.map((job, index) => ({
+            ...job,
+            stage_id: targetColumn.id,
+            stage: targetColumn,
+            position: index,
+          }));
 
           return [...applicationStageColumns];
         }
@@ -265,15 +364,23 @@ const Applications = () => {
         //update the active application stage
         initialColumn.jobs = newOrderedJobList;
 
+        //update the position of jobs
+        initialColumn.jobs = initialColumn.jobs.map((job, index) => ({
+          ...job,
+          position: index,
+        }));
+
         return [...applicationStageColumns];
       });
     }
   };
 
-  const handleDragEnd = (e: any) => {
+  const handleDragEnd = async (e: any) => {
     //clear previous data
     setActiveColumnData(null);
     setActiveCardData(null);
+    setInitialJobColumnId("");
+    setTargetJobColumnId("");
 
     const { active, over } = e;
     console.log(active, over);
@@ -281,28 +388,75 @@ const Applications = () => {
     if (!over || !active) return;
 
     if (activeCardData) {
-      //TODO: call api to update the job order
-      console.log("card data");
+      //get the initial and target column
+      const initialColumn = findColumnByStageId(initialJobColumnId);
+      const targetColumn = findColumnByStageId(targetJobColumnId);
+
+      if (!initialColumn || !targetColumn) return;
+
+      // console.log(initialColumn, targetColumn);
+
+      const affectedStages = [initialColumn];
+      //if the user is dragging the job card to a different column
+      if (initialColumn.id !== targetColumn.id)
+        affectedStages.push(targetColumn);
+
+      await updateJobOrder(affectedStages);
     } else if (activeColumnData) {
       if (active.data.current.type !== over.data.current.type) {
         console.log("not the same type");
         return;
       }
       if (active.id === over.id) return;
-      setApplicationStageColumns((prev) => {
-        //find old and new index of the column
-        const oldIndex = prev.findIndex(
-          (stage) => stage.id.toString() === active.id.split("-")[1]
-        );
-        const newIndex = prev.findIndex(
-          (stage) => stage.id.toString() === over.id.split("-")[1]
-        );
 
-        if (oldIndex === -1 || newIndex === -1) return prev;
-        console.log("test: " + oldIndex, newIndex);
-        //reorder application stages
-        return arrayMove(prev, oldIndex, newIndex);
-      });
+      const oldIndex = applicationStageColumns.findIndex(
+        (stage) => stage.id.toString() === active.id.split("-")[1]
+      );
+      const newIndex = applicationStageColumns.findIndex(
+        (stage) => stage.id.toString() === over.id.split("-")[1]
+      );
+
+      if (oldIndex === -1 || newIndex === -1) return;
+
+      //reorder application stages
+      let reorderedColumns = arrayMove(
+        applicationStageColumns,
+        oldIndex,
+        newIndex
+      );
+
+      //update the position of the application stages
+      reorderedColumns = reorderedColumns.map((stage, index) => ({
+        ...stage,
+        position: index,
+      }));
+      setApplicationStageColumns(reorderedColumns);
+
+      //call api
+      await updateStageOrder(reorderedColumns);
+
+      // setApplicationStageColumns((prev) => {
+      //   //find old and new index of the column
+      //   const oldIndex = prev.findIndex(
+      //     (stage) => stage.id.toString() === active.id.split("-")[1]
+      //   );
+      //   const newIndex = prev.findIndex(
+      //     (stage) => stage.id.toString() === over.id.split("-")[1]
+      //   );
+
+      //   if (oldIndex === -1 || newIndex === -1) return prev;
+      //   console.log("test: " + oldIndex, newIndex);
+      //   //reorder application stages
+      //   let reorderedColumns = arrayMove(prev, oldIndex, newIndex);
+
+      //   //update the position of the application stages
+      //   reorderedColumns = reorderedColumns.map((stage, index) => ({
+      //     ...stage,
+      //     position: index,
+      //   }));
+
+      //   return [...reorderedColumns];
+      // });
     }
   };
 
