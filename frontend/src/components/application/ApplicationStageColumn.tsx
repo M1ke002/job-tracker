@@ -21,25 +21,21 @@ import { cn } from "@/lib/utils";
 
 import { useModal } from "@/hooks/zustand/useModal";
 import ApplicationStage from "@/types/ApplicationStage";
+import SavedJob from "@/types/SavedJob";
 
-// interface ApplicationStageColumnProps {
-//   id: number;
-//   name: string;
-//   jobOrderIds: number[];
-//   jobs: {
-//     id: number;
-//     title: string;
-//     company: string;
-//     stageId: number;
-//   }[];
-// }
+interface ApplicationStageColumnProps {
+  id: number;
+  stage_name: string;
+  jobs: SavedJob[];
+  removeJobFromStages: (jobId: number) => void;
+}
 
 const ApplicationStageColumn = ({
   id,
   stage_name,
-  position,
   jobs,
-}: ApplicationStage) => {
+  removeJobFromStages,
+}: ApplicationStageColumnProps) => {
   const {
     attributes,
     listeners,
@@ -138,6 +134,7 @@ const ApplicationStageColumn = ({
                 id={job.id}
                 title={job.job_title}
                 company={job.company_name}
+                removeJobFromStages={removeJobFromStages}
               />
             ))}
           </div>

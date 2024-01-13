@@ -97,7 +97,7 @@ const JobDetails = () => {
               <SelectItem value="None">Not set</SelectItem>
               <SelectItem value="Applied">Applied</SelectItem>
               <SelectItem value="O.A.">O.A.</SelectItem>
-              <SelectItem value="Interview">Interview</SelectItem>
+              <SelectItem value="Interviewing">Interviewing</SelectItem>
               <SelectItem value="Offer">Offer</SelectItem>
               <SelectItem value="Rejected">Rejected</SelectItem>
             </SelectContent>

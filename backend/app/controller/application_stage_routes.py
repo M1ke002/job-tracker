@@ -4,8 +4,6 @@ from app.service.application_stage_service import get_all_application_stages
 from app.service.application_stage_service import delete_application_stage
 from app.service.application_stage_service import create_application_stage
 from app.service.application_stage_service import update_stage_order
-from app.service.application_stage_service import update_job_order
-
 
 application_stage_routes = Blueprint('application_stage_routes', __name__)
 
@@ -38,15 +36,6 @@ def handle_update_stage_order():
     if not data:
         return jsonify({'error': 'No data provided'}), 400
     message = update_stage_order(data)
-    return jsonify(message), 200
-
-# update job order
-@application_stage_routes.route('/reorder-jobs', methods=['PUT'])
-def handle_update_job_order():
-    data = request.get_json()
-    if not data:
-        return jsonify({'error': 'No data provided'}), 400
-    message = update_job_order(data)
     return jsonify(message), 200
 
 

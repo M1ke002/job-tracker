@@ -2,6 +2,20 @@ from app.model import db, DocumentType, Document
 
 def get_all_document_types():
     document_types = DocumentType.query.all()
+    
+    #first time running the app, create 2 default document types: resume and cover letter
+    if (len(document_types) == 0):
+        document_type_1 = DocumentType(
+            type_name='Resume'
+        )
+        document_type_2 = DocumentType(
+            type_name='Cover Letter'
+        )
+        db.session.add(document_type_1)
+        db.session.add(document_type_2)
+        db.session.commit()
+        document_types = DocumentType.query.all()
+
     return [document_type.to_dict() for document_type in document_types]
 
 def create_document_type(data):
@@ -13,10 +27,8 @@ def create_document_type(data):
     document_type = DocumentType(
         type_name=type_name,
     )
-
     db.session.add(document_type)
     db.session.commit()
-
     return document_type.to_dict()
 
 def delete_document_type(document_type_id):

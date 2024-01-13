@@ -8,18 +8,19 @@ import {
   FileEdit,
 } from "lucide-react";
 import { Button } from "../ui/button";
+import Document from "@/types/Document";
 
-export type Document = {
-  id: string;
-  name: string;
-  type: string;
-  job: string;
-  uploadedDate: string;
-};
+// export type Document = {
+//   id: string;
+//   name: string;
+//   type: string;
+//   job: string;
+//   uploadedDate: string;
+// };
 
 export const columns: ColumnDef<Document>[] = [
   {
-    accessorKey: "name",
+    accessorKey: "document_name",
     header: ({ column }) => {
       return (
         <Button
@@ -34,15 +35,15 @@ export const columns: ColumnDef<Document>[] = [
     },
   },
   {
-    accessorKey: "type",
+    accessorKey: "document_type_name",
     header: "Type",
   },
   {
-    accessorKey: "job",
+    accessorKey: "job_title",
     header: "Job",
   },
   {
-    accessorKey: "uploadedDate",
+    accessorKey: "date_uploaded",
     header: ({ column }) => {
       return (
         <Button

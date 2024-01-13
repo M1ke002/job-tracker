@@ -54,12 +54,43 @@ def update_job_stage(job_id, stage_name):
         db.session.commit()
         return job.to_dict()
     #search for application stage with stage_name
+    print(stage_name)
     stage = ApplicationStage.query.filter_by(stage_name=stage_name).first()
     if stage is None:
         return None
     job.stage_id = stage.id
+    # set job position to last position in stage
+    job.position = len(stage.jobs)
     db.session.commit()
     return job.to_dict()
+
+def update_job_order(data):
+    job_positions = data.get('jobPositions')
+    # sample: [{id: 1, stage_id: 1, position: 0}, {id: 2, stage_id: 1, position: 1}, ...]
+    for job_position in job_positions:
+        job = SavedJob.query.get(job_position['id'])
+        job.stage_id = job_position['stage_id']
+        job.position = job_position['position']
+    db.session.commit()
+    return "updated job order successfully"
+
+def remove_job_from_stage(job_id, data):
+    job_positions = data.get('jobPositions')
+    # sample: [{id: 1, position: 0}, {id: 2, position: 1}, ...]
+
+    #remove stage_id from job
+    job = SavedJob.query.get(job_id)
+    if job is None:
+        return None
+    job.stage_id = None
+    
+    #update positions of remaining jobs in stage
+    for job_position in job_positions:
+        job = SavedJob.query.get(job_position['id'])
+        job.position = job_position['position']
+
+    db.session.commit()
+    return "removed job from stage successfully"
 
 def delete_saved_job(saved_job_id):
     saved_job = SavedJob.query.get(saved_job_id)

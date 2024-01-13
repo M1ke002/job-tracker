@@ -44,15 +44,7 @@ def update_stage_order(data):
     db.session.commit()
     return "updated stage order successfully"
 
-def update_job_order(data):
-    job_positions = data.get('jobPositions')
-    # sample: [{id: 1, stage_id: 1, position: 0}, {id: 2, stage_id: 1, position: 1}, ...]
-    for job_position in job_positions:
-        job = SavedJob.query.get(job_position['id'])
-        job.stage_id = job_position['stage_id']
-        job.position = job_position['position']
-    db.session.commit()
-    return "updated job order successfully"
+
 
 def delete_application_stage(application_stage_id):
     application_stage = ApplicationStage.query.get(application_stage_id)

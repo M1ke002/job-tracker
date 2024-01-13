@@ -129,9 +129,46 @@ const Applications = () => {
         });
       });
       console.log(jobPositions);
-      const res = await axios.put("/application-stages/reorder-jobs", {
+      const res = await axios.put("/saved-jobs/reorder-jobs", {
         jobPositions,
       });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const removeJobFromStages = async (jobId: number) => {
+    try {
+      //find the column that contains the job
+      const column = findColumnByJobId(jobId);
+      if (!column) return;
+
+      //remove the job from the column
+      column.jobs = column.jobs.filter((job) => job.id !== jobId);
+
+      //update the position of jobs
+      column.jobs = column.jobs.map((job, index) => ({
+        ...job,
+        position: index,
+      }));
+
+      setApplicationStageColumns((prev) => {
+        const newColumns = [...prev];
+        const index = newColumns.findIndex((stage) => stage.id === column.id);
+        newColumns[index] = column;
+        return newColumns;
+      });
+
+      //send an array of [{id: 1, position: 0}, {id: 2, position: 1}, ...]: positions of the remaining jobs in the column
+      const jobPositions = column.jobs.map((job) => ({
+        id: job.id,
+        position: job.position,
+      }));
+
+      const res = await axios.put(`/saved-jobs/${jobId}/remove-stage`, {
+        jobPositions,
+      });
+      console.log(res.data);
     } catch (error) {
       console.log(error);
     }
@@ -147,10 +184,10 @@ const Applications = () => {
     }),
   };
 
-  const findColumnByJobId = (jobId: string) => {
+  const findColumnByJobId = (jobId: number) => {
     console.log(applicationStageColumns, jobId);
     const column = applicationStageColumns.find((stage) =>
-      stage.jobs.map((job) => job.id).includes(parseInt(jobId.split("-")[1]))
+      stage.jobs.map((job) => job.id).includes(jobId)
     );
     console.log(column);
 
@@ -434,29 +471,6 @@ const Applications = () => {
 
       //call api
       await updateStageOrder(reorderedColumns);
-
-      // setApplicationStageColumns((prev) => {
-      //   //find old and new index of the column
-      //   const oldIndex = prev.findIndex(
-      //     (stage) => stage.id.toString() === active.id.split("-")[1]
-      //   );
-      //   const newIndex = prev.findIndex(
-      //     (stage) => stage.id.toString() === over.id.split("-")[1]
-      //   );
-
-      //   if (oldIndex === -1 || newIndex === -1) return prev;
-      //   console.log("test: " + oldIndex, newIndex);
-      //   //reorder application stages
-      //   let reorderedColumns = arrayMove(prev, oldIndex, newIndex);
-
-      //   //update the position of the application stages
-      //   reorderedColumns = reorderedColumns.map((stage, index) => ({
-      //     ...stage,
-      //     position: index,
-      //   }));
-
-      //   return [...reorderedColumns];
-      // });
     }
   };
 
@@ -496,8 +510,8 @@ const Applications = () => {
                   key={stage.id}
                   id={stage.id}
                   stage_name={stage.stage_name}
-                  position={stage.position}
                   jobs={stage.jobs}
+                  removeJobFromStages={removeJobFromStages}
                 />
               ))}
               <DragOverlay dropAnimation={dropAnimation}>
@@ -505,8 +519,8 @@ const Applications = () => {
                   <ApplicationStageColumn
                     id={activeColumnData.id}
                     stage_name={activeColumnData.stage_name}
-                    position={activeColumnData.position}
                     jobs={activeColumnData.jobs}
+                    removeJobFromStages={removeJobFromStages}
                   />
                 )}
                 {activeCardData && (
@@ -514,6 +528,7 @@ const Applications = () => {
                     id={activeCardData.id}
                     title={activeCardData.job_title}
                     company={activeCardData.company_name}
+                    removeJobFromStages={removeJobFromStages}
                   />
                 )}
               </DragOverlay>

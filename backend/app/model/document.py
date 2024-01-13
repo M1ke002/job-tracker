@@ -15,7 +15,7 @@ class Document(db.Model):
         default=lambda: datetime.now())
 
     #relationship
-    document_type: so.Mapped["DocumentType"] = so.relationship()
+    document_type: so.Mapped["DocumentType"] = so.relationship("DocumentType", back_populates="documents")
     job: so.Mapped[Optional["SavedJob"]] = so.relationship()
 
     def __repr__(self) -> str:
@@ -26,8 +26,8 @@ class Document(db.Model):
             "id": self.id,
             "document_type_id": self.document_type_id,
             "job_id": self.job_id,
+            "job_title": self.job.job_title if self.job else None,
+            "document_type_name": self.document_type.type_name,
             "document_name": self.document_name,
             "date_uploaded": self.date_uploaded,
-            "document_type": self.document_type.to_dict(),
-            "job": self.job.to_dict()
         }

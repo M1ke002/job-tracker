@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { DataTable } from "@/components/document/DataTable";
-import { columns, Document } from "@/components/document/DocumentTableColumns";
+import { columns } from "@/components/document/DocumentTableColumns";
 import DocumentListTitle from "@/components/document/DocumentListTitle";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -14,32 +14,49 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { AlignJustify, Plus, Search, Settings } from "lucide-react";
+import DocumentType from "@/types/DocumentType";
+import axios from "@/lib/axiosConfig";
 
-const fakeData: Document[] = [
-  {
-    id: "1",
-    name: "A Resume.pdf",
-    type: "Resume",
-    job: "Software Engineer Intership Program 2023",
-    uploadedDate: "12/12/2021",
-  },
-  {
-    id: "2",
-    name: "My Resume for SE role en_version.pdf",
-    type: "Resume",
-    job: "– –",
-    uploadedDate: "12/12/2021",
-  },
-  {
-    id: "3",
-    name: "B Resume.pdf",
-    type: "Resume",
-    job: "– –",
-    uploadedDate: "12/12/2021",
-  },
-];
+// const fakeData: Document[] = [
+//   {
+//     id: "1",
+//     name: "A Resume.pdf",
+//     type: "Resume",
+//     job: "Software Engineer Intership Program 2023",
+//     uploadedDate: "12/12/2021",
+//   },
+//   {
+//     id: "2",
+//     name: "My Resume for SE role en_version.pdf",
+//     type: "Resume",
+//     job: "– –",
+//     uploadedDate: "12/12/2021",
+//   },
+//   {
+//     id: "3",
+//     name: "B Resume.pdf",
+//     type: "Resume",
+//     job: "– –",
+//     uploadedDate: "12/12/2021",
+//   },
+// ];
 
 const Documents = () => {
+  const [documentTypes, setDocumentTypes] = useState<DocumentType[]>([]);
+
+  useEffect(() => {
+    const fetchDocumentTypes = async () => {
+      try {
+        const res = await axios.get("/document-types");
+        setDocumentTypes(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchDocumentTypes();
+  }, []);
+
   return (
     <div className="mx-auto px-4 flex flex-col items-center max-w-[1450px]">
       {/* <div className="flex items-center justify-between border-[1px] border-[#c3dafe] bg-[#f0f4f7] p-4 mt-3 rounded-md w-full"> */}
@@ -79,7 +96,14 @@ const Documents = () => {
       </div>
 
       <div className="mt-3 w-full mb-2 space-y-2">
-        <div>
+        {documentTypes.map((documentType) => (
+          <div key={documentType.id}>
+            <DocumentListTitle title={documentType.type_name} />
+            <hr className="mt-1 mb-3 border-[#d6eaff]" />
+            <DataTable columns={columns} data={documentType.documents} />
+          </div>
+        ))}
+        {/* <div>
           <DocumentListTitle title="Resume" />
           <Separator className="mt-1 mb-3 bg-[#d6eaff]" />
           <DataTable columns={columns} data={fakeData} />
@@ -89,7 +113,7 @@ const Documents = () => {
           <DocumentListTitle title="Cover letter" />
           <Separator className="mt-1 mb-3 bg-[#d6eaff]" />
           <DataTable columns={columns} data={fakeData} />
-        </div>
+        </div> */}
       </div>
     </div>
   );
