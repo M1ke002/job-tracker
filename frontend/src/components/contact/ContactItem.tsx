@@ -1,4 +1,4 @@
-import { FileEdit, Linkedin, Mail, Trash } from "lucide-react";
+import { FileEdit, Linkedin, Mail, Trash, StickyNote } from "lucide-react";
 import { useModal } from "@/hooks/zustand/useModal";
 import React from "react";
 
@@ -24,6 +24,9 @@ const ContactItem = () => {
         </a>
       </span>
       <div className="absolute top-3 right-3 flex items-center space-x-1">
+        <button className="border-none focus:outline-none text-gray-700 hover:text-gray-700/80">
+          <StickyNote className="ml-1" size={20} />
+        </button>
         <button className="border-none focus:outline-none text-blue-700 hover:text-blue-700/80">
           <FileEdit className="ml-1" size={20} />
         </button>

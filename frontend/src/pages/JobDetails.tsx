@@ -23,6 +23,7 @@ import { useModal } from "@/hooks/zustand/useModal";
 import axios from "@/lib/axiosConfig";
 import SavedJob from "@/types/SavedJob";
 import { useParams } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 const JobDetails = () => {
   const [job, setJob] = useState<SavedJob | null>(null);
@@ -86,7 +87,13 @@ const JobDetails = () => {
 
           <Select onValueChange={(value) => changeJobStage(value)}>
             <SelectTrigger
-              className="w-[150px] border-blue-200"
+              className={cn(
+                "w-[150px] border-blue-200",
+                job?.stage?.stage_name === "O.A." && "border-[#a3e8f8]",
+                job?.stage?.stage_name === "Interviewing" && "border-amber-200",
+                job?.stage?.stage_name === "Offer" && "border-green-300",
+                job?.stage?.stage_name === "Rejected" && "border-rose-300"
+              )}
               disabled={isLoading}
             >
               <SelectValue

@@ -20,7 +20,18 @@ from .controller import document_type_routes
 from .controller import notification_routes
 
 #import models
-from .model import db, User, ApplicationStage, SavedJob, JobListing, Task, Contact, Document, DocumentType, ScrapedSite, ScrapedSiteSettings ,Notification
+from .model import db
+from .model import User
+from .model import ApplicationStage
+from .model import SavedJob
+from .model import JobListing
+from .model import Task
+from .model import Contact
+from .model import Document
+from .model import DocumentType
+from .model import ScrapedSite
+from .model import ScrapedSiteSettings
+from .model import Notification
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:5173"], supports_credentials=True)

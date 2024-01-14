@@ -71,7 +71,7 @@ const ApplicationStageColumn = ({
           "flex flex-col p-3 w-[340px] rounded-lg bg-[#fff] shadow-md border-[1px] border-[#c3dafe]",
           stage_name === "Applied" && "border-[#c3dafe]",
           stage_name === "O.A." && "border-[#a3e8f8]",
-          stage_name === "Interview" && "border-amber-200",
+          stage_name === "Interviewing" && "border-amber-200",
           stage_name === "Offer" && "border-green-300",
           stage_name === "Rejected" && "border-rose-300"
         )}
@@ -121,13 +121,18 @@ const ApplicationStageColumn = ({
           </DropdownMenu>
         </div>
 
-        <Separator className="my-2 bg-[#d6eaff]" />
+        <hr className="my-2 border-[#d6eaff]" />
 
         <SortableContext
           items={jobs.map((job) => `job-${job.id}`)}
           strategy={verticalListSortingStrategy}
         >
           <div className="max-h-[360px] overflow-y-auto">
+            {jobs.length === 0 && (
+              <div className="flex items-center justify-center h-[100px] mb-2 font-semibold rounded-md border border-dashed border-[#c3dafe]">
+                <p className=" text-gray-500">Drag job here</p>
+              </div>
+            )}
             {jobs.map((job, index) => (
               <JobCard
                 key={job.id}
@@ -140,12 +145,12 @@ const ApplicationStageColumn = ({
           </div>
         </SortableContext>
 
-        <Separator className="my-2 bg-[#d6eaff]" />
+        <hr className="my-2 border-[#d6eaff]" />
 
         {/* was #ddecfc instead of #f0f7fd??? */}
         <button className="flex items-center hover:bg-[#f0f7fd] p-1 rounded-md">
           <Plus size={20} className="mr-1" />
-          Add Item
+          Add job
         </button>
       </div>
     </div>

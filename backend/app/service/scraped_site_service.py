@@ -74,7 +74,7 @@ def scrape_site(scrape_site_id):
     scraped_jobs = getAllJobListings(scrapedSite.website_name, search_url, scrapedSiteSettings.max_pages_to_scrape)
 
     # update scraped site last scrape date to db
-    scrapedSite.last_scrape_date = datetime.utcnow()
+    scrapedSite.last_scrape_date = datetime.now()
 
     # get existing job listings from db
     existing_job_listings = JobListing.query.filter_by(scraped_site_id=scrapedSite.id).all()

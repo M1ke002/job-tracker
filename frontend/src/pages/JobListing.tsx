@@ -62,9 +62,9 @@ const JobList = () => {
     }
   };
 
-  if (scrapedSites.length === 0 || !currentScrapedSite) {
-    return null;
-  }
+  // if (scrapedSites.length === 0 || !currentScrapedSite) {
+  //   return null;
+  // }
 
   return (
     <div className="h-full">
@@ -113,23 +113,23 @@ const JobList = () => {
         <div className="w-full flex items-center justify-between">
           <div>
             <p className="text-sm font-medium">
-              {currentScrapedSite.job_listings.length} jobs on{" "}
+              {currentScrapedSite?.job_listings.length} jobs on{" "}
               <a
                 href={
-                  currentScrapedSite.website_name === "Grad Connection"
+                  currentScrapedSite?.website_name === "Grad Connection"
                     ? "https://au.gradconnection.com/"
                     : "https://www.seek.com.au/"
                 }
                 target="_blank"
                 className="underline text-blue-500"
               >
-                {currentScrapedSite.website_name}{" "}
+                {currentScrapedSite?.website_name}{" "}
               </a>
             </p>
           </div>
           <div className="flex items-center space-x-2">
             <p className="text-sm font-medium">
-              Last updated: {currentScrapedSite.last_scrape_date}
+              Last updated: {currentScrapedSite?.last_scrape_date}
             </p>
             <Button
               className="text-sm font-medium text-[#3d3d3d] hover:text-[#3d3d3d] px-2 bg-white"
@@ -151,7 +151,7 @@ const JobList = () => {
         {/* grid 2 cols */}
         {/* <div className="flex items-center flex-wrap justify-around"> */}
         <div className="grid md:grid-cols-2 gap-2 grid-cols-1 justify-items-center">
-          {currentScrapedSite.job_listings.map((job, index) => {
+          {currentScrapedSite?.job_listings.map((job, index) => {
             return (
               <JobItem
                 key={index}

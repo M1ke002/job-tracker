@@ -1,13 +1,35 @@
 [
     {
         "additional_info": "",
-        "company_name": "Calleo",
+        "company_name": "Genesis Recruitment Solutions",
         "is_new": true,
         "job_date": null,
-        "job_description": "Senior Software Engineer Role within Market Leading Technology Company. Onsite & WFH. Southeast Suburbs.",
-        "job_title": "Senior Software Engineer",
-        "job_url": "https://www.seek.com.au/job/72966332?type=promoted&ref=search-standalone",
+        "job_description": "The Linux & DevOps Engineer will be managing the Linux servers, and the operations of an automated DevOps environment on AWS cloud.",
+        "job_title": "Linux & DevOps Engineer",
+        "job_url": "https://www.seek.com.au/job/72714866?type=promoted&ref=search-standalone",
         "location": "Melbourne VIC",
-        "salary": "150,000 - 200,000 package"
+        "salary": "$1000-$1100 per Day"
+    },
+    {
+        "additional_info": "",
+        "company_name": "NetApp Australia Pty Ltd",
+        "is_new": true,
+        "job_date": null,
+        "job_description": "In this exciting time of growth, we\u2019re currently in search of a Software Engineer to join our growing Development team here at Instaclustr.",
+        "job_title": "Software Engineer",
+        "job_url": "https://www.seek.com.au/job/72877278?type=promoted&ref=search-standalone",
+        "location": "Canberra ACT",
+        "salary": "$90,000 \u2013 $110,000 per year"
+    },
+    {
+        "additional_info": "",
+        "company_name": "Genesis Recruitment Solutions",
+        "is_new": true,
+        "job_date": null,
+        "job_description": "The Linux & DevOps Engineer will be managing the Linux servers, and the operations of an automated DevOps environment on AWS cloud.",
+        "job_title": "Linux & DevOps Engineer",
+        "job_url": "https://www.seek.com.au/job/72714866?type=promoted&ref=search-standalone",
+        "location": "Melbourne VIC",
+        "salary": "$1000-$1100 per Day"
     }
 ]

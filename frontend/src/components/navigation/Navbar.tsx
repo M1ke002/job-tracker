@@ -8,22 +8,43 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import Notification from "../notification/Notification";
+import NotificationType from "@/types/Notification";
+import axios from "@/lib/axiosConfig";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isTop, setIsTop] = useState(false);
+  const [notifications, setNotifications] = useState<NotificationType[]>([]);
 
-  //   useEffect(() => {
-  //     const handleScroll = () => {
-  //       setIsTop(window.scrollY === 0);
-  //     };
+  const newNotificationsCount = notifications.reduce(
+    (acc, notification) => acc + (notification.is_read ? 0 : 1),
+    0
+  );
 
-  //     window.addEventListener("scroll", handleScroll);
+  useEffect(() => {
+    try {
+      const fetchNotifications = async () => {
+        const res = await axios.get("/notifications");
+        console.log(res.data);
+        setNotifications(res.data);
+      };
+      fetchNotifications();
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
 
-  //     return () => {
-  //       window.removeEventListener("scroll", handleScroll);
-  //     };
-  //   }, []);
+  const setNotificationToRead = async () => {
+    try {
+      const res = await axios.put("/notifications/read");
+      console.log(res.data);
+      setNotifications((prev) =>
+        prev.map((notification) => ({ ...notification, is_read: true }))
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <header
@@ -132,17 +153,29 @@ const Navbar = () => {
         </div>
 
         <div className="hidden md:flex md:items-center">
-          <Popover>
+          <Popover
+            onOpenChange={(isOpen) => {
+              if (!isOpen) {
+                if (notifications.some((notification) => !notification.is_read))
+                  setNotificationToRead();
+              }
+            }}
+          >
             <PopoverTrigger asChild>
-              <button className="border-none focus:outline-none text-black dark:text-white p-1 mr-2">
+              <button className="relative border-none focus:outline-none text-black dark:text-white p-1 mr-2">
                 <Bell className="h-6 w-6" />
+                {newNotificationsCount > 0 && (
+                  <span className="absolute top-0 right-1 -mt-1 -mr-1 bg-red-500 rounded-full text-xs text-white px-1">
+                    {newNotificationsCount}
+                  </span>
+                )}
               </button>
             </PopoverTrigger>
             <PopoverContent
-              className="p-0 m-0 rounded-md shadow-md w-[350px] mr-2"
+              className="p-0 m-0 rounded-md shadow-md w-[350px] mr-3"
               sideOffset={6}
             >
-              <Notification />
+              <Notification notifications={notifications} />
             </PopoverContent>
           </Popover>
 

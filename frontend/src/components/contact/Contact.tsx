@@ -7,7 +7,10 @@ import {
 import { ChevronDownCircle } from "lucide-react";
 import ContactItem from "@/components/contact/ContactItem";
 import { Button } from "@/components/ui/button";
+import { useModal } from "@/hooks/zustand/useModal";
+
 const Contact = () => {
+  const { onOpen } = useModal();
   const [rotateChevron, setRotateChevron] = useState(false);
   const handleRotate = () => setRotateChevron(!rotateChevron);
   const rotate = rotateChevron ? "rotate(-180deg)" : "rotate(0)";
@@ -28,7 +31,11 @@ const Contact = () => {
       <CollapsibleContent>
         <ContactItem />
         <ContactItem />
-        <Button variant="primary" className="mt-2 w-full">
+        <Button
+          variant="primary"
+          className="mt-2 w-full"
+          onClick={() => onOpen("createContact")}
+        >
           Add contact
         </Button>
       </CollapsibleContent>

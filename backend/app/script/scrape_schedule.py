@@ -66,12 +66,20 @@ def deleteOldJobListings(connection, cursor):
     connection.commit()
 
 def addJobListings(connection, cursor, jobs, scraped_site_id):
+    if (len(jobs) == 0): return
     # insert new job listings
     for job in jobs:
         cursor.execute(
             "INSERT INTO job_listings (scraped_site_id, job_title, company_name, location, job_description, additional_info, salary, job_url, is_new, job_date, created_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)",
             (scraped_site_id, job['job_title'], job['company_name'], job['location'], job['job_description'], job['additional_info'], job['salary'], job['job_url'], job['is_new'], job['job_date'])
         )
+    connection.commit()
+
+def createNotification(connection, cursor, scraped_site_id, website_name, new_jobs_count):
+    cursor.execute(
+        "INSERT INTO notifications (scraped_site_id, message, created_at, is_read) VALUES (%s, %s, CURRENT_TIMESTAMP, %s)",
+        (scraped_site_id, f'Found {new_jobs_count} new jobs on {website_name}', 0)
+    )
     connection.commit()
 
 
@@ -162,6 +170,10 @@ if __name__ == '__main__':
         updateJobListing(connection, cursor, old_jobs_dict)
         # insert new job listings
         addJobListings(connection, cursor, new_jobs, site_id)
+
+        if (len(new_jobs) > 0):
+            # create a notification
+            createNotification(connection, cursor, site_id, website_name, total_new_jobs_count)
     
         #update the last scraped date
         now = datetime.now()

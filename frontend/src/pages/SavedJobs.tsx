@@ -12,9 +12,11 @@ import React, { useEffect } from "react";
 import { Plus, SlidersHorizontal } from "lucide-react";
 import { useSavedJobs } from "@/hooks/zustand/useSavedJobs";
 import axios from "@/lib/axiosConfig";
+import { useModal } from "@/hooks/zustand/useModal";
 
 const SavedJobs = () => {
   const { savedJobs, setSavedJobs } = useSavedJobs();
+  const { onOpen } = useModal();
 
   useEffect(() => {
     const fetchSavedJobs = async () => {
@@ -34,7 +36,11 @@ const SavedJobs = () => {
       <div className="w-full flex items-center justify-between mt-4">
         <p className="text-sm font-medium">{savedJobs.length} jobs</p>
         <div className="flex items-center space-x-2">
-          <Button variant="primary" className="flex items-center">
+          <Button
+            variant="primary"
+            className="flex items-center"
+            onClick={() => onOpen("createJob")}
+          >
             <Plus size={20} className="mr-1" />
             Add job
           </Button>
@@ -61,6 +67,7 @@ const SavedJobs = () => {
             location={job.location}
             salary={job.salary}
             additionalInfo={job.additional_info}
+            stage={job.stage || undefined}
           />
         ))}
       </div>

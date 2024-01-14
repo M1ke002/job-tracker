@@ -31,6 +31,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import axios from "@/lib/axiosConfig";
+import { useModal } from "@/hooks/zustand/useModal";
+import ApplicationStage from "@/types/ApplicationStage";
 
 interface JobItemProps {
   id?: number;
@@ -44,6 +46,7 @@ interface JobItemProps {
   jobUrl: string;
   jobDate: string;
   isNewJob?: boolean;
+  stage?: ApplicationStage;
 }
 
 const JobItem = ({
@@ -58,9 +61,12 @@ const JobItem = ({
   jobUrl,
   jobDate,
   isNewJob,
+  stage,
 }: JobItemProps) => {
+  console.log(stage);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
+  const { onOpen } = useModal();
 
   const onSave = async () => {
     try {
@@ -137,14 +143,16 @@ const JobItem = ({
                   }
                 }}
               >
-                <span className="mr-2">View</span>
+                <span className="mr-2">
+                  {type === "jobListing" ? "View" : "More"}
+                </span>
                 {type === "jobListing" ? (
                   <ArrowUpRightSquare size={20} />
                 ) : (
                   <ArrowRightCircle size={20} />
                 )}
               </Button>
-              {type === "savedJob" && (
+              {type === "savedJob" && stage && (
                 <Badge className="text-xs font-bold uppercase py-1 px-3 text-white bg-green-400 hover:bg-initial">
                   Applied
                 </Badge>
@@ -176,7 +184,20 @@ const JobItem = ({
                       Edit
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem className="flex items-center ">
+                    <DropdownMenuItem
+                      className="flex items-center"
+                      onClick={() => {
+                        onOpen("deleteJob", {
+                          confirmModalTitle: "Delete saved job",
+                          confirmModalMessage:
+                            "Are you sure you want to delete this job?",
+                          confirmModalConfirmButtonText: "Delete",
+                          confirmModalAction: () => {
+                            console.log("delete job");
+                          },
+                        });
+                      }}
+                    >
                       <Trash size={18} className="mr-2 text-rose-500" />
                       Delete
                     </DropdownMenuItem>
