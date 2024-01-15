@@ -34,11 +34,11 @@ const formSchema = z.object({
   position: z.string(),
   linkedin: z.string(),
   email: z.string().email(),
-  notes: z.string(),
+  note: z.string(),
 });
 
 const EditContactModal = () => {
-  //   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
+  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
   const { type, isOpen, onClose, data } = useModal();
   const { contact } = data;
   console.log("contact", contact);
@@ -52,7 +52,7 @@ const EditContactModal = () => {
       position: "",
       linkedin: "",
       email: "",
-      notes: "",
+      note: "",
     },
   });
 
@@ -62,7 +62,7 @@ const EditContactModal = () => {
       form.setValue("position", contact.person_position);
       form.setValue("linkedin", contact.person_linkedin);
       form.setValue("email", contact.person_email);
-      form.setValue("notes", contact.note);
+      form.setValue("note", contact.note);
     }
   }, [contact, form]);
 
@@ -72,7 +72,7 @@ const EditContactModal = () => {
       form.setValue("position", contact.person_position);
       form.setValue("linkedin", contact.person_linkedin);
       form.setValue("email", contact.person_email);
-      form.setValue("notes", contact.note);
+      form.setValue("note", contact.note);
     }
   };
 
@@ -84,9 +84,23 @@ const EditContactModal = () => {
         personPosition: values.position,
         personLinkedin: values.linkedin,
         personEmail: values.email,
-        note: values.notes,
+        note: values.note,
       });
       const editedContact: Contact = res.data;
+      if (currentSavedJob) {
+        //find and replace contact
+        const updatedContacts = currentSavedJob.contacts.map((contact) => {
+          if (contact.id === editedContact.id) {
+            return editedContact;
+          }
+          return contact;
+        });
+        const updatedJob = {
+          ...currentSavedJob,
+          contacts: updatedContacts,
+        };
+        setCurrentSavedJob(updatedJob);
+      }
     } catch (error) {
     } finally {
       onClose();
@@ -165,7 +179,7 @@ const EditContactModal = () => {
               />
               <FormField
                 control={form.control}
-                name="notes"
+                name="note"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="font-semibold">Notes</FormLabel>

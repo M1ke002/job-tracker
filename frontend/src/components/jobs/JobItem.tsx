@@ -33,6 +33,7 @@ import { cn } from "@/lib/utils";
 import axios from "@/lib/axiosConfig";
 import { useModal } from "@/hooks/zustand/useModal";
 import ApplicationStage from "@/types/ApplicationStage";
+import { useSavedJobs } from "@/hooks/zustand/useSavedJobs";
 
 interface JobItemProps {
   id?: number;
@@ -63,7 +64,7 @@ const JobItem = ({
   isNewJob,
   stage,
 }: JobItemProps) => {
-  console.log(stage);
+  const { savedJobs, setSavedJobs } = useSavedJobs();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const { onOpen } = useModal();
@@ -80,6 +81,15 @@ const JobItem = ({
         jobUrl,
         jobDate,
       });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleDeleteJob = async () => {
+    try {
+      const res = await axios.delete(`/saved-jobs/${id}`);
+      setSavedJobs(savedJobs.filter((job) => job.id !== id));
     } catch (error) {
       console.log(error);
     }
@@ -192,9 +202,7 @@ const JobItem = ({
                           confirmModalMessage:
                             "Are you sure you want to delete this job?",
                           confirmModalConfirmButtonText: "Delete",
-                          confirmModalAction: () => {
-                            console.log("delete job");
-                          },
+                          confirmModalAction: handleDeleteJob,
                         });
                       }}
                     >

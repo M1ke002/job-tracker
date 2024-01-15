@@ -31,7 +31,7 @@ def handle_edit_document_type(document_type_id):
 # delete a document type
 @document_type_routes.route('/<int:document_type_id>', methods=['DELETE'])
 def handle_delete_document_type(document_type_id):
-    document_type = delete_document_type(document_type_id)
-    if document_type is None:
+    message = delete_document_type(document_type_id)
+    if message is None:
         return jsonify({}), 404
-    return jsonify(document_type), 200
+    return jsonify(message), 200

@@ -26,10 +26,12 @@ import { useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 import { useCurrentSavedJob } from "@/hooks/zustand/useCurrentSavedJob";
+import { useSavedJobs } from "@/hooks/zustand/useSavedJobs";
 
 const JobDetailsPage = () => {
   // const [job, setJob] = useState<SavedJob | undefined>();
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
+  const { savedJobs, setSavedJobs } = useSavedJobs();
   const [isLoading, setLoading] = useState(false);
   const { id } = useParams<{ id: string }>();
   const { onOpen } = useModal();
@@ -60,6 +62,16 @@ const JobDetailsPage = () => {
     }
   };
 
+  const handleDeleteJob = async () => {
+    try {
+      const res = await axios.delete(`/saved-jobs/${id}`);
+      setSavedJobs(savedJobs.filter((job) => job.id.toString() !== id));
+      setCurrentSavedJob(null);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="mx-auto my-4 px-4 flex flex-col items-center max-w-[1450px] space-y-4">
       {/* header (company name, job details) */}
@@ -80,7 +92,7 @@ const JobDetailsPage = () => {
                     confirmModalTitle: "Delete job",
                     confirmModalMessage:
                       "Are you sure you want to delete this job?",
-                    confirmModalAction: () => {},
+                    confirmModalAction: handleDeleteJob,
                     confirmModalConfirmButtonText: "Delete",
                   });
                 }}

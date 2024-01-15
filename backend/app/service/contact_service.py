@@ -29,10 +29,33 @@ def create_contact(data):
 
     return contact.to_dict()
 
+def edit_contact(job_id, data):
+    person_name = data.get('personName')
+    person_position = data.get('personPosition')
+    person_linkedin = data.get('personLinkedin')
+    person_email = data.get('personEmail')
+    note = data.get('note')
+
+    if not person_name:
+        return None
+    
+    contact = Contact.query.get(job_id)
+    if contact is None:
+        return None
+    
+    contact.person_name = person_name
+    contact.person_position = person_position
+    contact.person_linkedin = person_linkedin
+    contact.person_email = person_email
+    contact.note = note
+
+    db.session.commit()
+    return contact.to_dict()
+
 def delete_contact(contact_id):
     contact = Contact.query.get(contact_id)
     if contact is None:
         return None
     db.session.delete(contact)
     db.session.commit()
-    return contact.to_dict()
+    return "deleted contact successfully"

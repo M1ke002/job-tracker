@@ -4,3 +4,6 @@ __pycache__
 my_env
 
 .env
+
+app/script/Seek.json
+~/app/script/test.py

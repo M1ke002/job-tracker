@@ -21,7 +21,7 @@ def handle_set_notifications_to_read():
 # delete a notification
 @notification_routes.route('/<int:notification_id>', methods=['DELETE'])
 def handle_delete_notification(notification_id):
-    notification = delete_notification(notification_id)
-    if notification is None:
+    message = delete_notification(notification_id)
+    if message is None:
         return jsonify({}), 404
-    return jsonify(notification), 200
+    return jsonify(message), 200

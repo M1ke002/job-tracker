@@ -44,12 +44,10 @@ def update_stage_order(data):
     db.session.commit()
     return "updated stage order successfully"
 
-
-
 def delete_application_stage(application_stage_id):
     application_stage = ApplicationStage.query.get(application_stage_id)
     if application_stage is None:
         return None
     db.session.delete(application_stage)
     db.session.commit()
-    return application_stage.to_dict()
+    return "deleted application stage successfully"

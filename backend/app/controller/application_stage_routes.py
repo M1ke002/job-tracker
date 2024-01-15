@@ -42,7 +42,7 @@ def handle_update_stage_order():
 # delete an application stage
 @application_stage_routes.route('/<int:application_stage_id>', methods=['DELETE'])
 def handle_delete_application_stage(application_stage_id):
-    application_stage = delete_application_stage(application_stage_id)
-    if application_stage is None:
+    message = delete_application_stage(application_stage_id)
+    if message is None:
         return jsonify({}), 404
-    return jsonify(application_stage), 200
+    return jsonify(message), 200

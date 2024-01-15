@@ -31,7 +31,7 @@ def handle_edit_task(task_id):
 # delete a task
 @task_routes.route('/<int:task_id>', methods=['DELETE'])
 def handle_delete_task(task_id):
-    task = delete_task(task_id)
-    if task is None:
+    message = delete_task(task_id)
+    if message is None:
         return jsonify({}), 404
-    return jsonify(task), 200
+    return jsonify(message), 200

@@ -43,4 +43,4 @@ def delete_document_type(document_type_id):
         return None
     db.session.delete(document_type)
     db.session.commit()
-    return document_type.to_dict()
+    return "Deleted document type successfully"

@@ -1,1 +1,35 @@
-[]
+[
+    {
+        "additional_info": "Internships",
+        "company_name": "GradConnection",
+        "is_new": true,
+        "job_date": "Closing in 5 days",
+        "job_description": "Created in collaboration with\u202fInsideSherpa\u202fand\u202fDevelopment Beyond Learning, this program is designed to arm you specifically with the work-readiness skills that will help you to navigate these challenging times, and empower you to thrive as you seek and secure placements, internships and graduate ro",
+        "job_title": "Work Ready Virtual Experience Program",
+        "job_url": "https://au.gradconnection.com/employers/gradconnection/jobs/gradconnection-work-ready-virtual-experience-program-148/",
+        "location": "Australia",
+        "salary": ""
+    },
+    {
+        "additional_info": "Internships",
+        "company_name": "Readygrad",
+        "is_new": true,
+        "job_date": "Closing in a month",
+        "job_description": "As a software developer intern with our host company partner, you will gain valuable hands-on experience working with cutting-edge technologies such as .NET/C#, Angular/React, JavaScript, MVC + WebAPI, and SQL Server/TSQL. Our interns are challenged to solve complex problems and think critically.",
+        "job_title": "Software Developer Internship Program 2023",
+        "job_url": "https://au.gradconnection.com/employers/readygrad/jobs/readygrad-software-developer-internship-program-2023-7/",
+        "location": "Australia",
+        "salary": ""
+    },
+    {
+        "additional_info": "Internships",
+        "company_name": "Readygrad",
+        "is_new": true,
+        "job_date": "Closing in a month",
+        "job_description": "This is an exciting opportunity for a talented and driven individual to join a dynamic team working on complex and innovative technologies. If you are passionate about application security and want to make a real difference in the development of secure systems, we encourage you to apply now.",
+        "job_title": "Application Security Engineer Internship Program 2023",
+        "job_url": "https://au.gradconnection.com/employers/readygrad/jobs/readygrad-application-security-engineer-internship-program-2023-8/",
+        "location": "Australia",
+        "salary": ""
+    }
+]

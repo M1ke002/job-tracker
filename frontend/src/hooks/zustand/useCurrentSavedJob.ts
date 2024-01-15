@@ -3,10 +3,11 @@ import SavedJob from "@/types/SavedJob";
 
 interface CurrentSavedJobStore {
   currentSavedJob: SavedJob | null;
-  setCurrentSavedJob: (savedJob: SavedJob) => void;
+  setCurrentSavedJob: (savedJob: SavedJob | null) => void;
 }
 
 export const useCurrentSavedJob = create<CurrentSavedJobStore>((set) => ({
   currentSavedJob: null,
-  setCurrentSavedJob: (savedJob) => set({ currentSavedJob: savedJob }),
+  setCurrentSavedJob: (savedJob: SavedJob | null) =>
+    set(() => ({ currentSavedJob: savedJob })),
 }));

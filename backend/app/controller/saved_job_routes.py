@@ -75,7 +75,7 @@ def handle_remove_job_from_stage(saved_job_id):
 #delete a saved job
 @saved_job_routes.route('/<int:saved_job_id>', methods=['DELETE'])
 def handle_delete_saved_job(saved_job_id):
-    saved_job = delete_saved_job(saved_job_id)
-    if saved_job is None:
+    message = delete_saved_job(saved_job_id)
+    if message is None:
         return jsonify({}), 404
-    return jsonify(saved_job), 200
+    return jsonify(message), 200

@@ -19,4 +19,4 @@ def delete_notification(notification_id):
         return None
     db.session.delete(notification)
     db.session.commit()
-    return notification.to_dict()
+    return "Deleted notification successfully"

@@ -29,4 +29,4 @@ def delete_document(document_id):
         return None
     db.session.delete(document)
     db.session.commit()
-    return document.to_dict()
+    return "Deleted document successfully"

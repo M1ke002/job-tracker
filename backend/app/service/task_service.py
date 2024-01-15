@@ -38,4 +38,4 @@ def delete_task(task_id):
         return None
     db.session.delete(task)
     db.session.commit()
-    return task.to_dict()
+    return "Deleted task successfully"

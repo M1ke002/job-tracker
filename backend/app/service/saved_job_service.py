@@ -98,4 +98,4 @@ def delete_saved_job(saved_job_id):
         return None
     db.session.delete(saved_job)
     db.session.commit()
-    return saved_job.to_dict()
+    return "Deleted saved job successfully"

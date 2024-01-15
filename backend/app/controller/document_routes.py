@@ -31,10 +31,10 @@ def handle_create_document():
 # delete a document
 @document_routes.route('/<int:document_id>', methods=['DELETE'])
 def handle_delete_document(document_id):
-    document = delete_document(document_id)
-    if document is None:
+    message = delete_document(document_id)
+    if message is None:
         return jsonify({}), 404
-    return jsonify(document), 200
+    return jsonify(message), 200
 
 # search documents by name
 @document_routes.route('/search', methods=['GET'])
