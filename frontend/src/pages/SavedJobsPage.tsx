@@ -14,7 +14,7 @@ import { useSavedJobs } from "@/hooks/zustand/useSavedJobs";
 import axios from "@/lib/axiosConfig";
 import { useModal } from "@/hooks/zustand/useModal";
 
-const SavedJobs = () => {
+const SavedJobsPage = () => {
   const { savedJobs, setSavedJobs } = useSavedJobs();
   const { onOpen } = useModal();
 
@@ -86,4 +86,4 @@ const SavedJobs = () => {
   );
 };
 
-export default SavedJobs;
+export default SavedJobsPage;

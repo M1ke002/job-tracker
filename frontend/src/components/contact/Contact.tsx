@@ -6,10 +6,17 @@ import {
 } from "@/components/ui/collapsible";
 import { ChevronDownCircle } from "lucide-react";
 import ContactItem from "@/components/contact/ContactItem";
+import { Input } from "../ui/input";
 import { Button } from "@/components/ui/button";
 import { useModal } from "@/hooks/zustand/useModal";
+import ContactType from "@/types/Contact";
 
-const Contact = () => {
+interface ContactProps {
+  contacts: ContactType[] | undefined;
+  jobId: number | undefined;
+}
+
+const Contact = ({ contacts, jobId }: ContactProps) => {
   const { onOpen } = useModal();
   const [rotateChevron, setRotateChevron] = useState(false);
   const handleRotate = () => setRotateChevron(!rotateChevron);
@@ -29,14 +36,16 @@ const Contact = () => {
       </div>
       <hr className="mt-2 mb-3 border-[#d6eaff]" />
       <CollapsibleContent>
-        <ContactItem />
-        <ContactItem />
+        <Input placeholder="Search contacts" className="w-full mb-2" />
+        {contacts?.map((contact) => (
+          <ContactItem key={contact.id} contact={contact} />
+        ))}
         <Button
           variant="primary"
           className="mt-2 w-full"
-          onClick={() => onOpen("createContact")}
+          onClick={() => onOpen("createContact", { jobId: jobId?.toString() })}
         >
-          Add contact
+          Create contact
         </Button>
       </CollapsibleContent>
     </Collapsible>

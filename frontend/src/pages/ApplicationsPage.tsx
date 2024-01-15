@@ -37,7 +37,7 @@ const sortJobsByPosition = (jobs: SavedJob[]) => {
   return jobs.sort((a, b) => a.position - b.position);
 };
 
-const Applications = () => {
+const ApplicationsPage = () => {
   const [applicationStageColumns, setApplicationStageColumns] = useState<
     ApplicationStageType[]
   >([]);
@@ -525,9 +525,7 @@ const Applications = () => {
                 )}
                 {activeCardData && (
                   <JobCard
-                    id={activeCardData.id}
-                    title={activeCardData.job_title}
-                    company={activeCardData.company_name}
+                    job={activeCardData}
                     removeJobFromStages={removeJobFromStages}
                   />
                 )}
@@ -549,4 +547,4 @@ const Applications = () => {
   );
 };
 
-export default Applications;
+export default ApplicationsPage;

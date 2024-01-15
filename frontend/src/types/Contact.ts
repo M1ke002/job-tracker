@@ -5,7 +5,7 @@ interface Contact {
   person_position: string;
   person_linkedin: string;
   person_email: string;
-  notes: string;
+  note: string;
 }
 
 export default Contact;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -37,12 +37,13 @@ const formSchema = z.object({
   notes: z.string(),
 });
 
-const AddContactModal = () => {
-  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
+const EditContactModal = () => {
+  //   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
   const { type, isOpen, onClose, data } = useModal();
-  const { jobId } = data;
+  const { contact } = data;
+  console.log("contact", contact);
 
-  const isModalOpen = isOpen && type === "createContact";
+  const isModalOpen = isOpen && type === "editContact";
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -55,26 +56,37 @@ const AddContactModal = () => {
     },
   });
 
+  useEffect(() => {
+    if (contact) {
+      form.setValue("name", contact.person_name);
+      form.setValue("position", contact.person_position);
+      form.setValue("linkedin", contact.person_linkedin);
+      form.setValue("email", contact.person_email);
+      form.setValue("notes", contact.note);
+    }
+  }, [contact, form]);
+
+  const resetForm = () => {
+    if (contact) {
+      form.setValue("name", contact.person_name);
+      form.setValue("position", contact.person_position);
+      form.setValue("linkedin", contact.person_linkedin);
+      form.setValue("email", contact.person_email);
+      form.setValue("notes", contact.note);
+    }
+  };
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      console.log(values, data.jobId);
-      const res = await axios.post("/contacts", {
-        jobId: data.jobId,
+      console.log(values);
+      const res = await axios.put(`/contacts/${contact?.id}`, {
         personName: values.name,
         personPosition: values.position,
         personLinkedin: values.linkedin,
         personEmail: values.email,
         note: values.notes,
       });
-      const contact: Contact = res.data;
-      if (currentSavedJob) {
-        contact.job_id = currentSavedJob.id;
-        const updatedJob = {
-          ...currentSavedJob,
-          contacts: [...currentSavedJob.contacts, contact],
-        };
-        setCurrentSavedJob(updatedJob);
-      }
+      const editedContact: Contact = res.data;
     } catch (error) {
     } finally {
       onClose();
@@ -82,6 +94,7 @@ const AddContactModal = () => {
   };
 
   const handleCloseModal = () => {
+    resetForm();
     onClose();
   };
 
@@ -90,7 +103,7 @@ const AddContactModal = () => {
       <DialogContent className="bg-white text-black p-0 overflow-hidden">
         <DialogHeader className="pt-6 pb-2 px-6">
           <DialogTitle className="text-2xl text-center font-bold capitalize">
-            Add new contact
+            Edit contact
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
@@ -190,4 +203,4 @@ const AddContactModal = () => {
   );
 };
 
-export default AddContactModal;
+export default EditContactModal;

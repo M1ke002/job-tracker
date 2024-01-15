@@ -133,15 +133,16 @@ const ApplicationStageColumn = ({
                 <p className=" text-gray-500">Drag job here</p>
               </div>
             )}
-            {jobs.map((job, index) => (
-              <JobCard
-                key={job.id}
-                id={job.id}
-                title={job.job_title}
-                company={job.company_name}
-                removeJobFromStages={removeJobFromStages}
-              />
-            ))}
+            {jobs.map((job, index) => {
+              console.log(job);
+              return (
+                <JobCard
+                  key={job.id}
+                  job={job}
+                  removeJobFromStages={removeJobFromStages}
+                />
+              );
+            })}
           </div>
         </SortableContext>
 

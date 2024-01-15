@@ -1,6 +1,7 @@
 import AddContactModal from "../modals/AddContactModal";
 import CofirmationModal from "../modals/CofirmationModal";
 import CreateJobModal from "../modals/CreateJobModal";
+import EditContactModal from "../modals/EditContactModal";
 
 //this component will be used to render all the modals
 const ModalProvider = () => {
@@ -9,6 +10,7 @@ const ModalProvider = () => {
       <CofirmationModal />
       <AddContactModal />
       <CreateJobModal />
+      <EditContactModal />
     </>
   );
 };

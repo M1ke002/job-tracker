@@ -41,7 +41,7 @@ import axios from "@/lib/axiosConfig";
 //   },
 // ];
 
-const Documents = () => {
+const DocumentsPage = () => {
   const [documentTypes, setDocumentTypes] = useState<DocumentType[]>([]);
 
   useEffect(() => {
@@ -119,4 +119,4 @@ const Documents = () => {
   );
 };
 
-export default Documents;
+export default DocumentsPage;

@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import GoogleIcon from "@/assets/google-icon.svg";
 
-const Login = () => {
+const LoginPage = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       <h1 className="text-[#2164f3] text-3xl font-semibold tracking-wider">
@@ -105,4 +105,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginPage;

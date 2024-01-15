@@ -17,12 +17,12 @@ import {
 import { Link } from "react-router-dom";
 import JobItem from "@/components/jobs/JobItem";
 import { Separator } from "@/components/ui/separator";
-import PaginationBox from "@/components/PaginationBox";
+import PaginationBox from "@/components/pagination/PaginationBox";
 
 import axios from "@/lib/axiosConfig";
 import ScrapedSite from "@/types/ScrapedSite";
 
-const JobList = () => {
+const JobListingPage = () => {
   const [scrapedSites, setScrapedSites] = useState<ScrapedSite[]>([]);
   const [currentScrapedSite, setCurrentScrapedSite] = useState<ScrapedSite>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -175,4 +175,4 @@ const JobList = () => {
   );
 };
 
-export default JobList;
+export default JobListingPage;

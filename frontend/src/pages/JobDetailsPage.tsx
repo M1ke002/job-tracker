@@ -17,7 +17,7 @@ import React, { useEffect, useState } from "react";
 import Note from "@/components/note/Note";
 import Contact from "@/components/contact/Contact";
 import Task from "@/components/task/Task";
-import JobDescription from "@/components/job-description/JobDescription";
+import JobDescription from "@/components/jobs/JobDescription";
 
 import { useModal } from "@/hooks/zustand/useModal";
 import axios from "@/lib/axiosConfig";
@@ -25,8 +25,11 @@ import SavedJob from "@/types/SavedJob";
 import { useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
-const JobDetails = () => {
-  const [job, setJob] = useState<SavedJob | null>(null);
+import { useCurrentSavedJob } from "@/hooks/zustand/useCurrentSavedJob";
+
+const JobDetailsPage = () => {
+  // const [job, setJob] = useState<SavedJob | undefined>();
+  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
   const [isLoading, setLoading] = useState(false);
   const { id } = useParams<{ id: string }>();
   const { onOpen } = useModal();
@@ -35,7 +38,7 @@ const JobDetails = () => {
     const fetchJobDetails = async () => {
       try {
         const res = await axios.get(`/saved-jobs/${id}`);
-        setJob(res.data);
+        setCurrentSavedJob(res.data);
         console.log(res.data);
       } catch (error) {
         console.log(error);
@@ -51,7 +54,7 @@ const JobDetails = () => {
         stageName: stage_name,
       });
       setLoading(false);
-      setJob(res.data);
+      setCurrentSavedJob(res.data);
     } catch (error) {
       console.log(error);
     }
@@ -63,7 +66,9 @@ const JobDetails = () => {
       <div className="flex flex-col p-6 bg-white border border-[#dbe9ff] w-full shadow-sm">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-end space-x-3">
-            <h2 className="text-3xl font-semibold">{job?.job_title}</h2>
+            <h2 className="text-3xl font-semibold">
+              {currentSavedJob?.job_title}
+            </h2>
             <div className="flex items-center space-x-1">
               <button className="border-none focus:outline-none text-blue-700 hover:text-blue-700/80">
                 <FileEdit size={20} />
@@ -89,15 +94,21 @@ const JobDetails = () => {
             <SelectTrigger
               className={cn(
                 "w-[150px] border-blue-200",
-                job?.stage?.stage_name === "O.A." && "border-[#a3e8f8]",
-                job?.stage?.stage_name === "Interviewing" && "border-amber-200",
-                job?.stage?.stage_name === "Offer" && "border-green-300",
-                job?.stage?.stage_name === "Rejected" && "border-rose-300"
+                currentSavedJob?.stage?.stage_name === "O.A." &&
+                  "border-[#a3e8f8]",
+                currentSavedJob?.stage?.stage_name === "Interviewing" &&
+                  "border-amber-200",
+                currentSavedJob?.stage?.stage_name === "Offer" &&
+                  "border-green-300",
+                currentSavedJob?.stage?.stage_name === "Rejected" &&
+                  "border-rose-300"
               )}
               disabled={isLoading}
             >
               <SelectValue
-                placeholder={job?.stage?.stage_name || "Status: Not set"}
+                placeholder={
+                  currentSavedJob?.stage?.stage_name || "Status: Not set"
+                }
               />
             </SelectTrigger>
             <SelectContent>
@@ -114,10 +125,10 @@ const JobDetails = () => {
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center space-x-2">
             <h3 className="text-lg text-gray-700 font-semibold">
-              {job?.company_name}
+              {currentSavedJob?.company_name}
             </h3>
             <span className="text-gray-700">—</span>
-            <span className="text-gray-700">{job?.location}</span>
+            <span className="text-gray-700">{currentSavedJob?.location}</span>
           </div>
         </div>
 
@@ -126,7 +137,7 @@ const JobDetails = () => {
             <div>
               {/* <span className="text-gray-700 mr-1">View job posting</span> */}
               <a
-                href={job?.job_url}
+                href={currentSavedJob?.job_url}
                 target="_blank"
                 className="text-blue-700 underline hover:text-blue-700/80"
               >
@@ -136,18 +147,22 @@ const JobDetails = () => {
 
             <div className="flex items-center">
               <MapPin className="mr-2 text-blue-700" size={18} />
-              <span className="text-gray-700">{job?.location || "N/A"}</span>
+              <span className="text-gray-700">
+                {currentSavedJob?.location || "N/A"}
+              </span>
             </div>
 
             <div className="flex items-center">
               <CircleDollarSign className="mr-2 text-blue-700" size={18} />
-              <span className="text-gray-700">{job?.salary || "N/A"}</span>
+              <span className="text-gray-700">
+                {currentSavedJob?.salary || "N/A"}
+              </span>
             </div>
 
             <div className="flex items-center">
               <Briefcase className="mr-2 text-blue-700" size={18} />
               <span className="text-gray-700">
-                {job?.additional_info || "N/A"}
+                {currentSavedJob?.additional_info || "N/A"}
               </span>
             </div>
           </div>
@@ -166,7 +181,10 @@ const JobDetails = () => {
         <div className="col-span-2 space-y-4">
           <div className="p-6 bg-white border border-[#dbe9ff] w-full shadow-sm space-y-4">
             <Note />
-            <Contact />
+            <Contact
+              contacts={currentSavedJob?.contacts}
+              jobId={currentSavedJob?.id}
+            />
           </div>
         </div>
       </div>
@@ -174,4 +192,4 @@ const JobDetails = () => {
   );
 };
 
-export default JobDetails;
+export default JobDetailsPage;

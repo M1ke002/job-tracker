@@ -1,13 +1,13 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Login from "./pages/Login";
+import LoginPage from "./pages/LoginPage";
 import ProtectedRoutes from "./components/routes/ProtectedRoutes";
-import JobListing from "./pages/JobListing";
-import Landing from "./pages/Landing";
-import Applications from "./pages/Applications";
-import Documents from "./pages/Documents";
-import SavedJobs from "./pages/SavedJobs";
-import JobDetails from "./pages/JobDetails";
+import JobListingPage from "./pages/JobListingPage";
+import LandingPage from "./pages/LandingPage";
+import ApplicationsPage from "./pages/ApplicationsPage";
+import DocumentsPage from "./pages/DocumentsPage";
+import SavedJobsPage from "./pages/SavedJobsPage";
+import JobDetailsPage from "./pages/JobDetailsPage";
 import ModalProvider from "./components/providers/ModalProvider";
 
 function App() {
@@ -15,14 +15,14 @@ function App() {
     <>
       <Router>
         <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route element={<ProtectedRoutes />}>
-            <Route path="/jobs" element={<JobListing />} />
-            <Route path="/saved-jobs" element={<SavedJobs />} />
-            <Route path="/saved-jobs/:id" element={<JobDetails />} />
-            <Route path="/applications" element={<Applications />} />
-            <Route path="/documents" element={<Documents />} />
+            <Route path="/jobs" element={<JobListingPage />} />
+            <Route path="/saved-jobs" element={<SavedJobsPage />} />
+            <Route path="/saved-jobs/:id" element={<JobDetailsPage />} />
+            <Route path="/applications" element={<ApplicationsPage />} />
+            <Route path="/documents" element={<DocumentsPage />} />
           </Route>
         </Routes>
       </Router>

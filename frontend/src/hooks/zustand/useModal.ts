@@ -1,3 +1,4 @@
+import Contact from "@/types/Contact";
 import { create } from "zustand";
 
 export type ModalType =
@@ -25,6 +26,9 @@ interface ModalData {
   confirmModalMessage?: string;
   confirmModalConfirmButtonText?: string;
   confirmModalAction?: () => void;
+
+  jobId?: string;
+  contact?: Contact;
 }
 
 interface ModalStore {

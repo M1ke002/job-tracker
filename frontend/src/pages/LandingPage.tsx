@@ -1,7 +1,7 @@
 import { Navigate } from "react-router-dom";
 
-const Landing = () => {
+const LandingPage = () => {
   return <Navigate to="/jobs" />;
 };
 
-export default Landing;
+export default LandingPage;

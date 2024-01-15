@@ -7,16 +7,12 @@ import SavedJob from "@/types/SavedJob";
 import { useNavigate } from "react-router-dom";
 
 interface ApplicationStageBoxItemProps {
-  id: number;
-  title: string;
-  company: string;
+  job: SavedJob;
   removeJobFromStages: (jobId: number) => void;
 }
 
 const ApplicationStageBoxItem = ({
-  id,
-  title,
-  company,
+  job,
   removeJobFromStages,
 }: ApplicationStageBoxItemProps) => {
   const navigate = useNavigate();
@@ -28,12 +24,11 @@ const ApplicationStageBoxItem = ({
     transition,
     isDragging,
   } = useSortable({
-    id: `job-${id}`,
+    id: `job-${job.id}`,
     data: {
-      id: `job-${id}`,
+      ...job,
+      id: `job-${job.id}`,
       type: "job",
-      job_title: title,
-      company_name: company,
     },
   });
 
@@ -54,19 +49,19 @@ const ApplicationStageBoxItem = ({
         "flex flex-col relative group bg-white border-[1px] border-[#dce6f8] rounded-md p-3 mb-2 drop-shadow-sm hover:border-blue-400 hover:bg-[#f0f7fd] cursor-pointer",
         isDragging && "border-blue-500"
       )}
-      onClick={() => navigate(`/saved-jobs/${id}`)}
+      onClick={() => navigate(`/saved-jobs/${job.id}`)}
     >
-      <p className="font-semibold">{title}</p>
-      <p className="text-sm">{company}</p>
+      <p className="font-semibold">{job.job_title}</p>
+      <p className="text-sm">{job.company_name}</p>
       <p className="flex items-center mt-1 text-zinc-700">
-        <Contact size={13} className="mr-1" />
-        <ListTodo size={13} />
+        {job.contacts.length > 0 && <Contact size={13} className="mr-1" />}
+        {job.tasks.length > 0 && <ListTodo size={13} />}
       </p>
       <button
         className="border-none focus:outline-none"
         onClick={(e) => {
           e.stopPropagation();
-          removeJobFromStages(id);
+          removeJobFromStages(job.id);
         }}
       >
         <X
