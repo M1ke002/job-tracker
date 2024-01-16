@@ -14,17 +14,22 @@ import {
   Bell,
   BellRing,
 } from "lucide-react";
-import { Link } from "react-router-dom";
 import JobItem from "@/components/jobs/JobItem";
 import { Separator } from "@/components/ui/separator";
 import PaginationBox from "@/components/pagination/PaginationBox";
 
 import axios from "@/lib/axiosConfig";
 import ScrapedSite from "@/types/ScrapedSite";
+import JobListing from "@/types/JobListing";
 
 const JobListingPage = () => {
   const [scrapedSites, setScrapedSites] = useState<ScrapedSite[]>([]);
   const [currentScrapedSite, setCurrentScrapedSite] = useState<ScrapedSite>();
+
+  //maps page number to site id
+  const [pageSiteMapping, setPageSiteMapping] = useState<
+    { currentPage: number; siteId: number }[]
+  >([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -35,6 +40,12 @@ const JobListingPage = () => {
       console.log(res.data);
       setScrapedSites(res.data);
       setCurrentScrapedSite(res.data[0]);
+
+      //set pageSiteMapping
+      const pageSiteMapping = res.data.map((site: ScrapedSite) => {
+        return { currentPage: 1, siteId: site.id };
+      });
+      setPageSiteMapping(pageSiteMapping);
     };
     fetchScrapedSites();
   }, []);
@@ -62,9 +73,42 @@ const JobListingPage = () => {
     }
   };
 
-  // if (scrapedSites.length === 0 || !currentScrapedSite) {
-  //   return null;
-  // }
+  const fetchPage = async (page: number) => {
+    try {
+      const res = await axios.get(
+        `/job-listings/${currentScrapedSite?.id}?page=${page}&per_page=30`
+      );
+      const jobListings: JobListing[] = res.data;
+
+      if (currentScrapedSite) {
+        const updatedScrapedSite = {
+          ...currentScrapedSite,
+          job_listings: jobListings,
+        };
+        setCurrentScrapedSite(updatedScrapedSite);
+
+        //update scrapedSites
+        const updatedScrapedSites = scrapedSites.map((site) => {
+          if (site.id === updatedScrapedSite.id) {
+            return updatedScrapedSite;
+          }
+          return site;
+        });
+        setScrapedSites(updatedScrapedSites);
+
+        //update pageSiteMapping
+        const updatedPageSiteMapping = pageSiteMapping.map((mapping) => {
+          if (mapping.siteId === currentScrapedSite.id) {
+            return { ...mapping, currentPage: page };
+          }
+          return mapping;
+        });
+        setPageSiteMapping(updatedPageSiteMapping);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="h-full">
@@ -113,7 +157,7 @@ const JobListingPage = () => {
         <div className="w-full flex items-center justify-between">
           <div>
             <p className="text-sm font-medium">
-              {currentScrapedSite?.job_listings.length} jobs on{" "}
+              {currentScrapedSite?.total_job_count} jobs on{" "}
               <a
                 href={
                   currentScrapedSite?.website_name === "Grad Connection"
@@ -169,7 +213,17 @@ const JobListingPage = () => {
             );
           })}
         </div>
-        <PaginationBox />
+        {currentScrapedSite && currentScrapedSite?.total_pages > 1 && (
+          <PaginationBox
+            totalPages={currentScrapedSite.total_pages || 1}
+            currentPage={
+              pageSiteMapping.find(
+                (mapping) => mapping.siteId === currentScrapedSite.id
+              )?.currentPage || 1
+            }
+            fetchPage={fetchPage}
+          />
+        )}
       </div>
     </div>
   );

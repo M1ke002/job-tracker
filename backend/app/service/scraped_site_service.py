@@ -9,6 +9,7 @@ from datetime import datetime, timezone, timedelta
 
 def get_all_scraped_sites():
     scrapedSites = ScrapedSite.query.all()
+    res = []
 
     #first time db is empty -> need to create scraped sites
     if (len(scrapedSites) == 0):
@@ -46,13 +47,31 @@ def get_all_scraped_sites():
         db.session.commit()
         scrapedSites = ScrapedSite.query.all()
 
-    return [scrapedSite.to_dict() for scrapedSite in scrapedSites]
+    for scrapedSite in scrapedSites:
+        scrapedSite_dict = scrapedSite.to_dict()
+        
+        #query job listings, paginate by 30/page and sort by created_at date, return first page and total pages
+        job_listings = JobListing.query.filter_by(scraped_site_id=scrapedSite.id).order_by(JobListing.created_at.desc()).paginate(per_page=30, page=1, error_out=False)
+        scrapedSite_dict['job_listings'] = [job.to_dict() for job in job_listings.items]
+        scrapedSite_dict['total_pages'] = job_listings.pages
+        scrapedSite_dict['total_job_count'] = JobListing.query.filter_by(scraped_site_id=scrapedSite.id).count()
+        res.append(scrapedSite_dict)
+
+    return res
 
 def get_scraped_site(scraped_site_id):
     scrapedSite = ScrapedSite.query.get(scraped_site_id)
     if scrapedSite is None:
         return None
-    return scrapedSite.to_dict()
+    
+    scrapedSite_dict = scrapedSite.to_dict()
+    #query job listings, paginate by 30/page and sort by created_at date, return first page and total pages
+    job_listings = JobListing.query.filter_by(scraped_site_id=scrapedSite.id).order_by(JobListing.created_at.desc()).paginate(per_page=30, page=1, error_out=False)
+    scrapedSite_dict['job_listings'] = [job.to_dict() for job in job_listings.items]
+    scrapedSite_dict['total_pages'] = job_listings.pages
+    scrapedSite_dict['total_job_count'] = JobListing.query.filter_by(scraped_site_id=scrapedSite.id).count()
+
+    return scrapedSite_dict
 
 def scrape_site(scrape_site_id):
     #find scraped site
@@ -115,5 +134,12 @@ def scrape_site(scrape_site_id):
     if scrapedSite is None:
         return None
     
-    return scrapedSite.to_dict()
+    scrapedSite_dict = scrapedSite.to_dict()
+    #query job listings, paginate by 30/page and sort by created_at date, return first page and total pages
+    job_listings = JobListing.query.filter_by(scraped_site_id=scrapedSite.id).order_by(JobListing.created_at.desc()).paginate(per_page=30, page=1, error_out=False)
+    scrapedSite_dict['job_listings'] = [job.to_dict() for job in job_listings.items]
+    scrapedSite_dict['total_pages'] = job_listings.pages
+    scrapedSite_dict['total_job_count'] = JobListing.query.filter_by(scraped_site_id=scrapedSite.id).count()
+
+    return scrapedSite_dict
     
