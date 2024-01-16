@@ -149,7 +149,12 @@ const ApplicationStageColumn = ({
         <hr className="my-2 border-[#d6eaff]" />
 
         {/* was #ddecfc instead of #f0f7fd??? */}
-        <button className="flex items-center hover:bg-[#f0f7fd] p-1 rounded-md">
+        <button
+          className="flex items-center hover:bg-[#f0f7fd] p-1 rounded-md"
+          onClick={() => {
+            onOpen("addJobToStage");
+          }}
+        >
           <Plus size={20} className="mr-1" />
           Add job
         </button>

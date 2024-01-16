@@ -30,6 +30,7 @@ const Notification = ({ notifications }: NotificationProps) => {
         {notifications.map((notification) => (
           <NotificationItem
             key={notification.id}
+            id={notification.id}
             message={notification.message}
             createdAt={notification.created_at}
             isRead={notification.is_read}

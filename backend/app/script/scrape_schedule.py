@@ -157,8 +157,8 @@ if __name__ == '__main__':
 
         total_new_jobs_count = len(new_jobs)
 
-        file_name = f'{website_name}.json'
-        write_to_file(new_jobs, file_name)
+        # file_name = f'{website_name}.json'
+        # write_to_file(new_jobs, file_name)
 
         # write to a log.txt file
         with open('log.txt', 'a') as f:

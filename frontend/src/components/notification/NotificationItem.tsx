@@ -9,18 +9,39 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, Trash } from "lucide-react";
 import { getTimeDifference } from "@/utils/utils";
+import { useModal } from "@/hooks/zustand/useModal";
+import axios from "@/lib/axiosConfig";
+
+import { useNotifications } from "@/hooks/zustand/useNotifications";
 
 interface NotificationItemProps {
+  id: number;
   message: string;
   createdAt: string;
   isRead: boolean;
 }
 
 const NotificationItem = ({
+  id,
   message,
   createdAt,
   isRead,
 }: NotificationItemProps) => {
+  const { notifications, setNotifications } = useNotifications();
+  const { onOpen } = useModal();
+
+  const handleDeleteNotification = async () => {
+    try {
+      const res = await axios.delete(`/notifications/${id}`);
+      const updatedNotifications = notifications.filter(
+        (notification) => notification.id !== id
+      );
+      setNotifications(updatedNotifications);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="relative grid grid-cols-[25px_1fr] items-start border-b-[1px] last:border-b-0 px-4 py-4 cursor-pointer hover:bg-gray-100">
       {!isRead && (
@@ -44,7 +65,18 @@ const NotificationItem = ({
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent side="right">
-          <DropdownMenuItem className="flex items-center ">
+          <DropdownMenuItem
+            className="flex items-center"
+            onClick={() => {
+              onOpen("deleteNotification", {
+                confirmModalTitle: "Delete notification",
+                confirmModalMessage:
+                  "Are you sure you want to delete this notification?",
+                confirmModalConfirmButtonText: "Delete",
+                confirmModalAction: handleDeleteNotification,
+              });
+            }}
+          >
             <Trash size={18} className="mr-2 text-rose-500" />
             Delete notification
           </DropdownMenuItem>

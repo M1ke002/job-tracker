@@ -23,84 +23,65 @@ import {
 import { Button } from "../ui/button";
 import { useModal } from "@/hooks/zustand/useModal";
 import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
 import axios from "@/lib/axiosConfig";
 
 import { useCurrentSavedJob } from "@/hooks/zustand/useCurrentSavedJob";
-import Contact from "@/types/Contact";
 
 const formSchema = z.object({
-  name: z.string(),
-  position: z.string(),
-  linkedin: z.string(),
-  email: z.string().email(),
-  note: z.string(),
+  jobTitle: z.string(),
+  companyName: z.string(),
+  location: z.string().optional(),
+  salary: z.string().optional(),
+  additionalInfo: z.string().optional(),
+  jobUrl: z.string(),
 });
 
-const EditContactModal = () => {
+const EditSavedJobModal = () => {
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
-  const { type, isOpen, onClose, data } = useModal();
-  const { contact } = data;
+  const { type, isOpen, onClose } = useModal();
 
-  const isModalOpen = isOpen && type === "editContact";
+  const isModalOpen = isOpen && type === "editJob";
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      position: "",
-      linkedin: "",
-      email: "",
-      note: "",
+      jobTitle: "",
+      companyName: "",
+      location: "",
+      salary: "",
+      additionalInfo: "",
+      jobUrl: "",
     },
   });
 
   useEffect(() => {
-    if (contact) {
-      form.setValue("name", contact.person_name);
-      form.setValue("position", contact.person_position);
-      form.setValue("linkedin", contact.person_linkedin);
-      form.setValue("email", contact.person_email);
-      form.setValue("note", contact.note);
+    if (currentSavedJob) {
+      form.setValue("jobTitle", currentSavedJob.job_title);
+      form.setValue("companyName", currentSavedJob.company_name);
+      form.setValue("location", currentSavedJob.location || "");
+      form.setValue("salary", currentSavedJob.salary || "");
+      form.setValue("additionalInfo", currentSavedJob.additional_info || "");
+      form.setValue("jobUrl", currentSavedJob.job_url);
     }
-  }, [contact, form]);
+  }, [currentSavedJob, form]);
 
   const resetForm = () => {
-    if (contact) {
-      form.setValue("name", contact.person_name);
-      form.setValue("position", contact.person_position);
-      form.setValue("linkedin", contact.person_linkedin);
-      form.setValue("email", contact.person_email);
-      form.setValue("note", contact.note);
+    if (currentSavedJob) {
+      form.setValue("jobTitle", currentSavedJob.job_title);
+      form.setValue("companyName", currentSavedJob.company_name);
+      form.setValue("location", currentSavedJob.location || "");
+      form.setValue("salary", currentSavedJob.salary || "");
+      form.setValue("additionalInfo", currentSavedJob.additional_info || "");
+      form.setValue("jobUrl", currentSavedJob.job_url);
     }
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      console.log(values);
-      const res = await axios.put(`/contacts/${contact?.id}`, {
-        personName: values.name,
-        personPosition: values.position,
-        personLinkedin: values.linkedin,
-        personEmail: values.email,
-        note: values.note,
-      });
-      const editedContact: Contact = res.data;
-      if (currentSavedJob) {
-        //find and replace contact
-        const updatedContacts = currentSavedJob.contacts.map((contact) => {
-          if (contact.id === editedContact.id) {
-            return editedContact;
-          }
-          return contact;
-        });
-        const updatedJob = {
-          ...currentSavedJob,
-          contacts: updatedContacts,
-        };
-        setCurrentSavedJob(updatedJob);
-      }
+      const res = await axios.put(`/saved-jobs/${currentSavedJob?.id}`, values);
+      setCurrentSavedJob(res.data);
     } catch (error) {
+      console.log(error);
     } finally {
       onClose();
     }
@@ -124,12 +105,12 @@ const EditContactModal = () => {
             <div className="space-y-2 px-8">
               <FormField
                 control={form.control}
-                name="name"
+                name="jobTitle"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-semibold">Username</FormLabel>
+                    <FormLabel className="font-semibold">Job Title *</FormLabel>
                     <FormControl>
-                      <Input placeholder="Name" {...field} />
+                      <Input placeholder="Job Title" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -137,40 +118,14 @@ const EditContactModal = () => {
               />
               <FormField
                 control={form.control}
-                name="position"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-semibold">Position</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Position" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-semibold">Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="name@email.com" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="linkedin"
+                name="jobUrl"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="font-semibold">
-                      Linkedin URL
+                      URL of original job post *
                     </FormLabel>
                     <FormControl>
-                      <Input placeholder="linkedin url" {...field} />
+                      <Input placeholder="URL" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -178,12 +133,56 @@ const EditContactModal = () => {
               />
               <FormField
                 control={form.control}
-                name="note"
+                name="companyName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-semibold">Notes</FormLabel>
+                    <FormLabel className="font-semibold">
+                      Company Name *
+                    </FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Type your notes here" {...field} />
+                      <Input placeholder="Company Name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="font-semibold">Location</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Location" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="salary"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="font-semibold">Salary</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Salary" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="additionalInfo"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="font-semibold">Job Type</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Full-time, internship, graduate job..."
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -205,7 +204,7 @@ const EditContactModal = () => {
                   variant="primary"
                   className="text-white bg-blue-500 hover:bg-blue-600"
                 >
-                  Save contact
+                  Save changes
                 </Button>
               </div>
             </DialogFooter>
@@ -216,4 +215,4 @@ const EditContactModal = () => {
   );
 };
 
-export default EditContactModal;
+export default EditSavedJobModal;

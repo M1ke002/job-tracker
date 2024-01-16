@@ -45,6 +45,38 @@ def create_saved_job(data):
 
     return job.to_dict()
 
+#currently not updating job_description, job_date, or notes
+def edit_saved_job(saved_job_id, data):
+    job_title = data.get('jobTitle')
+    company_name = data.get('companyName')
+    location = data.get('location')
+    additional_info = data.get('additionalInfo')
+    salary = data.get('salary')
+    job_url = data.get('jobUrl')
+
+    if not job_title or not company_name or not job_url:
+        return None
+    
+    job = SavedJob.query.get(saved_job_id)
+    if job is None:
+        return None
+    
+    #check if a job with same title, company, and url already exists (except for current job)
+    existing_job = SavedJob.query.filter_by(job_title=job_title, company_name=company_name, job_url=job_url).first()
+    if existing_job and existing_job.id != saved_job_id:
+        print("Job already exists")
+        return None
+    
+    job.job_title = job_title
+    job.company_name = company_name
+    job.location = location
+    job.additional_info = additional_info
+    job.salary = salary
+    job.job_url = job_url
+
+    db.session.commit()
+    return job.to_dict()
+
 def update_job_stage(job_id, stage_name):
     job = SavedJob.query.get(job_id)
     if job is None:

@@ -8,26 +8,24 @@ import {
   DialogFooter,
   DialogDescription,
 } from "../ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "../ui/button";
 import { useModal } from "@/hooks/zustand/useModal";
+import axios from "@/lib/axiosConfig";
 
-const CofirmationModal = () => {
+import { useSavedJobs } from "@/hooks/zustand/useSavedJobs";
+
+const AddJobToStageModal = () => {
+  const { savedJobs, setSavedJobs } = useSavedJobs();
   const { type, isOpen, onClose, data } = useModal();
-  const {
-    confirmModalTitle,
-    confirmModalMessage,
-    confirmModalAction,
-    confirmModalConfirmButtonText,
-  } = data;
 
-  const isModalOpen =
-    isOpen &&
-    (type === "deleteJob" ||
-      type === "deleteTask" ||
-      type === "deleteContact" ||
-      type === "deleteNote" ||
-      type === "deleteApplicationStage" ||
-      type === "deleteNotification");
+  const isModalOpen = isOpen && type === "addJobToStage";
 
   const handleCloseModal = () => {
     onClose();
@@ -37,13 +35,22 @@ const CofirmationModal = () => {
     <Dialog open={isModalOpen} onOpenChange={handleCloseModal}>
       <DialogContent className="bg-white text-black p-0 overflow-hidden">
         <DialogHeader className="pt-6 pb-2 px-6">
-          <DialogTitle className="text-2xl text-center font-bold">
-            {confirmModalTitle}
+          <DialogTitle className="text-2xl text-center font-bold capitalize mb-5">
+            Add job to stage
           </DialogTitle>
+          <Select>
+            <SelectTrigger>
+              <SelectValue placeholder={"Select a job"} />
+            </SelectTrigger>
+            <SelectContent>
+              {savedJobs.map((job) => (
+                <SelectItem key={job.id} value={job.id.toString()}>
+                  {job.job_title + " - " + job.company_name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </DialogHeader>
-        <DialogDescription className="px-6 text-zinc-500">
-          {confirmModalMessage}
-        </DialogDescription>
         <DialogFooter className="bg-gray-100 px-6 py-4">
           <div className="flex items-center ml-auto">
             <Button
@@ -55,15 +62,9 @@ const CofirmationModal = () => {
             </Button>
             <Button
               variant="primary"
-              className="text-white bg-red-500 hover:bg-red-600"
-              onClick={() => {
-                if (confirmModalAction) {
-                  confirmModalAction();
-                }
-                handleCloseModal();
-              }}
+              className="text-white bg-blue-500 hover:bg-blue-600"
             >
-              {confirmModalConfirmButtonText}
+              Add
             </Button>
           </div>
         </DialogFooter>
@@ -72,4 +73,4 @@ const CofirmationModal = () => {
   );
 };
 
-export default CofirmationModal;
+export default AddJobToStageModal;

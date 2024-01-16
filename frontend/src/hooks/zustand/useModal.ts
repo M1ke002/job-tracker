@@ -19,7 +19,9 @@ export type ModalType =
   | "deleteNote"
   | "createContact"
   | "editContact"
-  | "deleteContact";
+  | "deleteContact"
+  | "deleteNotification"
+  | "addJobToStage";
 
 interface ModalData {
   confirmModalTitle?: string;

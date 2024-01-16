@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,18 +24,22 @@ import { Button } from "../ui/button";
 import { useModal } from "@/hooks/zustand/useModal";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
+import axios from "@/lib/axiosConfig";
+import { useSavedJobs } from "@/hooks/zustand/useSavedJobs";
 
 const formSchema = z.object({
   jobTitle: z.string(),
   companyName: z.string(),
-  location: z.string(),
+  location: z.string().optional(),
   salary: z.string().optional(),
-  jobDescription: z.string(),
+  jobDescription: z.string().optional(),
   jobUrl: z.string(),
 });
 
 const CreateJobModal = () => {
-  const { type, isOpen, onClose, data } = useModal();
+  const [isSaving, setIsSaving] = useState(false);
+  const { savedJobs, setSavedJobs } = useSavedJobs();
+  const { type, isOpen, onClose } = useModal();
 
   const isModalOpen = isOpen && type === "createJob";
 
@@ -52,8 +56,16 @@ const CreateJobModal = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
-    onClose();
+    try {
+      setIsSaving(true);
+      const res = await axios.post("/saved-jobs", values);
+      setSavedJobs([...savedJobs, res.data]);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsSaving(false);
+      onClose();
+    }
   };
 
   const handleCloseModal = () => {
@@ -76,7 +88,7 @@ const CreateJobModal = () => {
                 name="jobTitle"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-semibold">Job Title</FormLabel>
+                    <FormLabel className="font-semibold">Job Title *</FormLabel>
                     <FormControl>
                       <Input placeholder="Job Title" {...field} />
                     </FormControl>
@@ -90,7 +102,7 @@ const CreateJobModal = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="font-semibold">
-                      URL for original job post
+                      URL of original job post *
                     </FormLabel>
                     <FormControl>
                       <Input placeholder="URL" {...field} />
@@ -105,7 +117,7 @@ const CreateJobModal = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="font-semibold">
-                      Company Name
+                      Company Name *
                     </FormLabel>
                     <FormControl>
                       <Input placeholder="Company Name" {...field} />
@@ -132,9 +144,7 @@ const CreateJobModal = () => {
                 name="salary"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-semibold">
-                      Salary (optional)
-                    </FormLabel>
+                    <FormLabel className="font-semibold">Salary</FormLabel>
                     <FormControl>
                       <Input placeholder="Salary" {...field} />
                     </FormControl>
@@ -165,12 +175,15 @@ const CreateJobModal = () => {
                   variant="ghost"
                   className="mr-2 hover:text-zinc-500"
                   onClick={handleCloseModal}
+                  type="button"
                 >
                   Cancel
                 </Button>
                 <Button
                   variant="primary"
                   className="text-white bg-blue-500 hover:bg-blue-600"
+                  type="submit"
+                  disabled={isSaving}
                 >
                   Save contact
                 </Button>

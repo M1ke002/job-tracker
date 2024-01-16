@@ -82,7 +82,10 @@ const JobDetailsPage = () => {
               {currentSavedJob?.job_title}
             </h2>
             <div className="flex items-center space-x-1">
-              <button className="border-none focus:outline-none text-blue-700 hover:text-blue-700/80">
+              <button
+                className="border-none focus:outline-none text-blue-700 hover:text-blue-700/80"
+                onClick={() => onOpen("editJob")}
+              >
                 <FileEdit size={20} />
               </button>
               <button
