@@ -27,12 +27,12 @@ def handle_edit_scraped_site(scraped_site_id):
 
 # scrape a site
 @scraped_site_routes.route('/<int:scraped_site_id>/scrape', methods=['GET'])
-def handle_scrape_site(scraped_site_id):
+async def handle_scrape_site(scraped_site_id):
     # call fn getAllJobListings to scrape newest job listings
     # compare scraped job listings with existing job listings in db
     # find new job listings
     # update db with scraped job listings
-    updated_scraped_site = scrape_site(scraped_site_id)
+    updated_scraped_site = await scrape_site(scraped_site_id)
     if updated_scraped_site is None:
         return jsonify({'error': 'Something wrong while scraping site'}), 400
     return jsonify(updated_scraped_site), 200

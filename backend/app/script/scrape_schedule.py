@@ -8,9 +8,11 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 print(sys.path)
 
 from datetime import datetime, timezone, timedelta
+import aiohttp
+import asyncio
 import json
 import pymysql
-from app.utils.scraper.scrape import getAllJobListings
+from app.utils.scraper.scrape import scrapeAllJobListings
 from app.utils.scraper.helper import findNewJobListings
 from app.utils.scraper.constants import SEEK, GRAD_CONNECTION
 from app.utils.scraper.url_builder import ausgradUrlBuilder, seekUrlBuilder
@@ -82,8 +84,7 @@ def createNotification(connection, cursor, scraped_site_id, website_name, new_jo
     )
     connection.commit()
 
-
-if __name__ == '__main__':
+async def main():
     connection = connectDB()
     cursor = connection.cursor()
 
@@ -100,7 +101,7 @@ if __name__ == '__main__':
         exit()
 
     for scraped_site in scraped_sites:
-        print(scraped_site)
+        # print(scraped_site)
         # if (scraped_site[1] == SEEK): continue
 
         site_id = scraped_site[0]
@@ -127,9 +128,8 @@ if __name__ == '__main__':
             search_url = seekUrlBuilder(search_keyword, work_type, classification, location)
         
         print(website_name, search_url)
-        #currently test with only 1 scraped site
-        # scraped_jobs = getAllJobListings(website_name, 'https://au.gradconnection.com/internships/sydney/?title=Software+Engineer&ordering=-recent_job_created', site_id)
-        scraped_jobs = getAllJobListings(website_name, search_url, max_pages_to_scrape)
+        # scraped_jobs = scrapeAllJobListings(website_name, 'https://au.gradconnection.com/internships/sydney/?title=Software+Engineer&ordering=-recent_job_created', site_id)
+        scraped_jobs = await scrapeAllJobListings(website_name, search_url, max_pages_to_scrape)
 
         # get all job listings from db
         old_jobs = fetchAllJobListings(connection, cursor, site_id)
@@ -156,6 +156,7 @@ if __name__ == '__main__':
         new_jobs = findNewJobListings(old_jobs_dict, scraped_jobs)
 
         total_new_jobs_count = len(new_jobs)
+        print(f'Found {total_new_jobs_count} new jobs for site: {website_name}')
 
         # file_name = f'{website_name}.json'
         # write_to_file(new_jobs, file_name)
@@ -184,3 +185,7 @@ if __name__ == '__main__':
 
     cursor.close()
     connection.close()
+
+if __name__ == '__main__':
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    asyncio.run(main())

@@ -1,6 +1,6 @@
 from app.model import db, ScrapedSite, ScrapedSiteSettings, JobListing
 
-from app.utils.scraper.scrape import getAllJobListings
+from app.utils.scraper.scrape import scrapeAllJobListings
 from app.utils.scraper.url_builder import ausgradUrlBuilder, seekUrlBuilder
 from app.utils.scraper.helper import findNewJobListings, jobObjectToDict
 from app.utils.scraper.constants import GRAD_CONNECTION, SEEK
@@ -73,7 +73,7 @@ def get_scraped_site(scraped_site_id):
 
     return scrapedSite_dict
 
-def scrape_site(scrape_site_id):
+async def scrape_site(scrape_site_id):
     #find scraped site
     scrapedSite = ScrapedSite.query.get(scrape_site_id)
     if scrapedSite is None:
@@ -90,7 +90,8 @@ def scrape_site(scrape_site_id):
         search_url = seekUrlBuilder(scrapedSiteSettings.search_keyword, scrapedSiteSettings.work_type, scrapedSiteSettings.classification, scrapedSiteSettings.location)
    
     # scrape site
-    scraped_jobs = getAllJobListings(scrapedSite.website_name, search_url, scrapedSiteSettings.max_pages_to_scrape)
+    print(search_url)
+    scraped_jobs = await scrapeAllJobListings(scrapedSite.website_name, search_url, scrapedSiteSettings.max_pages_to_scrape)
 
     # update scraped site last scrape date to db
     scrapedSite.last_scrape_date = datetime.now()

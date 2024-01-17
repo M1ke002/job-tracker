@@ -1,10 +1,13 @@
 import requests
+from time import time
+import aiohttp
+import asyncio
 from bs4 import BeautifulSoup
 from .url_builder import ausgradUrlBuilder, seekUrlBuilder
 from .constants import BASE_URL_GRAD_CONNECTION, BASE_URL_SEEK, GRAD_CONNECTION, SEEK
 from .helper import addPageNumberToUrl
 
-def getAusGradJobPostings(soup: BeautifulSoup):
+async def scrapeAusGradJobListings(soup: BeautifulSoup):
     jobs_dict = {}
     jobListContainer = soup.find("div", class_="jobs-container")
 
@@ -40,16 +43,14 @@ def getAusGradJobPostings(soup: BeautifulSoup):
         jobType = job.find("p", class_="ellipsis-text-paragraph")
         if (jobType != None): jobType = jobType.text.strip()
 
-
-        print('title: '+jobTitle)
-        print('company: '+companyName)
-        print('job type: '+jobType)
-        print('location: '+location)
-        print('desc: '+jobDescription)
-        print('link: '+jobLink)
-        print('deadline: '+ jobDeadline)
-        # print(jobSalary)
-        print("")
+        # print('title: '+jobTitle)
+        # print('company: '+companyName)
+        # print('job type: '+jobType)
+        # print('location: '+location)
+        # print('desc: '+jobDescription)
+        # print('link: '+jobLink)
+        # print('deadline: '+ jobDeadline)
+        # print("")
         
         if (jobTitle and companyName and jobLink):
 
@@ -71,7 +72,7 @@ def getAusGradJobPostings(soup: BeautifulSoup):
     jobs = list(jobs_dict.values())
     return jobs
 
-def getSeekJobPostings(soup: BeautifulSoup):
+async def scrapeSeekJobListings(soup: BeautifulSoup):
     jobs_dict = {}
     job_listings = soup.find_all('div', class_='_1wkzzau0 a1msqi6m')
     print(f'Job Listings: {len(job_listings)}')
@@ -131,36 +132,63 @@ def getSeekJobPostings(soup: BeautifulSoup):
     jobs = list(jobs_dict.values())
     return jobs
 
-def getAllJobListings(
+async def fetchAndParseData(session, url, website_name):
+    async with session.get(url) as response:
+        html = await response.text()
+        soup = BeautifulSoup(html, "html.parser")
+        data = []
+
+        if (website_name == GRAD_CONNECTION):
+            data = await scrapeAusGradJobListings(soup)
+        elif (website_name == SEEK):
+            data = await scrapeSeekJobListings(soup)
+
+        return data
+
+async def scrapeAllJobListings(
         website_name: str,
         search_url: str,
         max_pages: int = 1
     ):
+    start_time = time()
+
     jobs = []
+    urls = [addPageNumberToUrl(search_url, page+1, website_name) for page in range(max_pages)]
 
-    for page in range(max_pages):
-        search_url_with_page = addPageNumberToUrl(search_url, page+1, website_name)
-        print(search_url_with_page)
-        response = requests.get(search_url_with_page)
+    async with aiohttp.ClientSession() as session:
+        tasks = [asyncio.create_task(fetchAndParseData(session, url, website_name)) for url in urls]
+        result = await asyncio.gather(*tasks)
+        for page in result:
+            print(len(page))
+            jobs.extend(page)
 
-        if response.status_code != 200:
-            print(f'Error: {response.status_code}')
-            return jobs
+    # for page in range(max_pages):
+    #     search_url_with_page = addPageNumberToUrl(search_url, page+1, website_name)
+    #     print(search_url_with_page)
+    #     response = requests.get(search_url_with_page)
+
+    #     if response.status_code != 200:
+    #         print(f'Error: {response.status_code}')
+    #         return jobs
         
-        soup = BeautifulSoup(response.content, 'html.parser')
-        if (website_name == GRAD_CONNECTION):
-            jobs.extend(getAusGradJobPostings(soup))
-        elif (website_name == SEEK):
-            jobs.extend(getSeekJobPostings(soup))
+    #     soup = BeautifulSoup(response.content, 'html.parser')
+    #     if (website_name == GRAD_CONNECTION):
+    #         jobs.extend(scrapeAusGradJobListings(soup))
+    #     elif (website_name == SEEK):
+    #         jobs.extend(scrapeSeekJobListings(soup))
 
-        print(f'=======================================End of page {page+1}=======================================')
-    print(f'jobs length: {len(jobs)}')
+    #     print(f'=======================================End of page {page+1}=======================================')
+    # print(f'jobs length: {len(jobs)}')
+            
+    time_difference = time() - start_time
+    print(f'Scraping time: %.2f seconds.' % time_difference)
     return jobs
 
 if __name__ == '__main__':
     search_url = ausgradUrlBuilder(keyword='Software Engineer', jobType='internships', discipline='engineering-software', location='sydney')
     # search_url = seekUrlBuilder(keyword='Software Engineer', classification='information-communication-technology', location='All Sydney NSW')
     print(search_url)
-    # getAllJobListings('ausgrad', 'https://au.gradconnection.com/internships/sydney/?title=Software+Engineer&ordering=-recent_job_created', 3)
-    jobs = getAllJobListings(GRAD_CONNECTION, search_url, 1)
+    # scrapeAllJobListings('ausgrad', 'https://au.gradconnection.com/internships/sydney/?title=Software+Engineer&ordering=-recent_job_created', 3)
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    jobs = asyncio.run(scrapeAllJobListings(GRAD_CONNECTION, search_url, 1))
 

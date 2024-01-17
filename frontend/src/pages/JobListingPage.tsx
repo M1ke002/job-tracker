@@ -58,6 +58,7 @@ const JobListingPage = () => {
       );
       setIsLoading(false);
       const updatedScrapedSite = res.data;
+      console.log(updatedScrapedSite);
 
       //update scrapedSites and currentScrapedSite
       const updatedScrapedSites = scrapedSites.map((site) => {
@@ -68,6 +69,15 @@ const JobListingPage = () => {
       });
       setScrapedSites(updatedScrapedSites);
       setCurrentScrapedSite(updatedScrapedSite);
+
+      //set currentPage to 1 for the updated site
+      const updatedPageSiteMapping = pageSiteMapping.map((mapping) => {
+        if (mapping.siteId === updatedScrapedSite.id) {
+          return { ...mapping, currentPage: 1 };
+        }
+        return mapping;
+      });
+      setPageSiteMapping(updatedPageSiteMapping);
     } catch (error) {
       console.log(error);
     }
