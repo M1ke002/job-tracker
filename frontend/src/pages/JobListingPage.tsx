@@ -19,8 +19,12 @@ import { Separator } from "@/components/ui/separator";
 import PaginationBox from "@/components/pagination/PaginationBox";
 
 import axios from "@/lib/axiosConfig";
+import { useModal } from "@/hooks/zustand/useModal";
+
 import ScrapedSite from "@/types/ScrapedSite";
 import JobListing from "@/types/JobListing";
+
+import { SEEK, GRAD_CONNECTION } from "@/utils/constants";
 
 const JobListingPage = () => {
   const [scrapedSites, setScrapedSites] = useState<ScrapedSite[]>([]);
@@ -31,6 +35,7 @@ const JobListingPage = () => {
     { currentPage: number; siteId: number }[]
   >([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { onOpen } = useModal();
 
   useEffect(() => {
     const fetchScrapedSites = async () => {
@@ -155,7 +160,16 @@ const JobListingPage = () => {
             >
               Compare
             </Button> */}
-            <Button className="flex items-center" variant="primary">
+            <Button
+              className="flex items-center"
+              variant="primary"
+              onClick={() =>
+                onOpen("editJobAlertSetting", {
+                  alertSetting: currentScrapedSite?.scraped_site_settings,
+                  websiteName: currentScrapedSite?.website_name,
+                })
+              }
+            >
               <BellRing size={18} className="mr-2" />
               <span className="pb-[1px]">Alert</span>
             </Button>
@@ -170,7 +184,7 @@ const JobListingPage = () => {
               {currentScrapedSite?.total_job_count} jobs on{" "}
               <a
                 href={
-                  currentScrapedSite?.website_name === "Grad Connection"
+                  currentScrapedSite?.website_name === GRAD_CONNECTION
                     ? "https://au.gradconnection.com/"
                     : "https://www.seek.com.au/"
                 }

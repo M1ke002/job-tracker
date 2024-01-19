@@ -1,4 +1,5 @@
 import Contact from "@/types/Contact";
+import ScrapedSiteSettings from "@/types/ScrapedSiteSettings";
 import { create } from "zustand";
 
 export type ModalType =
@@ -21,7 +22,8 @@ export type ModalType =
   | "editContact"
   | "deleteContact"
   | "deleteNotification"
-  | "addJobToStage";
+  | "addJobToStage"
+  | "editJobAlertSetting";
 
 interface ModalData {
   confirmModalTitle?: string;
@@ -31,6 +33,8 @@ interface ModalData {
 
   jobId?: string;
   contact?: Contact;
+  alertSetting?: ScrapedSiteSettings;
+  websiteName?: string;
 }
 
 interface ModalStore {

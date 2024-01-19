@@ -1,47 +1,20 @@
-Scheduled job ran at 11/01/2024 09:10:55. Found 1 new jobs for site: Grad Connection
-Scheduled job ran at 11/01/2024 09:10:57. Found 42 new jobs for site: Seek
-Scheduled job ran at 11/01/2024 11:22:56. Found 40 new jobs for site: Grad Connection
-Scheduled job ran at 11/01/2024 11:43:45. Found 40 new jobs for site: Grad Connection
-Scheduled job ran at 11/01/2024 11:43:47. Found 44 new jobs for site: Seek
-Scheduled job ran at 11/01/2024 11:45:59. Found 0 new jobs for site: Grad Connection
-Scheduled job ran at 11/01/2024 11:46:01. Found 0 new jobs for site: Seek
-Scheduled job ran at 11/01/2024 12:16:29. Found 0 new jobs for site: Grad Connection
-Scheduled job ran at 11/01/2024 12:16:31. Found 8 new jobs for site: Seek
-Scheduled job ran at 11/01/2024 15:22:03. Found 0 new jobs for site: Grad Connection
-Scheduled job ran at 11/01/2024 15:22:05. Found 8 new jobs for site: Seek
-Scheduled job ran at 11/01/2024 19:00:10. Found 0 new jobs for site: Grad Connection
-Scheduled job ran at 11/01/2024 19:00:12. Found 8 new jobs for site: Seek
-Scheduled job ran at 12/01/2024 09:08:36. Found 3 new jobs for site: Grad Connection
-Scheduled job ran at 12/01/2024 09:08:39. Found 39 new jobs for site: Seek
-Scheduled job ran at 12/01/2024 11:00:11. Found 0 new jobs for site: Grad Connection
-Scheduled job ran at 12/01/2024 11:00:13. Found 16 new jobs for site: Seek
-Scheduled job ran at 12/01/2024 19:27:53. Found 0 new jobs for site: Grad Connection
-Scheduled job ran at 12/01/2024 19:27:55. Found 38 new jobs for site: Seek
-Scheduled job ran at 13/01/2024 09:01:51. Found 5 new jobs for site: Grad Connection
-Scheduled job ran at 13/01/2024 09:01:53. Found 12 new jobs for site: Seek
-Scheduled job ran at 13/01/2024 11:00:10. Found 0 new jobs for site: Grad Connection
-Scheduled job ran at 13/01/2024 11:00:12. Found 1 new jobs for site: Seek
-Scheduled job ran at 13/01/2024 19:00:12. Found 0 new jobs for site: Grad Connection
-Scheduled job ran at 13/01/2024 19:00:13. Found 1 new jobs for site: Seek
-Scheduled job ran at 14/01/2024 08:59:28. Found 2 new jobs for site: Grad Connection
-Scheduled job ran at 14/01/2024 08:59:30. Found 2 new jobs for site: Seek
-Scheduled job ran at 14/01/2024 11:00:10. Found 0 new jobs for site: Grad Connection
-Scheduled job ran at 14/01/2024 11:00:13. Found 3 new jobs for site: Seek
-Scheduled job ran at 14/01/2024 19:00:11. Found 31 new jobs for site: Grad Connection
-Scheduled job ran at 14/01/2024 19:00:14. Found 6 new jobs for site: Seek
-Scheduled job ran at 15/01/2024 08:39:32. Found 1 new jobs for site: Grad Connection
-Scheduled job ran at 15/01/2024 08:39:34. Found 41 new jobs for site: Seek
-Scheduled job ran at 15/01/2024 11:00:10. Found 0 new jobs for site: Grad Connection
-Scheduled job ran at 15/01/2024 11:00:12. Found 33 new jobs for site: Seek
-Scheduled job ran at 15/01/2024 19:47:48. Found 3 new jobs for site: Grad Connection
-Scheduled job ran at 15/01/2024 19:47:50. Found 44 new jobs for site: Seek
-Scheduled job ran at 16/01/2024 09:03:22. Found 0 new jobs for site: Grad Connection
-Scheduled job ran at 16/01/2024 09:03:24. Found 44 new jobs for site: Seek
-Scheduled job ran at 16/01/2024 11:00:11. Found 0 new jobs for site: Grad Connection
-Scheduled job ran at 16/01/2024 11:00:13. Found 21 new jobs for site: Seek
-Scheduled job ran at 16/01/2024 19:19:37. Found 4 new jobs for site: Grad Connection
-Scheduled job ran at 16/01/2024 19:19:39. Found 42 new jobs for site: Seek
 Scheduled job ran at 17/01/2024 11:26:25. Found 0 new jobs for site: Grad Connection
 Scheduled job ran at 17/01/2024 11:26:27. Found 43 new jobs for site: Seek
 Scheduled job ran at 17/01/2024 16:37:46. Found 0 new jobs for site: Grad Connection
 Scheduled job ran at 17/01/2024 16:37:47. Found 2 new jobs for site: Seek
+Scheduled job ran at 17/01/2024 17:14:51. Found 0 new jobs for site: Grad Connection
+Scheduled job ran at 17/01/2024 17:14:52. Found 0 new jobs for site: Seek
+Scheduled job ran at 17/01/2024 19:10:26. Found 0 new jobs for site: Grad Connection
+Scheduled job ran at 17/01/2024 19:10:27. Found 1 new jobs for site: Seek
+Scheduled job ran at 17/01/2024 20:12:29. Found 0 new jobs for site: Grad Connection
+Scheduled job ran at 17/01/2024 20:12:31. Found 0 new jobs for site: Seek
+Scheduled job ran at 17/01/2024 20:13:37. Found 0 new jobs for site: Grad Connection
+Scheduled job ran at 17/01/2024 20:13:38. Found 0 new jobs for site: Seek
+Scheduled job ran at 18/01/2024 09:02:54. Found 30 new jobs for site: Grad Connection
+Scheduled job ran at 18/01/2024 09:02:55. Found 40 new jobs for site: Seek
+Scheduled job ran at 18/01/2024 11:00:10. Found 0 new jobs for site: Grad Connection
+Scheduled job ran at 18/01/2024 11:00:11. Found 18 new jobs for site: Seek
+Scheduled job ran at 18/01/2024 19:18:38. Found 1 new jobs for site: Grad Connection
+Scheduled job ran at 18/01/2024 19:18:39. Found 41 new jobs for site: Seek
+Scheduled job ran at 19/01/2024 11:35:42. Found 7 new jobs for site: Grad Connection
+Scheduled job ran at 19/01/2024 11:35:43. Found 41 new jobs for site: Seek

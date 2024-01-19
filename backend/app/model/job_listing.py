@@ -18,7 +18,8 @@ class JobListing(db.Model):
     job_url: so.Mapped[str] = so.mapped_column(sa.String(1000))
     job_date: so.Mapped[Optional[str]] = so.mapped_column(sa.String(100))
     is_new: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=True)
-    created_at: so.Mapped[datetime] = so.mapped_column(default=datetime.utcnow)
+    created_at: so.Mapped[datetime] = so.mapped_column(
+        default=lambda: datetime.now())
 
     #relationship
     scraped_site: so.Mapped["ScrapedSite"] = so.relationship(

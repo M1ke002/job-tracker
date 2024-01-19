@@ -4,6 +4,7 @@ import CofirmationModal from "../modals/CofirmationModal";
 import CreateJobModal from "../modals/CreateJobModal";
 import EditContactModal from "../modals/EditContactModal";
 import EditSavedJobModal from "../modals/EditSavedJobModal";
+import JobAlertSettingModal from "../modals/JobAlertSettingModal";
 
 //this component will be used to render all the modals
 const ModalProvider = () => {
@@ -15,6 +16,7 @@ const ModalProvider = () => {
       <CreateJobModal />
       <EditSavedJobModal />
       <AddJobToStageModal />
+      <JobAlertSettingModal />
     </>
   );
 };

@@ -22,7 +22,7 @@ def get_all_scraped_sites():
                 scrape_frequency=1,
                 is_notification_enabled=True,
                 is_notify_email=True,
-                is_notify_notification=True,
+                is_notify_on_website=True,
                 max_pages_to_scrape=2,
                 search_keyword="software engineer",
             )
@@ -33,7 +33,7 @@ def get_all_scraped_sites():
                 scrapedSiteSettings.classification = "engineering-software"
             elif (site == SEEK):
                 scrapedSiteSettings.location = "All Australia"
-                scrapedSiteSettings.work_type = ""
+                scrapedSiteSettings.job_type = ""
                 scrapedSiteSettings.classification = "information-communication-technology"
 
             #create scraped site object
@@ -87,7 +87,7 @@ async def scrape_site(scrape_site_id):
     if (scrapedSite.website_name == GRAD_CONNECTION):
         search_url = ausgradUrlBuilder(scrapedSiteSettings.search_keyword, scrapedSiteSettings.job_type, scrapedSiteSettings.classification, scrapedSiteSettings.location)
     elif (scrapedSite.website_name == SEEK):
-        search_url = seekUrlBuilder(scrapedSiteSettings.search_keyword, scrapedSiteSettings.work_type, scrapedSiteSettings.classification, scrapedSiteSettings.location)
+        search_url = seekUrlBuilder(scrapedSiteSettings.search_keyword, scrapedSiteSettings.job_type, scrapedSiteSettings.classification, scrapedSiteSettings.location)
    
     # scrape site
     print(search_url)
@@ -102,6 +102,8 @@ async def scrape_site(scrape_site_id):
 
     # find new job listings
     new_jobs = findNewJobListings(existing_job_dict, scraped_jobs)
+
+    print('Found new jobs: ', len(new_jobs))
 
     # update is_new to False for existing jobs, but delete it if its created_at is more than 3 days ago
     for existing_job_listing in existing_job_listings:

@@ -1,4 +1,5 @@
 import ApplicationStageType from "@/types/ApplicationStage";
+import { GRAD_CONNECTION_URL, SEEK_URL } from "./constants";
 
 export const getApplicationStatusCount = (
   applicationStages: ApplicationStageType[]
@@ -98,4 +99,71 @@ export const getTimeDifference = (startTime: string, endTime: Date) => {
   } else {
     return "just now";
   }
+};
+
+export const ausgradUrlBuilder = (
+  keyword: string,
+  jobType: string,
+  discipline: string,
+  location: string
+): string => {
+  let url: string = GRAD_CONNECTION_URL + "/";
+
+  if (jobType === "") {
+    jobType = "jobs";
+  }
+  url += jobType.replace(" ", "-") + "/";
+
+  if (discipline === "") {
+    discipline = "engineering-software";
+  }
+  url += discipline.replace(" ", "-") + "/";
+
+  if (location !== "") {
+    url += location.toLowerCase() + "/";
+  }
+
+  if (keyword !== "") {
+    url += "?title=" + keyword.replace(" ", "+");
+  }
+
+  if (keyword !== "") {
+    url += "&";
+  } else {
+    url += "?";
+  }
+
+  url += "ordering=-recent_job_created";
+  return url;
+};
+
+export const seekUrlBuilder = (
+  keyword: string,
+  jobType: string,
+  classification: string,
+  location: string
+): string => {
+  let url: string = SEEK_URL + "/";
+
+  if (keyword !== "") {
+    url += keyword.replace(" ", "-") + "-jobs";
+  } else {
+    url += "jobs";
+  }
+
+  if (classification === "") {
+    classification = "information-communication-technology";
+  }
+  url += "-in-" + classification.toLowerCase().replace(" ", "-");
+
+  if (location !== "") {
+    url += "/in-" + location.replace(" ", "-");
+  }
+
+  if (jobType !== "") {
+    url += "/" + jobType.toLowerCase().replace(" ", "-");
+  }
+
+  url += "?sortmode=ListedDate";
+  return url;
 };

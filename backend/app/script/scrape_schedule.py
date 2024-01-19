@@ -114,18 +114,17 @@ async def main():
             continue
         
         #get settings
-        search_keyword = scraped_site_settings[6]
-        location = scraped_site_settings[7]
-        job_type = scraped_site_settings[8]
-        work_type = scraped_site_settings[9]
-        classification = scraped_site_settings[10]
-        max_pages_to_scrape = scraped_site_settings[11]
+        search_keyword = scraped_site_settings[4]
+        location = scraped_site_settings[5]
+        job_type = scraped_site_settings[6]
+        classification = scraped_site_settings[7]
+        max_pages_to_scrape = scraped_site_settings[8]
 
         search_url = ''
         if (website_name == GRAD_CONNECTION):
             search_url = ausgradUrlBuilder(search_keyword, job_type, classification, location)
         elif (website_name == SEEK):
-            search_url = seekUrlBuilder(search_keyword, work_type, classification, location)
+            search_url = seekUrlBuilder(search_keyword, job_type, classification, location)
         
         print(website_name, search_url)
         # scraped_jobs = scrapeAllJobListings(website_name, 'https://au.gradconnection.com/internships/sydney/?title=Software+Engineer&ordering=-recent_job_created', site_id)

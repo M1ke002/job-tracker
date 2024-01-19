@@ -1,4 +1,5 @@
 import requests
+import re
 from time import time
 import aiohttp
 import asyncio
@@ -133,6 +134,12 @@ async def scrapeSeekJobListings(soup: BeautifulSoup):
     return jobs
 
 async def fetchAndParseData(session, url, website_name):
+    page = re.search(r'&page=(\d+)', url)
+    if not page:
+        print(f"Fetching page 1...")
+    else: 
+        page = page.group(1)
+        print(f"Fetching page {page}...")
     async with session.get(url) as response:
         html = await response.text()
         soup = BeautifulSoup(html, "html.parser")
@@ -156,7 +163,7 @@ async def scrapeAllJobListings(
     urls = [addPageNumberToUrl(search_url, page+1, website_name) for page in range(max_pages)]
 
     async with aiohttp.ClientSession() as session:
-        tasks = [asyncio.create_task(fetchAndParseData(session, url, website_name)) for url in urls]
+        tasks = [fetchAndParseData(session, url, website_name) for url in urls]
         result = await asyncio.gather(*tasks)
         for page in result:
             print(len(page))
