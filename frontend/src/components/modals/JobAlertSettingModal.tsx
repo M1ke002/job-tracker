@@ -30,6 +30,9 @@ import {
 import { Switch } from "@/components/ui/switch";
 
 import { useModal } from "@/hooks/zustand/useModal";
+import { useScrapedSites } from "@/hooks/zustand/useScrapedSites";
+import { useCurrentScrapedSite } from "@/hooks/zustand/useCurrentScrapedSite";
+
 import { Input } from "../ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "../ui/button";
@@ -42,6 +45,7 @@ import {
   SEEK,
 } from "@/utils/constants";
 import { ausgradUrlBuilder, seekUrlBuilder } from "@/utils/utils";
+import axios from "@/lib/axiosConfig";
 
 const formSchema = z.object({
   keywords: z.string().optional(),
@@ -55,8 +59,11 @@ const formSchema = z.object({
 });
 
 const JobAlertSettingModal = () => {
+  const { scrapedSites, setScrapedSites } = useScrapedSites();
+  const { currentScrapedSite, setCurrentScrapedSite } = useCurrentScrapedSite();
+
   const [formedUrl, setFormedUrl] = useState<string>("");
-  const { type, isOpen, onClose, data } = useModal();
+  const { type, isOpen, onOpen, onClose, data } = useModal();
   const isModalOpen = isOpen && type === "editJobAlertSetting";
   const { alertSetting, websiteName } = data;
 
@@ -68,10 +75,7 @@ const JobAlertSettingModal = () => {
       form.setValue("classification", alertSetting.classification);
       form.setValue("jobType", alertSetting.job_type);
       form.setValue("maxPages", alertSetting.max_pages_to_scrape.toString());
-      form.setValue(
-        "frequency",
-        alertSetting.scrape_frequency === 1 ? "Daily" : "Weekly"
-      );
+      form.setValue("frequency", alertSetting.scrape_frequency.toString());
       form.setValue("notifyEmail", alertSetting.is_notify_email);
       form.setValue("notifyWebsite", alertSetting.is_notify_on_website);
 
@@ -95,6 +99,19 @@ const JobAlertSettingModal = () => {
     }
   }, [alertSetting]);
 
+  const resetSettings = () => {
+    if (alertSetting) {
+      form.setValue("keywords", alertSetting.search_keyword);
+      form.setValue("location", alertSetting.location);
+      form.setValue("classification", alertSetting.classification);
+      form.setValue("jobType", alertSetting.job_type);
+      form.setValue("maxPages", alertSetting.max_pages_to_scrape.toString());
+      form.setValue("frequency", alertSetting.scrape_frequency.toString());
+      form.setValue("notifyEmail", alertSetting.is_notify_email);
+      form.setValue("notifyWebsite", alertSetting.is_notify_on_website);
+    }
+  };
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -103,17 +120,63 @@ const JobAlertSettingModal = () => {
       classification: "",
       jobType: "",
       maxPages: "1",
-      frequency: "Daily",
+      frequency: "1",
       notifyEmail: false,
       notifyWebsite: false,
     },
   });
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log(data);
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    try {
+      console.log(data);
+      const res = await axios.put(
+        `/scraped-site-settings/${alertSetting?.id}`,
+        {
+          isScrapeEnabled: true, //default is true for now
+          scrapeFrequency: data.frequency,
+          maxPagesToScrape: data.maxPages,
+          isNotifyEmail: data.notifyEmail,
+          isNotifyOnWebsite: data.notifyWebsite,
+          searchKeyword: data.keywords,
+          location: data.location,
+          jobType: data.jobType,
+          classification: data.classification,
+        }
+      );
+      const updatedSettings = res.data;
+
+      //update scrapedSites and currentScrapedSite
+      if (currentScrapedSite) {
+        const updatedScrapedSite = {
+          ...currentScrapedSite,
+          scraped_site_settings: updatedSettings,
+        };
+        setCurrentScrapedSite(updatedScrapedSite);
+
+        //update scrapedSites
+        const updatedScrapedSites = scrapedSites.map((site) => {
+          if (site.id === updatedScrapedSite.id) {
+            return updatedScrapedSite;
+          }
+          return site;
+        });
+        setScrapedSites(updatedScrapedSites);
+      }
+
+      //update modal with new data
+      onOpen("editJobAlertSetting", {
+        alertSetting: updatedSettings,
+        websiteName,
+      });
+
+      //update scrapedSites
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleCloseModal = () => {
+    resetSettings();
     onClose();
   };
 
@@ -342,7 +405,7 @@ const JobAlertSettingModal = () => {
                         <FormItem className="flex items-center space-x-3 space-y-0">
                           <FormControl>
                             <RadioGroupItem
-                              value="Daily"
+                              value="1"
                               id="Daily"
                               className="text-blue-500"
                             />
@@ -353,7 +416,7 @@ const JobAlertSettingModal = () => {
                         <FormItem className="flex items-center space-x-3 space-y-0">
                           <FormControl>
                             <RadioGroupItem
-                              value="Weekly"
+                              value="7"
                               id="Weekly"
                               className="text-blue-500"
                             />
@@ -364,7 +427,7 @@ const JobAlertSettingModal = () => {
                         <FormItem className="flex items-center space-x-3 space-y-0">
                           <FormControl>
                             <RadioGroupItem
-                              value="Never"
+                              value="0"
                               id="Never"
                               className="text-blue-500"
                             />

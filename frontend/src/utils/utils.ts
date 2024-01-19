@@ -109,7 +109,7 @@ export const ausgradUrlBuilder = (
 ): string => {
   let url: string = GRAD_CONNECTION_URL + "/";
 
-  if (jobType === "") {
+  if (jobType === "all") {
     jobType = "jobs";
   }
   url += jobType.replace(" ", "-") + "/";
@@ -160,7 +160,7 @@ export const seekUrlBuilder = (
     url += "/in-" + location.replace(" ", "-");
   }
 
-  if (jobType !== "") {
+  if (jobType !== "all") {
     url += "/" + jobType.toLowerCase().replace(" ", "-");
   }
 

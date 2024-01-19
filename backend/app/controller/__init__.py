@@ -2,6 +2,7 @@ from .test_routes import test_routes
 from .job_listing_routes import job_listing_routes
 from .saved_job_routes import saved_job_routes
 from .scraped_site_routes import scraped_site_routes
+from .scraped_site_settings_routes import scraped_site_settings_routes
 from .auth_routes import auth_routes
 from .user_routes import user_routes
 from .application_stage_routes import application_stage_routes

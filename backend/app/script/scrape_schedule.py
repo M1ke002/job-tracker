@@ -62,7 +62,7 @@ def updateJobListing(connection, cursor, jobs):
 
 #delete all old job listings where created_at is older than 3 days
 def deleteOldJobListings(connection, cursor):
-    cutoff_date = datetime.utcnow() - timedelta(days=3)
+    cutoff_date = datetime.now() - timedelta(days=3)
     sql = "DELETE FROM job_listings WHERE created_at < %s"
     cursor.execute(sql, (cutoff_date,))
     connection.commit()

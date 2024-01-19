@@ -29,11 +29,11 @@ def get_all_scraped_sites():
 
             if (site == GRAD_CONNECTION):
                 scrapedSiteSettings.location = "australia"
-                scrapedSiteSettings.job_type = ""
+                scrapedSiteSettings.job_type = "all"
                 scrapedSiteSettings.classification = "engineering-software"
             elif (site == SEEK):
                 scrapedSiteSettings.location = "All Australia"
-                scrapedSiteSettings.job_type = ""
+                scrapedSiteSettings.job_type = "all"
                 scrapedSiteSettings.classification = "information-communication-technology"
 
             #create scraped site object
@@ -107,7 +107,7 @@ async def scrape_site(scrape_site_id):
 
     # update is_new to False for existing jobs, but delete it if its created_at is more than 3 days ago
     for existing_job_listing in existing_job_listings:
-        cut_off_date = datetime.utcnow() - timedelta(days=3)
+        cut_off_date = datetime.now() - timedelta(days=3)
         if (existing_job_listing.created_at < cut_off_date):
             db.session.delete(existing_job_listing)
         else:

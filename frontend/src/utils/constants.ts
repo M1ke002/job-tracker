@@ -15,11 +15,11 @@ export const GRAD_CONNECTION_ALERT_SETTING = {
     { name: "Computer Science", value: "computer-science" },
   ],
   jobType: [
-    { name: "All job types", value: "All job types" },
-    { name: "Full-time", value: "full-time" },
-    { name: "Part-time", value: "part-time" },
-    { name: "Graduate jobs", value: "graduate jobs" },
+    { name: "All job types", value: "all" },
+    { name: "Graduate jobs", value: "graduate-jobs" },
     { name: "Internships", value: "internships" },
+    { name: "Entry Level Jobs", value: "entry-level-jobs" },
+    { name: "Part Time Student Jobs", value: "part-time-student-jobs" },
   ],
 };
 
@@ -36,6 +36,7 @@ export const SEEK_ALERT_SETTING = {
     },
   ],
   jobType: [
+    { name: "All job types", value: "all" },
     { name: "Full-time", value: "full time" },
     { name: "Part-time", value: "part time" },
   ],

@@ -20,6 +20,8 @@ import PaginationBox from "@/components/pagination/PaginationBox";
 
 import axios from "@/lib/axiosConfig";
 import { useModal } from "@/hooks/zustand/useModal";
+import { useScrapedSites } from "@/hooks/zustand/useScrapedSites";
+import { useCurrentScrapedSite } from "@/hooks/zustand/useCurrentScrapedSite";
 
 import ScrapedSite from "@/types/ScrapedSite";
 import JobListing from "@/types/JobListing";
@@ -27,8 +29,8 @@ import JobListing from "@/types/JobListing";
 import { SEEK, GRAD_CONNECTION } from "@/utils/constants";
 
 const JobListingPage = () => {
-  const [scrapedSites, setScrapedSites] = useState<ScrapedSite[]>([]);
-  const [currentScrapedSite, setCurrentScrapedSite] = useState<ScrapedSite>();
+  const { scrapedSites, setScrapedSites } = useScrapedSites();
+  const { currentScrapedSite, setCurrentScrapedSite } = useCurrentScrapedSite();
 
   //maps page number to site id
   const [pageSiteMapping, setPageSiteMapping] = useState<
@@ -136,7 +138,9 @@ const JobListingPage = () => {
                 const selectedScrapedSite = scrapedSites.find(
                   (site) => site.website_name === value
                 );
-                setCurrentScrapedSite(selectedScrapedSite);
+                if (selectedScrapedSite) {
+                  setCurrentScrapedSite(selectedScrapedSite);
+                }
               }}
             >
               <SelectTrigger className="w-[150px] border-blue-200">
