@@ -14,13 +14,45 @@ import {
 import { cn } from "@/lib/utils";
 
 import { useModal } from "@/hooks/zustand/useModal";
+import { useCurrentSavedJob } from "@/hooks/zustand/useCurrentSavedJob";
+
+import Task from "@/types/Task";
+
+import { format } from "date-fns";
+import axios from "@/lib/axiosConfig";
 
 interface TaskItemProps {
-  type: "completed" | "incomplete" | "overdue";
+  task: Task;
 }
 
-const TaskItem = ({ type }: TaskItemProps) => {
+const TaskItem = ({ task }: TaskItemProps) => {
   const { onOpen } = useModal();
+  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
+
+  let type = task.is_completed ? "completed" : "incomplete";
+  if (task.due_date) {
+    const today = new Date();
+    const dueDate = new Date(task.due_date);
+    if (dueDate < today) {
+      type = "overdue";
+    }
+  }
+
+  const deleteTask = async () => {
+    try {
+      const res = await axios.delete(`/tasks/${task.id}`);
+      //update current saved job
+      if (currentSavedJob) {
+        const updatedTasks = currentSavedJob.tasks.filter(
+          (currTask) => currTask.id !== task.id
+        );
+        setCurrentSavedJob({ ...currentSavedJob, tasks: updatedTasks });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div
       className={cn(
@@ -28,12 +60,15 @@ const TaskItem = ({ type }: TaskItemProps) => {
       )}
     >
       <div className="flex items-center space-x-1">
-        <h3 className=" text-gray-700 font-semibold">Do mock interview</h3>
+        <h3 className=" text-gray-700 font-semibold">{task.task_name}</h3>
         <span className="text-gray-500">-</span>
         <span
           className={cn("text-gray-500", type === "overdue" && "text-rose-500")}
         >
-          Due: 29/12/2023
+          Due:{" "}
+          {task.due_date
+            ? format(new Date(task.due_date), "MMM dd, yyyy")
+            : "N/A"}
         </span>
       </div>
       <div className="flex items-center space-x-5">
@@ -48,7 +83,10 @@ const TaskItem = ({ type }: TaskItemProps) => {
           {type === "completed" ? "Completed" : "Mark as done"}
         </Button>
         <div className="flex items-center space-x-2">
-          <Switch className="data-[state=checked]:bg-blue-500" />
+          <Switch
+            className="data-[state=checked]:bg-blue-500"
+            checked={task.is_reminder_enabled}
+          />
           <span className="text-sm">Remind me</span>
         </div>
       </div>
@@ -60,7 +98,10 @@ const TaskItem = ({ type }: TaskItemProps) => {
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent side="right">
-            <DropdownMenuItem className="flex items-center cursor-pointer">
+            <DropdownMenuItem
+              className="flex items-center cursor-pointer"
+              onClick={() => onOpen("editTask", { task })}
+            >
               <FileEdit size={18} className="mr-2 text-blue-500" />
               Edit
             </DropdownMenuItem>
@@ -73,9 +114,7 @@ const TaskItem = ({ type }: TaskItemProps) => {
                   confirmModalMessage:
                     "Are you sure you want to delete this task?",
                   confirmModalConfirmButtonText: "Delete",
-                  confirmModalAction: () => {
-                    console.log("delete task");
-                  },
+                  confirmModalAction: deleteTask,
                 });
               }}
             >

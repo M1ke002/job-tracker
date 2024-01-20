@@ -54,8 +54,8 @@ const formSchema = z.object({
   jobType: z.string().optional(),
   maxPages: z.string(),
   frequency: z.string(),
-  notifyEmail: z.boolean().default(false),
-  notifyWebsite: z.boolean().default(false),
+  isNotifyEmail: z.boolean().default(false),
+  isNotifyWebsite: z.boolean().default(false),
 });
 
 const JobAlertSettingModal = () => {
@@ -76,8 +76,8 @@ const JobAlertSettingModal = () => {
       form.setValue("jobType", alertSetting.job_type);
       form.setValue("maxPages", alertSetting.max_pages_to_scrape.toString());
       form.setValue("frequency", alertSetting.scrape_frequency.toString());
-      form.setValue("notifyEmail", alertSetting.is_notify_email);
-      form.setValue("notifyWebsite", alertSetting.is_notify_on_website);
+      form.setValue("isNotifyEmail", alertSetting.is_notify_email);
+      form.setValue("isNotifyWebsite", alertSetting.is_notify_on_website);
 
       let formedUrl = "";
       if (websiteName === GRAD_CONNECTION) {
@@ -107,8 +107,8 @@ const JobAlertSettingModal = () => {
       form.setValue("jobType", alertSetting.job_type);
       form.setValue("maxPages", alertSetting.max_pages_to_scrape.toString());
       form.setValue("frequency", alertSetting.scrape_frequency.toString());
-      form.setValue("notifyEmail", alertSetting.is_notify_email);
-      form.setValue("notifyWebsite", alertSetting.is_notify_on_website);
+      form.setValue("isNotifyEmail", alertSetting.is_notify_email);
+      form.setValue("isNotifyWebsite", alertSetting.is_notify_on_website);
     }
   };
 
@@ -121,8 +121,8 @@ const JobAlertSettingModal = () => {
       jobType: "",
       maxPages: "1",
       frequency: "1",
-      notifyEmail: false,
-      notifyWebsite: false,
+      isNotifyEmail: false,
+      isNotifyWebsite: false,
     },
   });
 
@@ -135,8 +135,8 @@ const JobAlertSettingModal = () => {
           isScrapeEnabled: true, //default is true for now
           scrapeFrequency: data.frequency,
           maxPagesToScrape: data.maxPages,
-          isNotifyEmail: data.notifyEmail,
-          isNotifyOnWebsite: data.notifyWebsite,
+          isNotifyEmail: data.isNotifyEmail,
+          isNotifyOnWebsite: data.isNotifyWebsite,
           searchKeyword: data.keywords,
           location: data.location,
           jobType: data.jobType,
@@ -448,7 +448,7 @@ const JobAlertSettingModal = () => {
                 <div className="flex items-center space-x-6 pt-1">
                   <FormField
                     control={form.control}
-                    name="notifyEmail"
+                    name="isNotifyEmail"
                     render={({ field }) => (
                       <FormItem className="flex items-center justify-center">
                         <FormControl>
@@ -471,7 +471,7 @@ const JobAlertSettingModal = () => {
 
                   <FormField
                     control={form.control}
-                    name="notifyWebsite"
+                    name="isNotifyWebsite"
                     render={({ field }) => (
                       <FormItem className="flex items-center justify-center">
                         <FormControl>

@@ -189,7 +189,7 @@ const JobDetailsPage = () => {
         {/* left col */}
         <div className="col-span-3 space-y-4 mb-4 lg:mb-0">
           <JobDescription />
-          <Task />
+          <Task jobId={currentSavedJob?.id.toString() || ""} />
         </div>
 
         {/* right col */}

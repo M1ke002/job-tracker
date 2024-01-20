@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify, request
 from app.service.task_service import get_all_tasks
 from app.service.task_service import delete_task
 from app.service.task_service import create_task
+from app.service.task_service import edit_task
 
 task_routes = Blueprint('task_routes', __name__)
 
@@ -26,7 +27,13 @@ def handle_create_task():
 # edit a task
 @task_routes.route('/<int:task_id>', methods=['PUT'])
 def handle_edit_task(task_id):
-    return 'edit a task'
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'No data provided'}), 400
+    task = edit_task(task_id, data)
+    if task is None:
+        return jsonify({'error': 'Cannot edit task'}), 400
+    return jsonify(task), 200
 
 # delete a task
 @task_routes.route('/<int:task_id>', methods=['DELETE'])

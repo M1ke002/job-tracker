@@ -2,8 +2,10 @@ import AddContactModal from "../modals/AddContactModal";
 import AddJobToStageModal from "../modals/AddJobToStageModal";
 import CofirmationModal from "../modals/CofirmationModal";
 import CreateJobModal from "../modals/CreateJobModal";
+import CreateTaskModal from "../modals/CreateTaskModal";
 import EditContactModal from "../modals/EditContactModal";
 import EditSavedJobModal from "../modals/EditSavedJobModal";
+import EditTaskModal from "../modals/EditTaskModal";
 import JobAlertSettingModal from "../modals/JobAlertSettingModal";
 
 //this component will be used to render all the modals
@@ -17,6 +19,8 @@ const ModalProvider = () => {
       <EditSavedJobModal />
       <AddJobToStageModal />
       <JobAlertSettingModal />
+      <CreateTaskModal />
+      <EditTaskModal />
     </>
   );
 };

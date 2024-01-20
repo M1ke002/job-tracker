@@ -1,5 +1,6 @@
 import Contact from "@/types/Contact";
 import ScrapedSiteSettings from "@/types/ScrapedSiteSettings";
+import Task from "@/types/Task";
 import { create } from "zustand";
 
 export type ModalType =
@@ -35,6 +36,8 @@ interface ModalData {
   contact?: Contact;
   alertSetting?: ScrapedSiteSettings;
   websiteName?: string;
+
+  task?: Task;
 }
 
 interface ModalStore {

@@ -7,7 +7,7 @@ interface Task {
   is_reminder_enabled: boolean;
   reminder_date: string;
   is_notify_email: boolean;
-  is_notify_notification: boolean;
+  is_notify_on_website: boolean;
 }
 
 export default Task;

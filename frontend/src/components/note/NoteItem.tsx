@@ -5,17 +5,27 @@ import "react-quill/dist/quill.snow.css";
 import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 
+const isTextEmpty = (text: string) => {};
+
 const Note = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [value, setValue] = useState(
     "<h3><strong>Interview questions</strong></h3><ul><li>What is the difference between a div and a span?</li><li>How to reverse a linked list?</li><li>What is Javascript?</li></ul><p><strong>Other important notes:</strong></p><p>Prepare your blurb or “tell me about yourself” response (it sucks, I know )</p><p>Practice answering behavioral interview questions. Research the company and your interviewers. Set up your virtual interview space and test your tech Send thank you emails within 24 hours</p>"
   );
+  const { onOpen } = useModal();
 
   useEffect(() => {
     console.log(value);
   }, [value]);
 
-  const { onOpen } = useModal();
+  const handleSaveNote = async () => {
+    try {
+      //get delta from quill and save to db
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       {isEditMode && (
@@ -48,21 +58,15 @@ const Note = () => {
       )}
       {!isEditMode && (
         <div className="relative p-3 rounded-md shadow-sm bg-[#f1f6fa] border border-[#c3dafe]">
-          <div dangerouslySetInnerHTML={{ __html: value }}>
-            {/* <strong>Interview questions</strong> <br />
-            <ul className="list-disc list-inside">
-              <li>What is the difference between a div and a span?</li>
-              <li>How to reverse a linked list?</li>
-              <li>What is Javascript?</li>
-            </ul>
-            <strong>Other important notes</strong> <br />
-            <p>Prepare your blurb or “tell me about yourself” response</p>
-            <p>
-              Practice answering behavioral interview questions. Research the
-              company and your interviewers. Set up your virtual interview space
-              and test your tech Send thank you emails within 24 hours
-            </p> */}
-          </div>
+          {value !== "" && (
+            <div dangerouslySetInnerHTML={{ __html: value }}></div>
+          )}
+
+          {value === "" && (
+            <div className="flex items-center justify-center h-28 text-gray-400">
+              No notes yet
+            </div>
+          )}
 
           <div className="absolute top-3 right-3 flex items-center space-x-1">
             <button

@@ -8,7 +8,16 @@ import TaskItem from "@/components/task/TaskItem";
 import { Button } from "@/components/ui/button";
 import { ChevronDownCircle } from "lucide-react";
 
-const Task = () => {
+import { useModal } from "@/hooks/zustand/useModal";
+import { useCurrentSavedJob } from "@/hooks/zustand/useCurrentSavedJob";
+
+interface TaskProps {
+  jobId: string;
+}
+
+const Task = ({ jobId }: TaskProps) => {
+  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
+  const { onOpen } = useModal();
   const [rotateChevron, setRotateChevron] = useState(false);
   const handleRotate = () => setRotateChevron(!rotateChevron);
   const rotate = rotateChevron ? "rotate(-180deg)" : "rotate(0)";
@@ -28,9 +37,16 @@ const Task = () => {
         </div>
         <hr className="my-2 border-[#d6eaff]" />
         <CollapsibleContent>
-          <TaskItem type="completed" />
-          <TaskItem type="overdue" />
-          <Button variant="primary" className="mt-2 w-full">
+          {currentSavedJob?.tasks.map((task) => (
+            <TaskItem key={task.id} task={task} />
+          ))}
+          {/* <TaskItem type="completed" />
+          <TaskItem type="overdue" /> */}
+          <Button
+            variant="primary"
+            className="mt-2 w-full"
+            onClick={() => onOpen("createTask", { jobId })}
+          >
             Add a task
           </Button>
         </CollapsibleContent>
