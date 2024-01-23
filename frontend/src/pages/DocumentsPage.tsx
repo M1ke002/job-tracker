@@ -16,6 +16,8 @@ import {
 import { AlignJustify, Plus, Search, Settings } from "lucide-react";
 import DocumentType from "@/types/DocumentType";
 import axios from "@/lib/axiosConfig";
+import { useModal } from "@/hooks/zustand/useModal";
+import { useSavedJobs } from "@/hooks/zustand/useSavedJobs";
 
 // const fakeData: Document[] = [
 //   {
@@ -43,6 +45,22 @@ import axios from "@/lib/axiosConfig";
 
 const DocumentsPage = () => {
   const [documentTypes, setDocumentTypes] = useState<DocumentType[]>([]);
+  const { onOpen } = useModal();
+  const { setSavedJobs, isFetched } = useSavedJobs();
+
+  useEffect(() => {
+    const fetchSavedJobs = async () => {
+      try {
+        // if (isFetched) return;
+        const res = await axios.get("/saved-jobs");
+        console.log(res.data);
+        setSavedJobs(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchSavedJobs();
+  }, []);
 
   useEffect(() => {
     const fetchDocumentTypes = async () => {
@@ -73,12 +91,15 @@ const DocumentsPage = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent side="bottom">
-              <DropdownMenuItem className="flex items-center ">
+              <DropdownMenuItem
+                className="flex items-center"
+                onClick={() => onOpen("uploadDocument")}
+              >
                 <Plus size={18} className="mr-2 text-blue-500" />
                 Add type
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="flex items-center ">
+              <DropdownMenuItem className="flex items-center">
                 <Settings size={18} className="mr-2 text-blue-700" />
                 Edit type
               </DropdownMenuItem>

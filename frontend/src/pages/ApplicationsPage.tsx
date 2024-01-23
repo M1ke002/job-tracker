@@ -26,6 +26,7 @@ import ApplicationStageType from "@/types/ApplicationStage";
 import axios from "@/lib/axiosConfig";
 import { getApplicationStatusCount } from "@/utils/utils";
 import SavedJob from "@/types/SavedJob";
+import { useSavedJobs } from "@/hooks/zustand/useSavedJobs";
 
 const sortStagesByPosition = (
   applicationStageColumns: ApplicationStageType[]
@@ -42,6 +43,21 @@ const ApplicationsPage = () => {
     ApplicationStageType[]
   >([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { savedJobs, setSavedJobs, isFetched } = useSavedJobs();
+
+  useEffect(() => {
+    const fetchSavedJobs = async () => {
+      try {
+        // if (isFetched) return;
+        const res = await axios.get("/saved-jobs");
+        console.log(res.data);
+        setSavedJobs(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchSavedJobs();
+  }, []);
 
   //the data of the item being dragged
   const [activeColumnData, setActiveColumnData] =
@@ -169,6 +185,19 @@ const ApplicationsPage = () => {
         jobPositions,
       });
       console.log(res.data);
+
+      //update the saved jobs
+      const updatedSavedJobs = savedJobs.map((job) => {
+        if (job.id === jobId) {
+          return {
+            ...job,
+            stage: null,
+            stage_id: null,
+          };
+        }
+        return job;
+      });
+      setSavedJobs(updatedSavedJobs);
     } catch (error) {
       console.log(error);
     }
@@ -512,6 +541,7 @@ const ApplicationsPage = () => {
                   stage_name={stage.stage_name}
                   jobs={stage.jobs}
                   removeJobFromStages={removeJobFromStages}
+                  setApplicationStageColumns={setApplicationStageColumns}
                 />
               ))}
               <DragOverlay dropAnimation={dropAnimation}>

@@ -78,8 +78,6 @@ const EditTaskModal = () => {
     },
   });
 
-  console.log(form.getValues("dueDate"));
-
   useEffect(() => {
     if (task) {
       console.log(task);

@@ -47,18 +47,16 @@ def handle_edit_saved_job(saved_job_id):
         return jsonify({'error': 'Cannot edit job'}), 400
     return jsonify(job), 200
 
-#
-
 #edit a saved job's stage
 @saved_job_routes.route('/<int:saved_job_id>/stage', methods=['PUT'])
 def handle_edit_saved_job_stage(saved_job_id):
     data = request.get_json()
     if not data:
         return jsonify({'error': 'No data provided'}), 400
-    stage_name = data.get('stageName')
-    if not stage_name:
-        return jsonify({'error': 'No stage name provided'}), 400
-    job = update_job_stage(saved_job_id, stage_name)
+    stage_id = data.get('stageId')
+    if not stage_id:
+        return jsonify({'error': 'No stage id provided'}), 400
+    job = update_job_stage(saved_job_id, stage_id)
     if job is None:
         return jsonify({'error': 'Cannot update job stage'}), 400
     return jsonify(job), 200

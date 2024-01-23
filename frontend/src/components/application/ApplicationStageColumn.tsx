@@ -28,6 +28,9 @@ interface ApplicationStageColumnProps {
   stage_name: string;
   jobs: SavedJob[];
   removeJobFromStages: (jobId: number) => void;
+  setApplicationStageColumns?: React.Dispatch<
+    React.SetStateAction<ApplicationStage[]>
+  >;
 }
 
 const ApplicationStageColumn = ({
@@ -35,6 +38,7 @@ const ApplicationStageColumn = ({
   stage_name,
   jobs,
   removeJobFromStages,
+  setApplicationStageColumns,
 }: ApplicationStageColumnProps) => {
   const {
     attributes,
@@ -134,7 +138,7 @@ const ApplicationStageColumn = ({
               </div>
             )}
             {jobs.map((job, index) => {
-              console.log(job);
+              // console.log(job);
               return (
                 <JobCard
                   key={job.id}
@@ -148,11 +152,13 @@ const ApplicationStageColumn = ({
 
         <hr className="my-2 border-[#d6eaff]" />
 
-        {/* was #ddecfc instead of #f0f7fd??? */}
         <button
           className="flex items-center hover:bg-[#f0f7fd] p-1 rounded-md"
           onClick={() => {
-            onOpen("addJobToStage");
+            onOpen("addJobToStage", {
+              stageId: id.toString(),
+              setApplicationStageColumns: setApplicationStageColumns,
+            });
           }}
         >
           <Plus size={20} className="mr-1" />

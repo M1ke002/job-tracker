@@ -79,6 +79,27 @@ def edit_task(task_id, data):
     db.session.commit()
     return task.to_dict()
 
+def set_task_complete(task_id, data):
+    is_completed = data.get('isCompleted')
+    if is_completed is None:
+        return None
+    task = Task.query.get(task_id)
+    if task is None:
+        return None
+    task.is_completed = is_completed
+    db.session.commit()
+    return task.to_dict()
+
+def toggle_task_reminder(task_id, data):
+    is_reminder_enabled = data.get('isReminderEnabled')
+    if is_reminder_enabled is None:
+        return None
+    task = Task.query.get(task_id)
+    if task is None:
+        return None
+    task.is_reminder_enabled = is_reminder_enabled
+    db.session.commit()
+    return task.to_dict()
 
 def delete_task(task_id):
     task = Task.query.get(task_id)

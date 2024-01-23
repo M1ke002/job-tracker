@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Dialog,
@@ -20,14 +20,62 @@ import { useModal } from "@/hooks/zustand/useModal";
 import axios from "@/lib/axiosConfig";
 
 import { useSavedJobs } from "@/hooks/zustand/useSavedJobs";
+import SavedJob from "@/types/SavedJob";
 
 const AddJobToStageModal = () => {
   const { savedJobs, setSavedJobs } = useSavedJobs();
+  const [filteredJobs, setFilteredJobs] = useState<SavedJob[]>([]);
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null); //
   const { type, isOpen, onClose, data } = useModal();
-
+  const { stageId, setApplicationStageColumns } = data;
   const isModalOpen = isOpen && type === "addJobToStage";
 
+  useEffect(() => {
+    if (savedJobs.length > 0) {
+      const filtered = savedJobs.filter((job) => !job.stage);
+      setFilteredJobs(filtered);
+    } else {
+      setFilteredJobs([]);
+    }
+  }, [savedJobs]);
+
+  const addJobToStage = async (jobId: string, stageId: string) => {
+    try {
+      const res = await axios.put(`/saved-jobs/${jobId}/stage`, {
+        stageId,
+      });
+      const updatedJob = res.data;
+
+      //update application stage columns
+      if (setApplicationStageColumns && stageId) {
+        setApplicationStageColumns((prev) => {
+          const updatedColumns = prev.map((stage) => {
+            if (stage.id.toString() === stageId) {
+              stage.jobs.push(updatedJob);
+            }
+            return stage;
+          });
+          return updatedColumns;
+        });
+      }
+
+      //update saved jobs
+      const updatedSavedJobs = savedJobs.map((job) => {
+        if (job.id === updatedJob.id) {
+          return updatedJob;
+        }
+        return job;
+      });
+      setSavedJobs(updatedSavedJobs);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      handleCloseModal();
+    }
+  };
+
   const handleCloseModal = () => {
+    setSelectedJobId(null);
     onClose();
   };
 
@@ -38,12 +86,17 @@ const AddJobToStageModal = () => {
           <DialogTitle className="text-2xl text-center font-bold capitalize mb-5">
             Add job to stage
           </DialogTitle>
-          <Select>
+          <Select onValueChange={(value) => setSelectedJobId(value)}>
             <SelectTrigger>
               <SelectValue placeholder={"Select a job"} />
             </SelectTrigger>
             <SelectContent>
-              {savedJobs.map((job) => (
+              {filteredJobs.length === 0 && (
+                <SelectItem value="None" disabled>
+                  No jobs available
+                </SelectItem>
+              )}
+              {filteredJobs.map((job) => (
                 <SelectItem key={job.id} value={job.id.toString()}>
                   {job.job_title + " - " + job.company_name}
                 </SelectItem>
@@ -63,6 +116,11 @@ const AddJobToStageModal = () => {
             <Button
               variant="primary"
               className="text-white bg-blue-500 hover:bg-blue-600"
+              onClick={() => {
+                if (selectedJobId && stageId) {
+                  addJobToStage(selectedJobId, stageId);
+                }
+              }}
             >
               Add
             </Button>

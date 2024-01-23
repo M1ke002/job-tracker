@@ -27,9 +27,12 @@ import { cn } from "@/lib/utils";
 
 import { useCurrentSavedJob } from "@/hooks/zustand/useCurrentSavedJob";
 import { useSavedJobs } from "@/hooks/zustand/useSavedJobs";
+import ApplicationStage from "@/types/ApplicationStage";
 
 const JobDetailsPage = () => {
-  // const [job, setJob] = useState<SavedJob | undefined>();
+  const [applicationStages, setApplicationStages] = useState<
+    ApplicationStage[]
+  >([]);
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
   const { savedJobs, setSavedJobs } = useSavedJobs();
   const [isLoading, setLoading] = useState(false);
@@ -42,18 +45,36 @@ const JobDetailsPage = () => {
         const res = await axios.get(`/saved-jobs/${id}`);
         setCurrentSavedJob(res.data);
         console.log(res.data);
+        console.log(res.data.stage?.id);
       } catch (error) {
         console.log(error);
       }
     };
     fetchJobDetails();
+
+    return () => {
+      setCurrentSavedJob(null);
+    };
   }, []);
 
-  const changeJobStage = async (stage_name: string) => {
+  useEffect(() => {
+    try {
+      const fetchApplicationStages = async () => {
+        const res = await axios.get(`/application-stages`);
+        setApplicationStages(res.data);
+        console.log(res.data);
+      };
+      fetchApplicationStages();
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
+  const changeJobStage = async (stageId: string) => {
     try {
       setLoading(true);
       const res = await axios.put(`/saved-jobs/${id}/stage`, {
-        stageName: stage_name,
+        stageId: stageId,
       });
       setLoading(false);
       setCurrentSavedJob(res.data);
@@ -105,7 +126,10 @@ const JobDetailsPage = () => {
             </div>
           </div>
 
-          <Select onValueChange={(value) => changeJobStage(value)}>
+          <Select
+            onValueChange={(value) => changeJobStage(value)}
+            defaultValue={currentSavedJob?.stage?.id.toString()}
+          >
             <SelectTrigger
               className={cn(
                 "w-[150px] border-blue-200",
@@ -128,11 +152,11 @@ const JobDetailsPage = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="None">Not set</SelectItem>
-              <SelectItem value="Applied">Applied</SelectItem>
-              <SelectItem value="O.A.">O.A.</SelectItem>
-              <SelectItem value="Interviewing">Interviewing</SelectItem>
-              <SelectItem value="Offer">Offer</SelectItem>
-              <SelectItem value="Rejected">Rejected</SelectItem>
+              {applicationStages.map((stage) => (
+                <SelectItem key={stage.id} value={stage.id.toString()}>
+                  {stage.stage_name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>

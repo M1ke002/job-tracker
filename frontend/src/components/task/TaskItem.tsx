@@ -53,6 +53,46 @@ const TaskItem = ({ task }: TaskItemProps) => {
     }
   };
 
+  const toggleTaskCompleted = async (isCompleted: boolean) => {
+    try {
+      const res = await axios.put(`/tasks/${task.id}/complete`, {
+        isCompleted,
+      });
+      //update current saved job
+      if (currentSavedJob) {
+        const updatedTasks = currentSavedJob.tasks.map((currTask) => {
+          if (currTask.id === task.id) {
+            return { ...currTask, is_completed: isCompleted };
+          }
+          return currTask;
+        });
+        setCurrentSavedJob({ ...currentSavedJob, tasks: updatedTasks });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const toggleReminder = async (isReminderEnabled: boolean) => {
+    try {
+      const res = await axios.put(`/tasks/${task.id}/reminder`, {
+        isReminderEnabled,
+      });
+      //update current saved job
+      if (currentSavedJob) {
+        const updatedTasks = currentSavedJob.tasks.map((currTask) => {
+          if (currTask.id === task.id) {
+            return { ...currTask, is_reminder_enabled: isReminderEnabled };
+          }
+          return currTask;
+        });
+        setCurrentSavedJob({ ...currentSavedJob, tasks: updatedTasks });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div
       className={cn(
@@ -79,6 +119,7 @@ const TaskItem = ({ task }: TaskItemProps) => {
             type === "completed" &&
               "border-blue-500 bg-blue-500 hover:bg-blue-500/80 text-white"
           )}
+          onClick={() => toggleTaskCompleted(!task.is_completed)}
         >
           {type === "completed" ? "Completed" : "Mark as done"}
         </Button>
@@ -86,6 +127,7 @@ const TaskItem = ({ task }: TaskItemProps) => {
           <Switch
             className="data-[state=checked]:bg-blue-500"
             checked={task.is_reminder_enabled}
+            onCheckedChange={(checked) => toggleReminder(checked)}
           />
           <span className="text-sm">Remind me</span>
         </div>

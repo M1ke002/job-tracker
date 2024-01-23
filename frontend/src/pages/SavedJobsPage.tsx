@@ -15,12 +15,13 @@ import axios from "@/lib/axiosConfig";
 import { useModal } from "@/hooks/zustand/useModal";
 
 const SavedJobsPage = () => {
-  const { savedJobs, setSavedJobs } = useSavedJobs();
+  const { savedJobs, setSavedJobs, isFetched } = useSavedJobs();
   const { onOpen } = useModal();
 
   useEffect(() => {
     const fetchSavedJobs = async () => {
       try {
+        // if (isFetched) return;
         const res = await axios.get("/saved-jobs");
         console.log(res.data);
         setSavedJobs(res.data);

@@ -16,7 +16,7 @@ interface SavedJob {
   position: number;
   tasks: Task[];
   contacts: Contact[];
-  stage_id: number;
+  stage_id: number | null;
   stage: ApplicationStage | null;
 }
 

@@ -1,3 +1,4 @@
+import ApplicationStage from "@/types/ApplicationStage";
 import Contact from "@/types/Contact";
 import ScrapedSiteSettings from "@/types/ScrapedSiteSettings";
 import Task from "@/types/Task";
@@ -24,20 +25,23 @@ export type ModalType =
   | "deleteContact"
   | "deleteNotification"
   | "addJobToStage"
-  | "editJobAlertSetting";
+  | "editJobAlertSetting"
+  | "uploadDocument";
 
 interface ModalData {
   confirmModalTitle?: string;
   confirmModalMessage?: string;
   confirmModalConfirmButtonText?: string;
   confirmModalAction?: () => void;
-
   jobId?: string;
   contact?: Contact;
   alertSetting?: ScrapedSiteSettings;
   websiteName?: string;
-
   task?: Task;
+  stageId?: string;
+  setApplicationStageColumns?: React.Dispatch<
+    React.SetStateAction<ApplicationStage[]>
+  >;
 }
 
 interface ModalStore {

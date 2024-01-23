@@ -3,10 +3,12 @@ import SavedJob from "@/types/SavedJob";
 
 interface SavedJobsStore {
   savedJobs: SavedJob[];
+  isFetched: boolean;
   setSavedJobs: (savedJobs: SavedJob[]) => void;
 }
 
 export const useSavedJobs = create<SavedJobsStore>((set) => ({
   savedJobs: [],
-  setSavedJobs: (savedJobs) => set({ savedJobs }),
+  isFetched: false,
+  setSavedJobs: (savedJobs) => set({ savedJobs, isFetched: true }),
 }));

@@ -77,17 +77,17 @@ def edit_saved_job(saved_job_id, data):
     db.session.commit()
     return job.to_dict()
 
-def update_job_stage(job_id, stage_name):
+def update_job_stage(job_id, stage_id):
     job = SavedJob.query.get(job_id)
     if job is None:
         return None
-    if (stage_name == "None"):
+    if (stage_id == "None"):
         job.stage_id = None
         db.session.commit()
         return job.to_dict()
-    #search for application stage with stage_name
-    print(stage_name)
-    stage = ApplicationStage.query.filter_by(stage_name=stage_name).first()
+    #search for application stage with stage_id
+    print(stage_id)
+    stage = ApplicationStage.query.filter_by(id=stage_id).first()
     if stage is None:
         return None
     job.stage_id = stage.id
