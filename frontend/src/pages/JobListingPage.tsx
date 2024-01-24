@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
+import { debounce } from "lodash";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -11,8 +12,9 @@ import {
   Settings,
   SlidersHorizontal,
   RefreshCcw,
-  Bell,
   BellRing,
+  Search,
+  Loader2,
 } from "lucide-react";
 import JobItem from "@/components/jobs/JobItem";
 import { Separator } from "@/components/ui/separator";
@@ -21,7 +23,7 @@ import PaginationBox from "@/components/pagination/PaginationBox";
 import axios from "@/lib/axiosConfig";
 import { useModal } from "@/hooks/zustand/useModal";
 import { useScrapedSites } from "@/hooks/zustand/useScrapedSites";
-import { useCurrentScrapedSite } from "@/hooks/zustand/useCurrentScrapedSite";
+import { useCurrentScrapedSiteId } from "@/hooks/zustand/useCurrentScrapedSiteId";
 
 import ScrapedSite from "@/types/ScrapedSite";
 import JobListing from "@/types/JobListing";
@@ -30,14 +32,31 @@ import { SEEK, GRAD_CONNECTION } from "@/utils/constants";
 
 const JobListingPage = () => {
   const { scrapedSites, setScrapedSites } = useScrapedSites();
-  const { currentScrapedSite, setCurrentScrapedSite } = useCurrentScrapedSite();
+  const { currentScrapedSiteId, setCurrentScrapedSiteId } =
+    useCurrentScrapedSiteId();
+  const [currentScrapedSite, setCurrentScrapedSite] =
+    useState<ScrapedSite | null>(null);
+
+  //for searching jobs
+  const [searchText, setSearchText] = useState<string>("");
+  const [isSearching, setIsSearching] = useState<boolean>(false);
 
   //maps page number to site id
   const [pageSiteMapping, setPageSiteMapping] = useState<
     { currentPage: number; siteId: number }[]
   >([]);
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { onOpen } = useModal();
+
+  useEffect(() => {
+    const currentScrapedSite = scrapedSites.find((site) => {
+      return site.id.toString() === currentScrapedSiteId;
+    });
+    if (currentScrapedSite) {
+      setCurrentScrapedSite(currentScrapedSite);
+    }
+  }, [currentScrapedSiteId, scrapedSites]);
 
   useEffect(() => {
     const fetchScrapedSites = async () => {
@@ -46,7 +65,9 @@ const JobListingPage = () => {
       setIsLoading(false);
       console.log(res.data);
       setScrapedSites(res.data);
-      setCurrentScrapedSite(res.data[0]);
+
+      //set default currentScrapedSiteId to the first site
+      setCurrentScrapedSiteId(res.data[0].id.toString());
 
       //set pageSiteMapping
       const pageSiteMapping = res.data.map((site: ScrapedSite) => {
@@ -56,6 +77,74 @@ const JobListingPage = () => {
     };
     fetchScrapedSites();
   }, []);
+
+  //call api to search jobs
+  const searchJobs = useCallback(
+    async (
+      searchText: string,
+      currentScrapedSiteId: string,
+      scrapedSites: ScrapedSite[]
+    ) => {
+      try {
+        setIsSearching(true);
+        console.log("searching jobs with text: ", searchText);
+        let query = `/job-listings/${currentScrapedSiteId}`;
+        if (searchText !== "") {
+          query += `/search?query=${searchText}&`;
+        } else {
+          query += "?";
+        }
+        query += `page=1&per_page=30`;
+        const res = await axios.get(query);
+        setIsSearching(false);
+
+        const jobListings: JobListing[] = res.data[0];
+        const totalPages = res.data[1];
+        const totalJobCount = res.data[2];
+
+        if (currentScrapedSiteId) {
+          //update scrapedSites with new data
+          const updatedScrapedSites = scrapedSites.map((site) => {
+            if (site.id.toString() === currentScrapedSiteId) {
+              return {
+                ...site,
+                job_listings: jobListings,
+                total_pages: totalPages,
+                total_job_count: totalJobCount,
+              };
+            }
+            return site;
+          });
+          setScrapedSites(updatedScrapedSites);
+
+          //update pageSiteMapping to reset currentPage to 1
+          setPageSiteMapping((prev) => {
+            const updatedPageSiteMapping = prev.map((mapping) => {
+              if (mapping.siteId.toString() === currentScrapedSiteId) {
+                return { ...mapping, currentPage: 1 };
+              }
+              return mapping;
+            });
+            return updatedPageSiteMapping;
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    []
+  );
+
+  const debouncedSearchJobs = useMemo(() => {
+    return debounce(searchJobs, 1000);
+  }, [searchJobs]);
+
+  const handleSearchTextChange = (value: string) => {
+    setSearchText(value);
+    if (currentScrapedSiteId) {
+      debouncedSearchJobs(value, currentScrapedSiteId, scrapedSites);
+    }
+  };
 
   const scrapeSite = async () => {
     try {
@@ -67,7 +156,7 @@ const JobListingPage = () => {
       const updatedScrapedSite = res.data;
       console.log(updatedScrapedSite);
 
-      //update scrapedSites and currentScrapedSite
+      //update scrapedSites
       const updatedScrapedSites = scrapedSites.map((site) => {
         if (site.id === updatedScrapedSite.id) {
           return updatedScrapedSite;
@@ -75,9 +164,8 @@ const JobListingPage = () => {
         return site;
       });
       setScrapedSites(updatedScrapedSites);
-      setCurrentScrapedSite(updatedScrapedSite);
 
-      //set currentPage to 1 for the updated site
+      //reset currentPage back to 1 for the updated site
       const updatedPageSiteMapping = pageSiteMapping.map((mapping) => {
         if (mapping.siteId === updatedScrapedSite.id) {
           return { ...mapping, currentPage: 1 };
@@ -85,6 +173,9 @@ const JobListingPage = () => {
         return mapping;
       });
       setPageSiteMapping(updatedPageSiteMapping);
+
+      //reset searchText
+      setSearchText("");
     } catch (error) {
       console.log(error);
     }
@@ -92,30 +183,37 @@ const JobListingPage = () => {
 
   const fetchPage = async (page: number) => {
     try {
-      const res = await axios.get(
-        `/job-listings/${currentScrapedSite?.id}?page=${page}&per_page=30`
-      );
-      const jobListings: JobListing[] = res.data;
+      let query = `/job-listings/${currentScrapedSiteId}`;
+      if (searchText !== "") {
+        query += `/search?query=${searchText}&`;
+      } else {
+        query += "?";
+      }
+      query += `page=${page}&per_page=30`;
+      const res = await axios.get(query);
+      const jobListings: JobListing[] = res.data[0];
+      const totalPages = res.data[1];
+      const totalJobCount = res.data[2];
+      console.log("res", res.data);
 
-      if (currentScrapedSite) {
-        const updatedScrapedSite = {
-          ...currentScrapedSite,
-          job_listings: jobListings,
-        };
-        setCurrentScrapedSite(updatedScrapedSite);
-
-        //update scrapedSites
+      if (currentScrapedSiteId) {
+        //update scrapedSites with new data
         const updatedScrapedSites = scrapedSites.map((site) => {
-          if (site.id === updatedScrapedSite.id) {
-            return updatedScrapedSite;
+          if (site.id.toString() === currentScrapedSiteId) {
+            return {
+              ...site,
+              job_listings: jobListings,
+              total_pages: totalPages,
+              total_job_count: totalJobCount,
+            };
           }
           return site;
         });
         setScrapedSites(updatedScrapedSites);
 
-        //update pageSiteMapping
+        //update pageSiteMapping with new currentPage
         const updatedPageSiteMapping = pageSiteMapping.map((mapping) => {
-          if (mapping.siteId === currentScrapedSite.id) {
+          if (mapping.siteId.toString() === currentScrapedSiteId) {
             return { ...mapping, currentPage: page };
           }
           return mapping;
@@ -133,14 +231,18 @@ const JobListingPage = () => {
         <div className="flex items-center justify-between max-w-[1450px] w-full px-4 mx-auto py-3">
           <div className="flex items-center space-x-3">
             <Select
+              disabled={isLoading || isSearching}
               onValueChange={(value) => {
                 console.log(value);
                 const selectedScrapedSite = scrapedSites.find(
                   (site) => site.website_name === value
                 );
                 if (selectedScrapedSite) {
-                  setCurrentScrapedSite(selectedScrapedSite);
+                  setCurrentScrapedSiteId(selectedScrapedSite.id.toString());
                 }
+
+                //reset searchText
+                if (searchText !== "") handleSearchTextChange("");
               }}
             >
               <SelectTrigger className="w-[150px] border-blue-200">
@@ -211,17 +313,32 @@ const JobListingPage = () => {
             >
               <RefreshCcw size={20} />
             </Button>
-            <Button
-              className="text-sm font-medium text-[#3d3d3d] hover:text-[#3d3d3d] px-2 bg-white"
-              variant="outlinePrimary"
-            >
-              <SlidersHorizontal size={20} />
-            </Button>
+            <div className="relative flex items-center justify-between">
+              <input
+                type="text"
+                placeholder="Search jobs"
+                className="text-sm rounded-sm border-blue-300 border-[1px] pl-3 pr-9 py-2 w-[230px] h-[40px]"
+                value={searchText}
+                onChange={(e) => handleSearchTextChange(e.target.value)}
+              />
+              {isSearching ? (
+                <div className="absolute right-2">
+                  <Loader2
+                    size={20}
+                    className="mr-1 animate-spin text-[#3d3d3d]"
+                  />
+                </div>
+              ) : (
+                <Search
+                  size={20}
+                  className="mr-1 absolute right-2 text-[#3d3d3d] cursor-pointer h-full"
+                />
+              )}
+            </div>
           </div>
         </div>
         <Separator className="my-2" />
-        {/* grid 2 cols */}
-        {/* <div className="flex items-center flex-wrap justify-around"> */}
+
         <div className="grid md:grid-cols-2 gap-2 grid-cols-1 justify-items-center">
           {currentScrapedSite?.job_listings.map((job, index) => {
             return (
@@ -241,6 +358,11 @@ const JobListingPage = () => {
             );
           })}
         </div>
+        {currentScrapedSite?.job_listings.length === 0 && (
+          <div className="flex items-center justify-center w-full h-60">
+            <p className="text-lg font-medium text-gray-400">No jobs found</p>
+          </div>
+        )}
         {currentScrapedSite && currentScrapedSite?.total_pages > 1 && (
           <PaginationBox
             totalPages={currentScrapedSite.total_pages || 1}

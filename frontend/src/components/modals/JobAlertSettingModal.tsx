@@ -31,7 +31,7 @@ import { Switch } from "@/components/ui/switch";
 
 import { useModal } from "@/hooks/zustand/useModal";
 import { useScrapedSites } from "@/hooks/zustand/useScrapedSites";
-import { useCurrentScrapedSite } from "@/hooks/zustand/useCurrentScrapedSite";
+import { useCurrentScrapedSiteId } from "@/hooks/zustand/useCurrentScrapedSiteId";
 
 import { Input } from "../ui/input";
 import { Label } from "@/components/ui/label";
@@ -60,7 +60,8 @@ const formSchema = z.object({
 
 const JobAlertSettingModal = () => {
   const { scrapedSites, setScrapedSites } = useScrapedSites();
-  const { currentScrapedSite, setCurrentScrapedSite } = useCurrentScrapedSite();
+  const { currentScrapedSiteId, setCurrentScrapedSiteId } =
+    useCurrentScrapedSiteId();
 
   const [formedUrl, setFormedUrl] = useState<string>("");
   const { type, isOpen, onOpen, onClose, data } = useModal();
@@ -145,18 +146,12 @@ const JobAlertSettingModal = () => {
       );
       const updatedSettings = res.data;
 
-      //update scrapedSites and currentScrapedSite
-      if (currentScrapedSite) {
-        const updatedScrapedSite = {
-          ...currentScrapedSite,
-          scraped_site_settings: updatedSettings,
-        };
-        setCurrentScrapedSite(updatedScrapedSite);
-
+      if (currentScrapedSiteId) {
         //update scrapedSites
         const updatedScrapedSites = scrapedSites.map((site) => {
-          if (site.id === updatedScrapedSite.id) {
-            return updatedScrapedSite;
+          if (site.id.toString() === currentScrapedSiteId) {
+            site.scraped_site_settings = updatedSettings;
+            return site;
           }
           return site;
         });
