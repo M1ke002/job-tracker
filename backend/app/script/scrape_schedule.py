@@ -7,6 +7,9 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 print(sys.path)
 
+from dotenv import load_dotenv
+load_dotenv()
+
 from datetime import datetime, timezone, timedelta
 import aiohttp
 import asyncio
@@ -16,6 +19,7 @@ from app.utils.scraper.scrape import scrapeAllJobListings
 from app.utils.scraper.helper import findNewJobListings
 from app.utils.scraper.constants import SEEK, GRAD_CONNECTION
 from app.utils.scraper.url_builder import ausgradUrlBuilder, seekUrlBuilder
+from app.utils.send_mail.send_mail import send_mail, create_subject_and_body
 from app.script.utils import write_to_file
 
 database_config = {
@@ -88,6 +92,12 @@ async def main():
     connection = connectDB()
     cursor = connection.cursor()
 
+    found_jobs_dict = {
+        GRAD_CONNECTION: [],
+        SEEK: []
+    }
+    found_new_jobs = False
+
     #delete all old job listings where created_at is older than 1 week
     deleteOldJobListings(connection, cursor)
 
@@ -134,7 +144,7 @@ async def main():
         old_jobs = fetchAllJobListings(connection, cursor, site_id)
 
         old_jobs_dict = []
-        #old jobs is a list of tuples
+        #old jobs is a list of tuples -> need to convert to a list of dicts
         for job in old_jobs:
             old_jobs_dict.append({
                 'id': job[0],
@@ -157,14 +167,10 @@ async def main():
         total_new_jobs_count = len(new_jobs)
         print(f'Found {total_new_jobs_count} new jobs for site: {website_name}')
 
-        # file_name = f'{website_name}.json'
-        # write_to_file(new_jobs, file_name)
-
-        # write to a log.txt file
-        with open('log.txt', 'a') as f:
-            now = datetime.now()
-            dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-            f.write(f"Scheduled job ran at {dt_string}. Found {total_new_jobs_count} new jobs for site: {website_name}\n")
+        #add new jobs to the found_jobs_dict
+        found_jobs_dict[website_name] = new_jobs
+        if (total_new_jobs_count > 0):
+            found_new_jobs = True
 
         # update the is_new field of the existing job listings to false
         updateJobListing(connection, cursor, old_jobs_dict)
@@ -184,6 +190,32 @@ async def main():
 
     cursor.close()
     connection.close()
+
+    # write to a log.txt file
+    text = f"Scheduled job ran at {dt_string}. Found "
+    for site_name, jobs in found_jobs_dict.items():
+        text += f"{len(jobs)} new jobs for site: {site_name}, "
+
+    #remove the last 2 characters, which are ', '
+    text = text[:-2]
+    text += '.'
+    with open('log.txt', 'a') as f:
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        f.write(text + '\n')
+
+    #send an email with the new jobs found
+    if (found_new_jobs):
+        GMAIL_USERNAME = os.getenv('GMAIL_USERNAME')
+        GMAIL_APP_PASSWORD = os.getenv('GMAIL_APP_PASSWORD')
+        subject, body = create_subject_and_body(found_jobs_dict)
+        send_mail(
+            GMAIL_USERNAME,
+            GMAIL_APP_PASSWORD,
+            [GMAIL_USERNAME],
+            subject,
+            body
+        )
 
 if __name__ == '__main__':
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())

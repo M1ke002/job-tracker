@@ -39,7 +39,7 @@ def findNewJobListings(oldJobs, scrapedJobs):
     for scrapedJob in scrapedJobs:
         isNew = True
         for oldJob in oldJobs:
-            #newJob is of type dict, oldJob is of type object
+            #both are dicts
             if (scrapedJob['job_title'] == oldJob['job_title'] and scrapedJob['company_name'] == oldJob['company_name'] and scrapedJob['job_url'] == oldJob['job_url']):
                 isNew = False
                 break
