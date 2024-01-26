@@ -19,7 +19,7 @@ from app.utils.scraper.scrape import scrapeAllJobListings
 from app.utils.scraper.helper import findNewJobListings
 from app.utils.scraper.constants import SEEK, GRAD_CONNECTION
 from app.utils.scraper.url_builder import ausgradUrlBuilder, seekUrlBuilder
-from app.utils.send_mail.send_mail import send_mail, create_subject_and_body
+from app.utils.send_mail.send_mail import send_mail, create_subject_and_body, should_send_email
 from app.script.utils import write_to_file
 
 database_config = {
@@ -96,7 +96,10 @@ async def main():
         GRAD_CONNECTION: [],
         SEEK: []
     }
-    found_new_jobs = False
+    email_notification_settings = {
+        GRAD_CONNECTION: False,
+        SEEK: False
+    }
 
     #delete all old job listings where created_at is older than 1 week
     deleteOldJobListings(connection, cursor)
@@ -129,6 +132,16 @@ async def main():
         job_type = scraped_site_settings[6]
         classification = scraped_site_settings[7]
         max_pages_to_scrape = scraped_site_settings[8]
+        scrape_frequency = scraped_site_settings[2]
+        is_notify_email = scraped_site_settings[3]
+        is_notify_on_website = scraped_site_settings[9]
+
+        #update the email_notification_settings dict
+        email_notification_settings[website_name] = bool(is_notify_email)
+
+        #if disabled scrape, continue
+        if scrape_frequency == -1:
+            continue
 
         search_url = ''
         if (website_name == GRAD_CONNECTION):
@@ -169,15 +182,13 @@ async def main():
 
         #add new jobs to the found_jobs_dict
         found_jobs_dict[website_name] = new_jobs
-        if (total_new_jobs_count > 0):
-            found_new_jobs = True
 
         # update the is_new field of the existing job listings to false
         updateJobListing(connection, cursor, old_jobs_dict)
         # insert new job listings
         addJobListings(connection, cursor, new_jobs, site_id)
 
-        if (len(new_jobs) > 0):
+        if (len(new_jobs) > 0 and bool(is_notify_on_website)):
             # create a notification
             createNotification(connection, cursor, site_id, website_name, total_new_jobs_count)
     
@@ -204,11 +215,12 @@ async def main():
         dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
         f.write(text + '\n')
 
-    #send an email with the new jobs found
-    if (found_new_jobs):
+
+    #send email notification
+    if (should_send_email(found_jobs_dict, email_notification_settings)):
         GMAIL_USERNAME = os.getenv('GMAIL_USERNAME')
         GMAIL_APP_PASSWORD = os.getenv('GMAIL_APP_PASSWORD')
-        subject, body = create_subject_and_body(found_jobs_dict)
+        subject, body = create_subject_and_body(found_jobs_dict, email_notification_settings)
         send_mail(
             GMAIL_USERNAME,
             GMAIL_APP_PASSWORD,
@@ -216,6 +228,7 @@ async def main():
             subject,
             body
         )
+        
 
 if __name__ == '__main__':
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())

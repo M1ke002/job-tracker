@@ -8,10 +8,22 @@ from email.mime.text import MIMEText
 from datetime import datetime
 
 
+def should_send_email(jobs_dict, email_notification_settings):
+    #only send email if there are new jobs and if the email notification is enabled for at least one site
+    for site_name, jobs in jobs_dict.items():
+        if ((len(jobs) > 0) and (email_notification_settings[site_name])):
+            return True
+    return False
+
+
 """
-    input: jobs_dict. ex: {
+    input: 1) jobs_dict. ex: {
         GRAD_CONNECTION: [list of jobs],
         SEEK: [list of jobs]
+    }
+    2) email_notification_settings. ex: {
+        GRAD_CONNECTION: True,
+        SEEK: False
     }
     subject: Found x new jobs for site_name, y new jobs for site_name
     body: 
@@ -27,7 +39,7 @@ from datetime import datetime
             job_title - job_url
             ...
 """
-def create_subject_and_body(jobs_dict):
+def create_subject_and_body(jobs_dict, email_notification_settings):
     subject = "Found"
     body = ""
 
@@ -38,13 +50,14 @@ def create_subject_and_body(jobs_dict):
     body += f"Scheduled job ran at {dt_string}.\n\n"
 
     for site_name, jobs in jobs_dict.items():
-        if (len(jobs) == 0): continue
+        if (len(jobs) == 0 or not email_notification_settings[site_name]):
+            continue
         if (found_jobs):
             subject += ","
         subject += f" {len(jobs)} new jobs for {site_name}"
 
         if (found_jobs):
-            body += "\n\n"
+            body += "\n"
         body += f"{site_name}:\n"
         for job in jobs:
             body += f"{job['job_title']} - {job['job_url']}\n"

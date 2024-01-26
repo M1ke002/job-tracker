@@ -20,7 +20,7 @@ class SavedJob(db.Model):
     salary: so.Mapped[Optional[str]] = so.mapped_column(sa.String(100))
     job_url: so.Mapped[str] = so.mapped_column(sa.String(1000))
     job_date: so.Mapped[Optional[str]] = so.mapped_column(sa.String(100))
-    notes: so.Mapped[Optional[str]] = so.mapped_column(sa.String(1000))
+    notes: so.Mapped[Optional[str]] = so.mapped_column(sa.String(5000))
     position: so.Mapped[Optional[int]] = so.mapped_column(sa.Integer)
 
     #relationship

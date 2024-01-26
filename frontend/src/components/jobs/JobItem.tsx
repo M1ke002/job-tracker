@@ -116,6 +116,11 @@ const JobItem = ({
               {jobDate}
             </span>
           )}
+          {type === "savedJob" && stage && (
+            <span className="ml-3 text-xs uppercase text-green-700 bg-green-100 p-1 px-2 rounded-md font-bold">
+              Applied
+            </span>
+          )}
         </div>
       </CardHeader>
       <CardContent className="mb-[77px] pb-3">
@@ -162,11 +167,11 @@ const JobItem = ({
                   <ArrowRightCircle size={20} />
                 )}
               </Button>
-              {type === "savedJob" && stage && (
+              {/* {type === "savedJob" && stage && (
                 <Badge className="text-xs font-bold uppercase py-1 px-3 text-white bg-green-400 hover:bg-initial">
                   Applied
                 </Badge>
-              )}
+              )} */}
               {type === "jobListing" && (
                 <Button
                   variant="outlinePrimary"

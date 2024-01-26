@@ -76,6 +76,10 @@
     @apply bg-[#f7fafc] text-foreground;
     /* font-family: Poppins,Helvetica Neue,Roboto,Arial,sans-serif,"Apple Color Emoji" */
   }
+  ul, ol {
+    list-style: revert;
+    padding: revert;
+  }
 }
 
 ::-webkit-scrollbar {

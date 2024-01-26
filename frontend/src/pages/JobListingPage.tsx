@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import { debounce } from "lodash";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +21,7 @@ import {
   BellRing,
   Search,
   Loader2,
+  ChevronDown,
 } from "lucide-react";
 import JobItem from "@/components/jobs/JobItem";
 import { Separator } from "@/components/ui/separator";
@@ -29,6 +36,7 @@ import ScrapedSite from "@/types/ScrapedSite";
 import JobListing from "@/types/JobListing";
 
 import { SEEK, GRAD_CONNECTION } from "@/utils/constants";
+import ScrollToTopBtn from "@/components/ScrollToTopBtn";
 
 const JobListingPage = () => {
   const { scrapedSites, setScrapedSites } = useScrapedSites();
@@ -77,6 +85,11 @@ const JobListingPage = () => {
     };
     fetchScrapedSites();
   }, []);
+
+  useEffect(() => {
+    //scroll to top of page when currentScrapedSite changes
+    window.scrollTo(0, 0);
+  }, [currentScrapedSite]);
 
   //call api to search jobs
   const searchJobs = useCallback(
@@ -374,6 +387,10 @@ const JobListingPage = () => {
             fetchPage={fetchPage}
           />
         )}
+      </div>
+
+      <div className="fixed bottom-4 right-4">
+        <ScrollToTopBtn />
       </div>
     </div>
   );

@@ -4,23 +4,59 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
+import { useCurrentSavedJob } from "@/hooks/zustand/useCurrentSavedJob";
+import axios from "@/lib/axiosConfig";
 
-const isTextEmpty = (text: string) => {};
+const isTextEmpty = (text: string) => {
+  // Regular expression to match HTML tags
+  var htmlTagPattern = /<[^>]*>/g;
+
+  // Extract all HTML tags from the input string
+  var tags = text.match(htmlTagPattern);
+
+  // If there are tags and they cover the entire input string, it contains only tags
+  return tags && text.replace(htmlTagPattern, "").trim() === "";
+};
 
 const Note = () => {
+  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
   const [isEditMode, setIsEditMode] = useState(false);
-  const [value, setValue] = useState(
-    "<h3><strong>Interview questions</strong></h3><ul><li>What is the difference between a div and a span?</li><li>How to reverse a linked list?</li><li>What is Javascript?</li></ul><p><strong>Other important notes:</strong></p><p>Prepare your blurb or “tell me about yourself” response (it sucks, I know )</p><p>Practice answering behavioral interview questions. Research the company and your interviewers. Set up your virtual interview space and test your tech Send thank you emails within 24 hours</p>"
-  );
+  const [value, setValue] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const { onOpen } = useModal();
 
   useEffect(() => {
-    console.log(value);
-  }, [value]);
+    setValue(currentSavedJob?.notes || "");
+  }, [currentSavedJob]);
 
   const handleSaveNote = async () => {
     try {
-      //get delta from quill and save to db
+      setIsLoading(true);
+      const res = await axios.put(`/saved-jobs/${currentSavedJob?.id}/notes`, {
+        notes: value,
+      });
+      const updatedSavedJob = res.data;
+      setCurrentSavedJob(updatedSavedJob);
+      setIsEditMode(false);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setValue(currentSavedJob?.notes || "");
+    setIsEditMode(false);
+  };
+
+  const handleDeleteNote = async () => {
+    try {
+      const res = await axios.put(`/saved-jobs/${currentSavedJob?.id}/notes`, {
+        notes: "",
+      });
+      const updatedSavedJob = res.data;
+      setCurrentSavedJob(updatedSavedJob);
     } catch (error) {
       console.log(error);
     }
@@ -33,7 +69,13 @@ const Note = () => {
           <ReactQuill
             theme="snow"
             value={value}
-            onChange={setValue}
+            onChange={(value) => {
+              if (isTextEmpty(value)) {
+                setValue("");
+              } else {
+                setValue(value);
+              }
+            }}
             className="job-note-quill"
           />
           <div className="flex items-center space-x-2 mt-3">
@@ -41,7 +83,8 @@ const Note = () => {
               variant="primary"
               size="sm"
               className="text-white bg-blue-600 hover:bg-blue-700 px-5"
-              onClick={() => setIsEditMode(!isEditMode)}
+              disabled={isLoading}
+              onClick={handleSaveNote}
             >
               Save
             </Button>
@@ -49,7 +92,7 @@ const Note = () => {
               variant="ghost"
               size="sm"
               className="text-blue-600 hover:text-blue-700"
-              onClick={() => setIsEditMode(!isEditMode)}
+              onClick={handleCancel}
             >
               Cancel
             </Button>
@@ -59,7 +102,10 @@ const Note = () => {
       {!isEditMode && (
         <div className="relative p-3 rounded-md shadow-sm bg-[#f1f6fa] border border-[#c3dafe]">
           {value !== "" && (
-            <div dangerouslySetInnerHTML={{ __html: value }}></div>
+            <div
+              className="min-h-28 max-h-[600px] overflow-y-auto"
+              dangerouslySetInnerHTML={{ __html: value }}
+            ></div>
           )}
 
           {value === "" && (
@@ -83,9 +129,7 @@ const Note = () => {
                   confirmModalMessage:
                     "Are you sure you want to delete this note?",
                   confirmModalConfirmButtonText: "Delete",
-                  confirmModalAction: () => {
-                    console.log("delete note");
-                  },
+                  confirmModalAction: handleDeleteNote,
                 });
               }}
             >
