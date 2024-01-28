@@ -16,35 +16,14 @@ import {
 import { AlignJustify, Plus, Search, Settings } from "lucide-react";
 import DocumentType from "@/types/DocumentType";
 import axios from "@/lib/axiosConfig";
+
 import { useModal } from "@/hooks/zustand/useModal";
 import { useSavedJobs } from "@/hooks/zustand/useSavedJobs";
-
-// const fakeData: Document[] = [
-//   {
-//     id: "1",
-//     name: "A Resume.pdf",
-//     type: "Resume",
-//     job: "Software Engineer Intership Program 2023",
-//     uploadedDate: "12/12/2021",
-//   },
-//   {
-//     id: "2",
-//     name: "My Resume for SE role en_version.pdf",
-//     type: "Resume",
-//     job: "– –",
-//     uploadedDate: "12/12/2021",
-//   },
-//   {
-//     id: "3",
-//     name: "B Resume.pdf",
-//     type: "Resume",
-//     job: "– –",
-//     uploadedDate: "12/12/2021",
-//   },
-// ];
+import { useDocumentList } from "@/hooks/zustand/useDocumentList";
 
 const DocumentsPage = () => {
-  const [documentTypes, setDocumentTypes] = useState<DocumentType[]>([]);
+  // const [documentTypes, setDocumentTypes] = useState<DocumentType[]>([]);
+  const { documentLists, setDocumentLists } = useDocumentList();
   const { onOpen } = useModal();
   const { setSavedJobs, isFetched } = useSavedJobs();
 
@@ -66,7 +45,7 @@ const DocumentsPage = () => {
     const fetchDocumentTypes = async () => {
       try {
         const res = await axios.get("/document-types");
-        setDocumentTypes(res.data);
+        setDocumentLists(res.data);
       } catch (error) {
         console.log(error);
       }
@@ -117,11 +96,11 @@ const DocumentsPage = () => {
       </div>
 
       <div className="mt-3 w-full mb-2 space-y-2">
-        {documentTypes.map((documentType) => (
-          <div key={documentType.id}>
-            <DocumentListTitle title={documentType.type_name} />
+        {documentLists.map((documentList) => (
+          <div key={documentList.id}>
+            <DocumentListTitle title={documentList.type_name} />
             <hr className="mt-1 mb-3 border-[#d6eaff]" />
-            <DataTable columns={columns} data={documentType.documents} />
+            <DataTable columns={columns} data={documentList.documents} />
           </div>
         ))}
         {/* <div>

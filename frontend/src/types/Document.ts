@@ -6,7 +6,8 @@ interface Document {
   job_id: number | null;
   job: SavedJob | null;
   job_title: string | null;
-  document_name: string;
+  file_name: string;
+  file_url: string;
   document_type_name: string;
   date_uploaded: string;
 }

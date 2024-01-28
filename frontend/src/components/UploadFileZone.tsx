@@ -2,9 +2,11 @@ import { useState, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-interface UploadFileZoneProps {}
+interface UploadFileZoneProps {
+  setFile: (file: File) => void;
+}
 
-const UploadFileZone = () => {
+const UploadFileZone = ({ setFile }: UploadFileZoneProps) => {
   const inputFileRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
 
@@ -19,12 +21,15 @@ const UploadFileZone = () => {
       console.log("file is too large");
       return;
     }
+
+    setFile(file);
+
     let reader = new FileReader();
     console.log(file);
     reader.onload = (e) => {
       const { result } = e.target as any;
       if (result) {
-        console.log(result);
+        // console.log(result);
         // setImageData({
         //   src: result,
         //   file: file,

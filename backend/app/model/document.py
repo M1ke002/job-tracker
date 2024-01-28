@@ -10,7 +10,8 @@ class Document(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     document_type_id: so.Mapped[int] = so.mapped_column(sa.Integer, sa.ForeignKey('document_types.id'))
     job_id: so.Mapped[Optional[int]] = so.mapped_column(sa.Integer, sa.ForeignKey('saved_jobs.id'))
-    document_name: so.Mapped[str] = so.mapped_column(sa.String(150))
+    file_name: so.Mapped[str] = so.mapped_column(sa.String(150))
+    file_url: so.Mapped[str] = so.mapped_column(sa.String(500))
     date_uploaded: so.Mapped[datetime] = so.mapped_column(
         default=lambda: datetime.now())
 
@@ -19,7 +20,7 @@ class Document(db.Model):
     job: so.Mapped[Optional["SavedJob"]] = so.relationship()
 
     def __repr__(self) -> str:
-        return f"<Document {self.document_name}>"
+        return f"<Document {self.file_name}>"
     
     def to_dict(self) -> dict:
         return {
@@ -28,6 +29,7 @@ class Document(db.Model):
             "job_id": self.job_id,
             "job_title": self.job.job_title if self.job else None,
             "document_type_name": self.document_type.type_name,
-            "document_name": self.document_name,
+            "file_name": self.file_name,
+            "file_url": self.file_url,
             "date_uploaded": self.date_uploaded,
         }

@@ -31,6 +31,7 @@ import axios from "@/lib/axiosConfig";
 import { useModal } from "@/hooks/zustand/useModal";
 import { useScrapedSites } from "@/hooks/zustand/useScrapedSites";
 import { useCurrentScrapedSiteId } from "@/hooks/zustand/useCurrentScrapedSiteId";
+import { useSavedJobs } from "@/hooks/zustand/useSavedJobs";
 
 import ScrapedSite from "@/types/ScrapedSite";
 import JobListing from "@/types/JobListing";
@@ -39,6 +40,7 @@ import { SEEK, GRAD_CONNECTION } from "@/utils/constants";
 import ScrollToTopBtn from "@/components/ScrollToTopBtn";
 
 const JobListingPage = () => {
+  const { savedJobs, setSavedJobs } = useSavedJobs();
   const { scrapedSites, setScrapedSites } = useScrapedSites();
   const { currentScrapedSiteId, setCurrentScrapedSiteId } =
     useCurrentScrapedSiteId();
@@ -84,6 +86,20 @@ const JobListingPage = () => {
       setPageSiteMapping(pageSiteMapping);
     };
     fetchScrapedSites();
+  }, []);
+
+  useEffect(() => {
+    const fetchSavedJobs = async () => {
+      try {
+        // if (isFetched) return;
+        const res = await axios.get("/saved-jobs");
+        console.log(res.data);
+        setSavedJobs(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchSavedJobs();
   }, []);
 
   useEffect(() => {
@@ -367,6 +383,12 @@ const JobListingPage = () => {
                 jobDate={job.job_date}
                 salary={job.salary}
                 isNewJob={job.is_new}
+                isSaved={savedJobs.some(
+                  (savedJob) =>
+                    savedJob.job_url === job.job_url &&
+                    savedJob.company_name === job.company_name &&
+                    savedJob.job_title === job.job_title
+                )}
               />
             );
           })}

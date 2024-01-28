@@ -1,5 +1,6 @@
 import ApplicationStage from "@/types/ApplicationStage";
 import Contact from "@/types/Contact";
+import DocumentType from "@/types/DocumentType";
 import ScrapedSiteSettings from "@/types/ScrapedSiteSettings";
 import Task from "@/types/Task";
 import { create } from "zustand";
@@ -26,7 +27,9 @@ export type ModalType =
   | "deleteNotification"
   | "addJobToStage"
   | "editJobAlertSetting"
-  | "uploadDocument";
+  | "uploadDocument"
+  | "deleteDocument"
+  | "editDocument";
 
 interface ModalData {
   confirmModalTitle?: string;
@@ -42,6 +45,8 @@ interface ModalData {
   setApplicationStageColumns?: React.Dispatch<
     React.SetStateAction<ApplicationStage[]>
   >;
+  documentType?: string;
+  documentId?: string;
 }
 
 interface ModalStore {

@@ -1,5 +1,5 @@
 import React from "react";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Row } from "@tanstack/react-table";
 import {
   Trash,
   ArrowUpDown,
@@ -9,18 +9,83 @@ import {
 } from "lucide-react";
 import { Button } from "../ui/button";
 import Document from "@/types/Document";
+import { format } from "date-fns";
 
-// export type Document = {
-//   id: string;
-//   name: string;
-//   type: string;
-//   job: string;
-//   uploadedDate: string;
-// };
+import { useModal } from "@/hooks/zustand/useModal";
+import { useDocumentList } from "@/hooks/zustand/useDocumentList";
+
+import axios from "@/lib/axiosConfig";
+
+const ActionCell = ({ row }: { row: Row<Document> }) => {
+  const { documentLists, setDocumentLists } = useDocumentList();
+  const { onOpen } = useModal();
+  const { id, file_url, document_type_id, job_id } = row.original;
+
+  const deleteDocument = async (id: number) => {
+    try {
+      console.log(id);
+      const res = await axios.delete(`/documents/${id}`);
+
+      //update the documents list to remove the deleted document
+      const updatedDocumentLists = documentLists.map((documentList) => {
+        return {
+          ...documentList,
+          documents: documentList.documents.filter(
+            (document) => document.id !== id
+          ),
+        };
+      });
+      setDocumentLists(updatedDocumentLists);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-center space-x-2">
+      <button
+        className="text-blue-500 focus:outline-none"
+        onClick={() => {
+          window.open(file_url, "_blank");
+        }}
+      >
+        <FileDown size={18} />
+      </button>
+      <button
+        className="text-blue-700 focus:outline-none"
+        onClick={() => {
+          onOpen("editDocument", {
+            documentId: id.toString(),
+            documentType: document_type_id.toString(),
+            jobId: job_id ? job_id.toString() : "none",
+          });
+        }}
+      >
+        <FileEdit size={18} />
+      </button>
+      <button
+        className="text-rose-500 focus:outline-none"
+        onClick={() => {
+          onOpen("deleteDocument", {
+            confirmModalTitle: "Delete document",
+            confirmModalMessage:
+              "Are you sure you want to delete this document?",
+            confirmModalConfirmButtonText: "Delete",
+            confirmModalAction: () => {
+              deleteDocument(id);
+            },
+          });
+        }}
+      >
+        <Trash size={18} />
+      </button>
+    </div>
+  );
+};
 
 export const columns: ColumnDef<Document>[] = [
   {
-    accessorKey: "document_name",
+    accessorKey: "file_name",
     header: ({ column }) => {
       return (
         <Button
@@ -41,6 +106,10 @@ export const columns: ColumnDef<Document>[] = [
   {
     accessorKey: "job_title",
     header: "Job",
+    cell: ({ row }) => {
+      const { job_title } = row.original;
+      return <div>{job_title ? job_title : "– –"}</div>;
+    },
   },
   {
     accessorKey: "date_uploaded",
@@ -56,40 +125,15 @@ export const columns: ColumnDef<Document>[] = [
         </Button>
       );
     },
+    cell: ({ row }) => {
+      const { date_uploaded } = row.original;
+      return <div>{format(new Date(date_uploaded), "dd/MM/yyyy")}</div>;
+    },
   },
   {
     accessorKey: "actions",
     header: () => <div className="text-center">Actions</div>,
     // action to delete a document (trash icon)
-    cell: ({ row }) => {
-      return (
-        <div className="flex items-center justify-center space-x-2">
-          <button
-            className="text-blue-500 focus:outline-none"
-            onClick={() => {
-              // deleteDocument(row.original.id);
-            }}
-          >
-            <FileDown size={18} />
-          </button>
-          <button
-            className="text-blue-700 focus:outline-none"
-            onClick={() => {
-              // deleteDocument(row.original.id);
-            }}
-          >
-            <FileEdit size={18} />
-          </button>
-          <button
-            className="text-rose-500 focus:outline-none"
-            onClick={() => {
-              // deleteDocument(row.original.id);
-            }}
-          >
-            <Trash size={18} />
-          </button>
-        </div>
-      );
-    },
+    cell: ActionCell,
   },
 ];

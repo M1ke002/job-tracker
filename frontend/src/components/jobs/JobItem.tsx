@@ -28,6 +28,7 @@ import {
   Settings,
   Trash,
   FileEdit,
+  Check,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import axios from "@/lib/axiosConfig";
@@ -48,6 +49,7 @@ interface JobItemProps {
   jobDate: string;
   isNewJob?: boolean;
   stage?: ApplicationStage;
+  isSaved?: boolean;
 }
 
 const JobItem = ({
@@ -63,6 +65,7 @@ const JobItem = ({
   jobDate,
   isNewJob,
   stage,
+  isSaved,
 }: JobItemProps) => {
   const { savedJobs, setSavedJobs } = useSavedJobs();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -81,6 +84,7 @@ const JobItem = ({
         jobUrl,
         jobDate,
       });
+      setSavedJobs([...savedJobs, res.data]);
     } catch (error) {
       console.log(error);
     }
@@ -175,12 +179,26 @@ const JobItem = ({
               {type === "jobListing" && (
                 <Button
                   variant="outlinePrimary"
-                  className="mr-2 flex items-center justify-center"
+                  className={cn(
+                    "mr-2 flex items-center justify-center",
+                    isSaved && "bg-blue-500/10"
+                  )}
                   disabled={isLoading}
-                  onClick={onSave}
+                  onClick={() => {
+                    !isSaved && onSave();
+                  }}
                 >
-                  <span className="mr-2">Save</span>
-                  <Bookmark size={20} />
+                  {isSaved ? (
+                    <>
+                      <span className="mr-2">Saved</span>
+                      <Check size={20} />
+                    </>
+                  ) : (
+                    <>
+                      <span className="mr-2">Save</span>
+                      <Bookmark size={20} />
+                    </>
+                  )}
                 </Button>
               )}
             </div>

@@ -1,4 +1,3 @@
-import requests
 import re
 from time import time
 import aiohttp

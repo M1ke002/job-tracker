@@ -4,6 +4,7 @@ import CofirmationModal from "../modals/CofirmationModal";
 import CreateJobModal from "../modals/CreateJobModal";
 import CreateTaskModal from "../modals/CreateTaskModal";
 import EditContactModal from "../modals/EditContactModal";
+import EditDocumentModal from "../modals/EditDocumentModal";
 import EditSavedJobModal from "../modals/EditSavedJobModal";
 import EditTaskModal from "../modals/EditTaskModal";
 import JobAlertSettingModal from "../modals/JobAlertSettingModal";
@@ -23,6 +24,7 @@ const ModalProvider = () => {
       <CreateTaskModal />
       <EditTaskModal />
       <UploadDocumentModal />
+      <EditDocumentModal />
     </>
   );
 };

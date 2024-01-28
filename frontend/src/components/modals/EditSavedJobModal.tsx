@@ -97,7 +97,7 @@ const EditSavedJobModal = () => {
       <DialogContent className="bg-white text-black p-0 overflow-hidden">
         <DialogHeader className="pt-6 pb-2 px-6">
           <DialogTitle className="text-2xl text-center font-bold capitalize">
-            Edit contact
+            Edit Job
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
