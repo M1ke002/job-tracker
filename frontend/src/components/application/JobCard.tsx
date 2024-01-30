@@ -7,11 +7,13 @@ import SavedJob from "@/types/SavedJob";
 import { useNavigate } from "react-router-dom";
 
 interface ApplicationStageBoxItemProps {
+  isLoading: boolean;
   job: SavedJob;
   removeJobFromStages: (jobId: number) => void;
 }
 
 const ApplicationStageBoxItem = ({
+  isLoading,
   job,
   removeJobFromStages,
 }: ApplicationStageBoxItemProps) => {
@@ -30,6 +32,7 @@ const ApplicationStageBoxItem = ({
       id: `job-${job.id}`,
       type: "job",
     },
+    disabled: isLoading,
   });
 
   const style = {

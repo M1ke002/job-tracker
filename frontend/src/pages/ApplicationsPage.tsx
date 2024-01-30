@@ -50,7 +50,7 @@ const ApplicationsPage = () => {
       try {
         // if (isFetched) return;
         const res = await axios.get("/saved-jobs");
-        console.log(res.data);
+        // console.log(res.data);
         setSavedJobs(res.data);
       } catch (error) {
         console.log(error);
@@ -62,7 +62,7 @@ const ApplicationsPage = () => {
   //the data of the item being dragged
   const [activeColumnData, setActiveColumnData] =
     useState<ApplicationStageType | null>(null);
-  const [activeCardData, setActiveCardData] = useState<SavedJob | null>(null);
+  const [activeCardData, setActiveCardData] = useState<any>(null);
 
   //set the initial and target column id when dragging a job card
   const [initialJobColumnId, setInitialJobColumnId] = useState<string>("");
@@ -121,7 +121,7 @@ const ApplicationsPage = () => {
       const res = await axios.put("/application-stages/reorder-stages", {
         stagePositions,
       });
-      console.log(res.data);
+      // console.log(res.data);
     } catch (error) {
       console.log(error);
     }
@@ -133,13 +133,20 @@ const ApplicationsPage = () => {
       const jobPositions: {
         id: number;
         stage_id: number;
+        rejected_at_stage_id: number | null;
         position: number;
       }[] = [];
       affectedStages.forEach((stage) => {
         stage.jobs.forEach((job, index) => {
+          let rejected_at_stage_id = job.rejected_at_stage_id;
+          if (stage.stage_name !== "Rejected") {
+            //if job doesnt belong to a stage yet
+            rejected_at_stage_id = stage.id;
+          }
           jobPositions.push({
             id: job.id,
             stage_id: stage.id,
+            rejected_at_stage_id: rejected_at_stage_id,
             position: index,
           });
         });
@@ -193,6 +200,7 @@ const ApplicationsPage = () => {
             ...job,
             stage: null,
             stage_id: null,
+            rejected_at_stage_id: null,
           };
         }
         return job;
@@ -214,11 +222,11 @@ const ApplicationsPage = () => {
   };
 
   const findColumnByJobId = (jobId: number) => {
-    console.log(applicationStageColumns, jobId);
+    // console.log(applicationStageColumns, jobId);
     const column = applicationStageColumns.find((stage) =>
       stage.jobs.map((job) => job.id).includes(jobId)
     );
-    console.log(column);
+    // console.log(column);
 
     return column;
   };
@@ -234,8 +242,8 @@ const ApplicationsPage = () => {
     //stores the data of the item being dragged
 
     if (e?.active?.data?.current?.type === "job") {
-      setActiveCardData(e.active.data.current);
       console.log(e.active.data.current);
+      setActiveCardData(e.active.data.current);
     } else if (e?.active?.data?.current?.type === "applicationStage") {
       setActiveColumnData(e.active.data.current);
     }
@@ -387,7 +395,7 @@ const ApplicationsPage = () => {
 
             //dragging to the top of the column
             if (active.rect.current.translated.top <= over.rect.top) {
-              console.log("top!");
+              // console.log("top!");
               targetColumn.jobs.splice(0, 0, {
                 ...active.data.current,
                 id: parseInt(active.id.split("-")[1]),
@@ -455,22 +463,40 @@ const ApplicationsPage = () => {
 
     if (activeCardData) {
       //get the initial and target column
-      const initialColumn = findColumnByStageId(initialJobColumnId);
+      const initialColumn = applicationStageColumns.find(
+        (stage) => stage.id === activeCardData.stage_id
+      );
       const targetColumn = findColumnByStageId(targetJobColumnId);
 
       if (!initialColumn || !targetColumn) return;
 
-      // console.log(initialColumn, targetColumn);
+      console.log(initialColumn, targetColumn);
 
       const affectedStages = [initialColumn];
       //if the user is dragging the job card to a different column
-      if (initialColumn.id !== targetColumn.id)
+      if (initialColumn.id !== targetColumn.id) {
         affectedStages.push(targetColumn);
+        //update the position of jobs
+        targetColumn.jobs = targetColumn.jobs.map((job, index) => {
+          const newJob = {
+            ...job,
+            stage_id: targetColumn.id,
+            stage: targetColumn,
+            position: index,
+          };
+          if (targetColumn.stage_name !== "Rejected") {
+            newJob.rejected_at_stage_id = targetColumn.id;
+          }
+          return newJob;
+        });
+      }
 
+      setIsLoading(true);
       await updateJobOrder(affectedStages);
+      setIsLoading(false);
     } else if (activeColumnData) {
       if (active.data.current.type !== over.data.current.type) {
-        console.log("not the same type");
+        // console.log("not the same type");
         return;
       }
       if (active.id === over.id) return;
@@ -499,7 +525,9 @@ const ApplicationsPage = () => {
       setApplicationStageColumns(reorderedColumns);
 
       //call api
+      setIsLoading(true);
       await updateStageOrder(reorderedColumns);
+      setIsLoading(false);
     }
   };
 
@@ -542,6 +570,7 @@ const ApplicationsPage = () => {
                   jobs={stage.jobs}
                   removeJobFromStages={removeJobFromStages}
                   setApplicationStageColumns={setApplicationStageColumns}
+                  isLoading={isLoading}
                 />
               ))}
               <DragOverlay dropAnimation={dropAnimation}>
@@ -549,12 +578,14 @@ const ApplicationsPage = () => {
                   <ApplicationStageColumn
                     id={activeColumnData.id}
                     stage_name={activeColumnData.stage_name}
+                    isLoading={isLoading}
                     jobs={activeColumnData.jobs}
                     removeJobFromStages={removeJobFromStages}
                   />
                 )}
                 {activeCardData && (
                   <JobCard
+                    isLoading={isLoading}
                     job={activeCardData}
                     removeJobFromStages={removeJobFromStages}
                   />

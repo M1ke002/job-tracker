@@ -19,6 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { DataTablePagination } from "./DataTablePagination";
+import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -84,14 +85,32 @@ export function DataTable<TData, TValue>({
                   data-state={row.getIsSelected() && "selected"}
                   className="bg-[#fff] border-[#c3dafe]"
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+                  {row.getVisibleCells().map((cell) => {
+                    let width = 0;
+                    if (cell.column.id === "file_name") {
+                      width = 300;
+                    } else if (cell.column.id === "document_type_name") {
+                      width = 140;
+                    } else if (cell.column.id === "job_title") {
+                      width = 300;
+                    } else if (cell.column.id === "date_uploaded") {
+                      width = 100;
+                    } else {
+                      width = 200;
+                    }
+                    return (
+                      <TableCell
+                        key={cell.id}
+                        width={width}
+                        className="truncate"
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               ))
             ) : (

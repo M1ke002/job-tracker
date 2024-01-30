@@ -55,10 +55,15 @@ const ContactItem = ({ contact }: ContactItemProps) => {
           </a>
         </span>
       )}
+      {contact.note && (
+        <div className="flex flex-col mt-3">
+          <p className="font-semibold">Notes:</p>
+          <p className="text-gray-700 max-h-20 overflow-y-auto">
+            {contact.note}
+          </p>
+        </div>
+      )}
       <div className="absolute top-3 right-3 flex items-center space-x-1">
-        <button className="border-none focus:outline-none text-gray-700 hover:text-gray-700/80">
-          <StickyNote className="ml-1" size={20} />
-        </button>
         <button
           className="border-none focus:outline-none text-blue-700 hover:text-blue-700/80"
           onClick={() => {

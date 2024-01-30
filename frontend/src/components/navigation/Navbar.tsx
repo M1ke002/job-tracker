@@ -26,7 +26,7 @@ const Navbar = () => {
     try {
       const fetchNotifications = async () => {
         const res = await axios.get("/notifications");
-        console.log(res.data);
+        // console.log(res.data);
         setNotifications(res.data);
       };
       fetchNotifications();

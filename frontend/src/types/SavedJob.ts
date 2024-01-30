@@ -18,6 +18,8 @@ interface SavedJob {
   contacts: Contact[];
   stage_id: number | null;
   stage: ApplicationStage | null;
+  rejected_at_stage_id: number | null;
+  created_at: string;
 }
 
 export default SavedJob;

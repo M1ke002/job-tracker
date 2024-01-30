@@ -19,20 +19,20 @@ import Contact from "@/components/contact/Contact";
 import Task from "@/components/task/Task";
 import JobDescription from "@/components/jobs/JobDescription";
 
-import { useModal } from "@/hooks/zustand/useModal";
 import axios from "@/lib/axiosConfig";
-import SavedJob from "@/types/SavedJob";
 import { useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
+import { useModal } from "@/hooks/zustand/useModal";
 import { useCurrentSavedJob } from "@/hooks/zustand/useCurrentSavedJob";
 import { useSavedJobs } from "@/hooks/zustand/useSavedJobs";
+import { useApplicationStages } from "@/hooks/zustand/useApplicationStages";
+
 import ApplicationStage from "@/types/ApplicationStage";
+import ApplicationProgress from "@/components/application/ApplicationProgress";
 
 const JobDetailsPage = () => {
-  const [applicationStages, setApplicationStages] = useState<
-    ApplicationStage[]
-  >([]);
+  const { applicationStages, setApplicationStages } = useApplicationStages();
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
   const { savedJobs, setSavedJobs } = useSavedJobs();
   const [isLoading, setLoading] = useState(false);
@@ -207,6 +207,8 @@ const JobDetailsPage = () => {
           </div>
         </div>
       </div>
+
+      <ApplicationProgress />
 
       {/* 2 main cols, left col - 2/3: for job description. Right  col-1/3: for notes, contacts, etcc*/}
       <div className="lg:grid grid-cols-5 gap-4 w-full">

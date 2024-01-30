@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from typing import Optional, List, TYPE_CHECKING
 import sqlalchemy as sa
 import sqlalchemy.orm as so
@@ -12,6 +13,7 @@ class SavedJob(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     #foreign key can be null
     stage_id: so.Mapped[Optional[int]] = so.mapped_column(sa.Integer, sa.ForeignKey('application_stages.id'))
+    rejected_at_stage_id: so.Mapped[Optional[int]] = so.mapped_column(sa.Integer, sa.ForeignKey('application_stages.id'))
     job_title: so.Mapped[str] = so.mapped_column(sa.String(150))
     company_name: so.Mapped[str] = so.mapped_column(sa.String(150))
     location: so.Mapped[Optional[str]] = so.mapped_column(sa.String(250))
@@ -22,9 +24,11 @@ class SavedJob(db.Model):
     job_date: so.Mapped[Optional[str]] = so.mapped_column(sa.String(100))
     notes: so.Mapped[Optional[str]] = so.mapped_column(sa.String(5000))
     position: so.Mapped[Optional[int]] = so.mapped_column(sa.Integer)
+    created_at: so.Mapped[datetime] = so.mapped_column(
+        default=lambda: datetime.now())
 
     #relationship
-    stage: so.Mapped[Optional["ApplicationStage"]] = so.relationship("ApplicationStage", back_populates="jobs")
+    stage: so.Mapped[Optional["ApplicationStage"]] = so.relationship("ApplicationStage", back_populates="jobs", foreign_keys='SavedJob.stage_id')
     #delete all tasks and contacts associated with this job when job is deleted
     tasks: so.Mapped[List["Task"]] = so.relationship(cascade="all, delete-orphan", lazy=True)
     contacts: so.Mapped[List["Contact"]] = so.relationship(cascade="all, delete-orphan", lazy=True)
@@ -36,6 +40,7 @@ class SavedJob(db.Model):
         return {
             "id": self.id,
             "stage_id": self.stage_id,
+            "rejected_at_stage_id": self.rejected_at_stage_id,
             "job_title": self.job_title,
             "company_name": self.company_name,
             "location": self.location,
@@ -46,6 +51,7 @@ class SavedJob(db.Model):
             "job_date": self.job_date,
             "notes": self.notes,
             "position": self.position,
+            "created_at": self.created_at,
             #for stage only need id and stage_name
             "stage": {
                 "id": self.stage.id,

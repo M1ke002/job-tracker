@@ -31,6 +31,43 @@ export const getApplicationStatusCount = (
         break;
     }
   });
+
+  const rejectedJobStageMap: { [key: string]: number } = {
+    Applied: 0,
+    "O.A.": 0,
+    Interview: 0,
+    Offer: 0,
+  };
+  const stageRejected = applicationStages.find(
+    (stage) => stage.stage_name === "Rejected"
+  );
+  if (stageRejected) {
+    stageRejected.jobs.forEach((job) => {
+      // console.log(job);
+      const currentStageName = applicationStages.find(
+        (stage) => stage.id === job.rejected_at_stage_id
+      )?.stage_name;
+      // console.log(currentStageName);
+      switch (currentStageName) {
+        case "O.A.":
+          rejectedJobStageMap["O.A."] += 1;
+          break;
+        case "Interviewing":
+          rejectedJobStageMap["O.A."] += 1;
+          rejectedJobStageMap["Interview"] += 1;
+          break;
+        case "Offer":
+          rejectedJobStageMap["O.A."] += 1;
+          rejectedJobStageMap["Interview"] += 1;
+          rejectedJobStageMap["Offer"] += 1;
+          break;
+        default:
+          break;
+      }
+    });
+  }
+  // console.log(applicationStageMap);
+
   applicationStages.forEach((stage) => {
     switch (stage.stage_name) {
       case "Applied":
@@ -48,6 +85,7 @@ export const getApplicationStatusCount = (
         applicationStatus.push({
           name: "O.A.",
           count:
+            rejectedJobStageMap["O.A."] +
             applicationStageMap["O.A."] +
             applicationStageMap["Interview"] +
             applicationStageMap["Offer"],
@@ -57,13 +95,15 @@ export const getApplicationStatusCount = (
         applicationStatus.push({
           name: "Interviews",
           count:
-            applicationStageMap["Interview"] + applicationStageMap["Offer"],
+            rejectedJobStageMap["Interview"] +
+            applicationStageMap["Interview"] +
+            applicationStageMap["Offer"],
         });
         break;
       case "Offer":
         applicationStatus.push({
           name: "Offers",
-          count: applicationStageMap["Offer"],
+          count: rejectedJobStageMap["Offer"] + applicationStageMap["Offer"],
         });
         break;
       case "Rejected":

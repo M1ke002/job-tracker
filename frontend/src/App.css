@@ -13,9 +13,24 @@
     height: 12rem;
 }
   
-  .ql-editor {
-    height: 100%;
-    flex: 1;
-    overflow-y: auto;
-    width: 100%;
-  }
+.ql-editor {
+  height: 100%;
+  flex: 1;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.test-class:not(:last-of-type)::after {
+  content: "";
+  position: absolute;  
+  bottom: 0;
+  top: -1px;
+  width: 0;
+  height: 0;
+  right: -16px;
+  border-left: 16px solid #ffffff;
+  border-top: 20px solid transparent;
+  border-bottom: 20px solid transparent;
+  filter: drop-shadow(1px 0px 0px #bdbdbd);
+  z-index: 2;
+}

@@ -91,6 +91,7 @@ def update_job_stage(job_id, stage_id):
         return None
     if (stage_id == "None"):
         job.stage_id = None
+        job.rejected_at_stage_id = None
         db.session.commit()
         return job.to_dict()
     #search for application stage with stage_id
@@ -98,6 +99,13 @@ def update_job_stage(job_id, stage_id):
     stage = ApplicationStage.query.filter_by(id=stage_id).first()
     if stage is None:
         return None
+    #if stage is rejected, and job doesnt have a stage yet -> set default to stage with name = 'Applied'
+    if stage.stage_name == "Rejected":
+        if job.rejected_at_stage_id is None:
+            applied_stage = ApplicationStage.query.filter_by(stage_name="Applied").first()
+            job.rejected_at_stage_id = applied_stage.id
+    else:
+        job.rejected_at_stage_id = stage.id
     job.stage_id = stage.id
     # set job position to last position in stage
     job.position = len(stage.jobs)
@@ -110,6 +118,7 @@ def update_job_order(data):
     for job_position in job_positions:
         job = SavedJob.query.get(job_position['id'])
         job.stage_id = job_position['stage_id']
+        job.rejected_at_stage_id = job_position['rejected_at_stage_id']
         job.position = job_position['position']
     db.session.commit()
     return "updated job order successfully"
@@ -123,6 +132,7 @@ def remove_job_from_stage(job_id, data):
     if job is None:
         return None
     job.stage_id = None
+    job.rejected_at_stage_id = None
     
     #update positions of remaining jobs in stage
     for job_position in job_positions:

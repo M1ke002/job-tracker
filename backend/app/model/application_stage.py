@@ -11,7 +11,7 @@ class ApplicationStage(db.Model):
     position: so.Mapped[int] = so.mapped_column(sa.Integer)
 
     #relationship
-    jobs: so.Mapped[List["SavedJob"]] = so.relationship("SavedJob", back_populates="stage", lazy=True)
+    jobs: so.Mapped[List["SavedJob"]] = so.relationship("SavedJob", back_populates="stage", lazy=True, foreign_keys='SavedJob.stage_id')
 
     def __repr__(self) -> str:
         return f"<ApplicationStage {self.stage_name}>"

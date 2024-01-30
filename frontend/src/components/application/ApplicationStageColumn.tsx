@@ -27,6 +27,7 @@ interface ApplicationStageColumnProps {
   id: number;
   stage_name: string;
   jobs: SavedJob[];
+  isLoading: boolean;
   removeJobFromStages: (jobId: number) => void;
   setApplicationStageColumns?: React.Dispatch<
     React.SetStateAction<ApplicationStage[]>
@@ -37,6 +38,7 @@ const ApplicationStageColumn = ({
   id,
   stage_name,
   jobs,
+  isLoading,
   removeJobFromStages,
   setApplicationStageColumns,
 }: ApplicationStageColumnProps) => {
@@ -56,6 +58,7 @@ const ApplicationStageColumn = ({
       stage_name,
       jobs,
     },
+    disabled: isLoading,
   });
 
   const { onOpen } = useModal();
@@ -68,7 +71,11 @@ const ApplicationStageColumn = ({
 
   //#f1f2f4
   return (
-    <div ref={setNodeRef} style={style} className="px-2 h-full">
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={cn("px-2 h-full", isLoading && "opacity-70")}
+    >
       {/* #ebf4ff instead of #fff???? */}
       <div
         className={cn(
@@ -144,6 +151,7 @@ const ApplicationStageColumn = ({
                   key={job.id}
                   job={job}
                   removeJobFromStages={removeJobFromStages}
+                  isLoading={isLoading}
                 />
               );
             })}

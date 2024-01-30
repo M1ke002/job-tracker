@@ -90,7 +90,7 @@ export const columns: ColumnDef<Document>[] = [
       return (
         <Button
           variant="ghost"
-          className="flex items-center hover:bg-[#ebf4ff] p-1 font-semibold"
+          className="flex items-center hover:bg-[#ebf4ff] font-semibold px-1"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Name
@@ -98,17 +98,29 @@ export const columns: ColumnDef<Document>[] = [
         </Button>
       );
     },
+    cell: ({ row }) => {
+      // fixed width for the name column
+      return <div className="truncate px-1">{row.original.file_name}</div>;
+    },
   },
   {
     accessorKey: "document_type_name",
     header: "Type",
+    cell: ({ row }) => {
+      return <div className="truncate">{row.original.document_type_name}</div>;
+    },
   },
   {
     accessorKey: "job_title",
     header: "Job",
     cell: ({ row }) => {
       const { job_title } = row.original;
-      return <div>{job_title ? job_title : "– –"}</div>;
+      const displayed_job_title = job_title
+        ? job_title.length > 40
+          ? job_title.substring(0, 40) + "..."
+          : job_title
+        : "– –";
+      return <div>{displayed_job_title}</div>;
     },
   },
   {
@@ -117,7 +129,7 @@ export const columns: ColumnDef<Document>[] = [
       return (
         <Button
           variant="ghost"
-          className="flex items-center hover:bg-[#ebf4ff] p-1 font-semibold"
+          className="flex items-center hover:bg-[#ebf4ff] px-1 font-semibold"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Uploaded
@@ -127,7 +139,11 @@ export const columns: ColumnDef<Document>[] = [
     },
     cell: ({ row }) => {
       const { date_uploaded } = row.original;
-      return <div>{format(new Date(date_uploaded), "dd/MM/yyyy")}</div>;
+      return (
+        <div className="px-1">
+          {format(new Date(date_uploaded), "dd/MM/yyyy")}
+        </div>
+      );
     },
   },
   {
