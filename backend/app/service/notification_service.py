@@ -1,7 +1,8 @@
 from app.model import db, Notification
 
-def get_all_notifications():
-    notifications = Notification.query.order_by(Notification.created_at.desc()).all()
+def get_all_notifications(limit):
+    #get top limit notifications, ordered by created_at desc
+    notifications = Notification.query.order_by(Notification.created_at.desc()).limit(limit).all()
     return [notification.to_dict() for notification in notifications]
 
 def set_notifications_to_read():

@@ -70,3 +70,5 @@ Scheduled job ran at 2024-01-29 20:13:11. Found 6 new jobs for site: Grad Connec
 Scheduled job ran at 2024-01-30 08:53:40. Found 1 new jobs for site: Grad Connection, 37 new jobs for site: Seek.
 Scheduled job ran at 2024-01-30 11:00:13. Found 12 new jobs for site: Grad Connection, 26 new jobs for site: Seek.
 Scheduled job ran at 2024-01-30 19:00:19. Found 4 new jobs for site: Grad Connection, 42 new jobs for site: Seek.
+Scheduled job ran at 2024-01-31 11:40:15. Found 10 new jobs for site: Grad Connection, 42 new jobs for site: Seek.
+Scheduled job ran at 2024-01-31 19:00:11. Found 3 new jobs for site: Grad Connection, 39 new jobs for site: Seek.
