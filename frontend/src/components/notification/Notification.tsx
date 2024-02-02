@@ -4,11 +4,14 @@ import NotificationItem from "./NotificationItem";
 import axios from "@/lib/axiosConfig";
 import NotificationType from "@/types/Notification";
 
+import { useNavigate } from "react-router-dom";
+
 interface NotificationProps {
   notifications: NotificationType[];
 }
 
 const Notification = ({ notifications }: NotificationProps) => {
+  const navigate = useNavigate();
   return (
     <div className="flex flex-col">
       <div className="flex items-center space-x-2 px-4 py-3 shadow-sm">
@@ -39,8 +42,11 @@ const Notification = ({ notifications }: NotificationProps) => {
       </div>
       {/* load more btn */}
       <div className="flex items-center justify-center">
-        <button className="text-sm w-full text-blue-500 hover:text-blue-500/80 py-3 bg-[#f6f7f8] font-semibold">
-          Load more
+        <button
+          className="text-sm w-full text-blue-500 hover:text-blue-500/80 py-3 bg-[#f6f7f8] font-semibold uppercase"
+          onClick={() => navigate("/notifications")}
+        >
+          See all
         </button>
       </div>
     </div>

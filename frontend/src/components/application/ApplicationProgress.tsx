@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import ApplicationProgressItem from "./ApplicationProgressItem";
 
 import { useCurrentSavedJob } from "@/hooks/zustand/useCurrentSavedJob";
@@ -49,9 +49,10 @@ const ApplicationProgress = () => {
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
   const { applicationStages, setApplicationStages } = useApplicationStages();
 
-  const applicationProgressItems = getApplicationProgressItems(
-    applicationStages,
-    currentSavedJob
+  //useMemo to memoize the result of getApplicationProgressItems
+  const applicationProgressItems = useMemo(
+    () => getApplicationProgressItems(applicationStages, currentSavedJob),
+    [applicationStages, currentSavedJob]
   );
 
   return (

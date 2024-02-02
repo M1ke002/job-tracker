@@ -1,5 +1,5 @@
 import { X, AlignJustify, Bell, CircleUserRound } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { NavLink } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import {
@@ -17,17 +17,24 @@ const Navbar = () => {
   const [isTop, setIsTop] = useState(false);
   const { notifications, setNotifications } = useNotifications();
 
-  const newNotificationsCount = notifications.reduce(
-    (acc, notification) => acc + (notification.is_read ? 0 : 1),
-    0
+  const newNotificationsCount = useMemo(
+    () =>
+      notifications.reduce(
+        (acc, notification) => acc + (notification.is_read ? 0 : 1),
+        0
+      ),
+    [notifications]
   );
 
   useEffect(() => {
     try {
       const fetchNotifications = async () => {
-        const res = await axios.get("/notifications");
+        const res = await axios.get("/notifications?limit=15&page=1");
         // console.log(res.data);
-        setNotifications(res.data);
+        const notifications = res.data[0];
+        const hasNextPage = res.data[1];
+        console.log(notifications);
+        setNotifications(notifications);
       };
       fetchNotifications();
     } catch (error) {

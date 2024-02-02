@@ -42,7 +42,11 @@ const ContactItem = ({ contact }: ContactItemProps) => {
       {contact.person_linkedin && (
         <span className="flex items-center space-x-1">
           <Linkedin size={18} />
-          <a href="#" className="text-blue-700">
+          <a
+            href={contact.person_linkedin}
+            target="_blank"
+            className="text-blue-700"
+          >
             {contact.person_linkedin}
           </a>
         </span>

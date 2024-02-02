@@ -128,8 +128,8 @@ const JobListingPage = () => {
         setIsSearching(false);
 
         const jobListings: JobListing[] = res.data[0];
-        const totalPages = res.data[1];
-        const totalJobCount = res.data[2];
+        const totalPages: number = res.data[1];
+        const totalJobCount: number = res.data[2];
 
         if (currentScrapedSiteId) {
           //update scrapedSites with new data
@@ -221,8 +221,8 @@ const JobListingPage = () => {
       query += `page=${page}&per_page=30`;
       const res = await axios.get(query);
       const jobListings: JobListing[] = res.data[0];
-      const totalPages = res.data[1];
-      const totalJobCount = res.data[2];
+      const totalPages: number = res.data[1];
+      const totalJobCount: number = res.data[2];
       console.log("res", res.data);
 
       if (currentScrapedSiteId) {

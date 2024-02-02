@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import ApplicationStageType from "@/types/ApplicationStage";
 import { GRAD_CONNECTION_URL, SEEK_URL } from "./constants";
 
@@ -128,7 +129,9 @@ export const getTimeDifference = (startTime: string, endTime: Date) => {
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
-  if (days > 0) {
+  if (days > 6) {
+    return format(realStartDate, "dd/MM/yyyy");
+  } else if (days > 0) {
     return `${days}d ago`;
   } else if (hours > 0) {
     return `${hours}h ago`;

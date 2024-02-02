@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import ApplicationStageColumn from "@/components/application/ApplicationStageColumn";
 import ApplicationStage from "@/components/application/ApplicationStage";
 import { Plus } from "lucide-react";
@@ -160,56 +160,64 @@ const ApplicationsPage = () => {
     }
   };
 
-  const removeJobFromStages = async (jobId: number) => {
-    try {
-      //find the column that contains the job
-      const column = findColumnByJobId(jobId);
-      if (!column) return;
+  const removeJobFromStages = useCallback(
+    async (jobId: number) => {
+      try {
+        //find the column that contains the job
+        const column = findColumnByJobId(jobId);
+        if (!column) return;
 
-      //remove the job from the column
-      column.jobs = column.jobs.filter((job) => job.id !== jobId);
+        //remove the job from the column
+        column.jobs = column.jobs.filter((job) => job.id !== jobId);
 
-      //update the position of jobs
-      column.jobs = column.jobs.map((job, index) => ({
-        ...job,
-        position: index,
-      }));
+        //update the position of jobs
+        column.jobs = column.jobs.map((job, index) => ({
+          ...job,
+          position: index,
+        }));
 
-      setApplicationStageColumns((prev) => {
-        const newColumns = [...prev];
-        const index = newColumns.findIndex((stage) => stage.id === column.id);
-        newColumns[index] = column;
-        return newColumns;
-      });
+        setApplicationStageColumns((prev) => {
+          const newColumns = [...prev];
+          const index = newColumns.findIndex((stage) => stage.id === column.id);
+          newColumns[index] = column;
+          return newColumns;
+        });
 
-      //send an array of [{id: 1, position: 0}, {id: 2, position: 1}, ...]: positions of the remaining jobs in the column
-      const jobPositions = column.jobs.map((job) => ({
-        id: job.id,
-        position: job.position,
-      }));
+        //send an array of [{id: 1, position: 0}, {id: 2, position: 1}, ...]: positions of the remaining jobs in the column
+        const jobPositions = column.jobs.map((job) => ({
+          id: job.id,
+          position: job.position,
+        }));
 
-      const res = await axios.put(`/saved-jobs/${jobId}/remove-stage`, {
-        jobPositions,
-      });
-      console.log(res.data);
+        const res = await axios.put(`/saved-jobs/${jobId}/remove-stage`, {
+          jobPositions,
+        });
+        console.log(res.data);
 
-      //update the saved jobs
-      const updatedSavedJobs = savedJobs.map((job) => {
-        if (job.id === jobId) {
-          return {
-            ...job,
-            stage: null,
-            stage_id: null,
-            rejected_at_stage_id: null,
-          };
-        }
-        return job;
-      });
-      setSavedJobs(updatedSavedJobs);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+        //update the saved jobs
+        const updatedSavedJobs = savedJobs.map((job) => {
+          if (job.id === jobId) {
+            return {
+              ...job,
+              stage: null,
+              stage_id: null,
+              rejected_at_stage_id: null,
+            };
+          }
+          return job;
+        });
+        setSavedJobs(updatedSavedJobs);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [
+      savedJobs,
+      setSavedJobs,
+      applicationStageColumns,
+      setApplicationStageColumns,
+    ]
+  );
 
   const dropAnimation: DropAnimation = {
     sideEffects: defaultDropAnimationSideEffects({

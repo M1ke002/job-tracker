@@ -9,6 +9,7 @@ import DocumentsPage from "./pages/DocumentsPage";
 import SavedJobsPage from "./pages/SavedJobsPage";
 import JobDetailsPage from "./pages/JobDetailsPage";
 import ModalProvider from "./components/providers/ModalProvider";
+import NotificationsPage from "./pages/NotificationsPage";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
             <Route path="/saved-jobs/:id" element={<JobDetailsPage />} />
             <Route path="/applications" element={<ApplicationsPage />} />
             <Route path="/documents" element={<DocumentsPage />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
           </Route>
         </Routes>
       </Router>

@@ -29,7 +29,7 @@ const TaskItem = ({ task }: TaskItemProps) => {
   const { onOpen } = useModal();
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
 
-  let type = task.is_completed ? "completed" : "incomplete";
+  let type = "incomplete";
   if (task.due_date) {
     const today = new Date();
     const dueDate = new Date(task.due_date);
@@ -37,6 +37,7 @@ const TaskItem = ({ task }: TaskItemProps) => {
       type = "overdue";
     }
   }
+  if (task.is_completed) type = "completed";
 
   const deleteTask = async () => {
     try {

@@ -20,7 +20,7 @@ import Task from "@/components/task/Task";
 import JobDescription from "@/components/jobs/JobDescription";
 
 import axios from "@/lib/axiosConfig";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 import { useModal } from "@/hooks/zustand/useModal";
@@ -34,10 +34,10 @@ import ApplicationProgress from "@/components/application/ApplicationProgress";
 const JobDetailsPage = () => {
   const { applicationStages, setApplicationStages } = useApplicationStages();
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
-  const { savedJobs, setSavedJobs } = useSavedJobs();
   const [isLoading, setLoading] = useState(false);
   const { id } = useParams<{ id: string }>();
   const { onOpen } = useModal();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchJobDetails = async () => {
@@ -86,8 +86,8 @@ const JobDetailsPage = () => {
   const handleDeleteJob = async () => {
     try {
       const res = await axios.delete(`/saved-jobs/${id}`);
-      setSavedJobs(savedJobs.filter((job) => job.id.toString() !== id));
       setCurrentSavedJob(null);
+      navigate("/saved-jobs");
     } catch (error) {
       console.log(error);
     }
