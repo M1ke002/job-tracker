@@ -5,5 +5,7 @@ my_env
 
 .env
 
+test.db
+
 app/script/Seek.json
 ~/app/script/test.py

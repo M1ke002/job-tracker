@@ -3,6 +3,20 @@ from flask_cors import CORS
 from .config import config_by_name
 from flask_migrate import Migrate
 
+#import models
+from .model import db
+from .model import User
+from .model import ApplicationStage
+from .model import SavedJob
+from .model import JobListing
+from .model import Task
+from .model import Contact
+from .model import Document
+from .model import DocumentType
+from .model import ScrapedSite
+from .model import ScrapedSiteSettings
+from .model import Notification
+
 def register_blueprints(app: Flask):
     #import blueprints
     from .controller import test_routes
@@ -34,20 +48,6 @@ def register_blueprints(app: Flask):
     app.register_blueprint(notification_routes, url_prefix='/api/notifications')
 
 def init_extensions(app):
-    #import models
-    from .model import db
-    from .model import User
-    from .model import ApplicationStage
-    from .model import SavedJob
-    from .model import JobListing
-    from .model import Task
-    from .model import Contact
-    from .model import Document
-    from .model import DocumentType
-    from .model import ScrapedSite
-    from .model import ScrapedSiteSettings
-    from .model import Notification
-
     db.init_app(app)
     migrate = Migrate(app, db)
 

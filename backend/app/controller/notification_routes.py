@@ -7,12 +7,13 @@ from app.service.notification_service import set_notifications_to_read
 notification_routes = Blueprint('notification_routes', __name__)
 
 # get all notifications
-#sample request: http://localhost:5000/api/notifications?limit=30
+#sample request: http://localhost:5000/api/notifications?limit=30&page=1
 @notification_routes.route('', methods=['GET'])
 def handle_get_all_notifications():
     # get the limit from the query string
     limit = request.args.get('limit', default=30, type=int)
-    notifications = get_all_notifications(limit)
+    page = request.args.get('page', default=1, type=int)
+    notifications = get_all_notifications(limit, page)
     return jsonify(notifications), 200
 
 #set all notiications to read

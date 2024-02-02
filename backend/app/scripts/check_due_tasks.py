@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
-from app.script.utils import connectDB
+from app.scripts.utils import connectDB
 
-def check_due_tasks(tasks):
+def find_due_tasks(tasks):
     res = []
     for task in tasks:
         task_name = task[2]
@@ -47,12 +47,42 @@ def create_notification(connection, cursor, task_name, due_date, date_message):
     )
     connection.commit()
 
+def check_due_tasks(connection, cursor):
+    email_data = {
+        'type': 'tasks',
+        'data': []
+    }
+    tasks = fetch_all_tasks(connection, cursor)
+    due_tasks = find_due_tasks(tasks)
+
+    for task in due_tasks:
+        task_name = task['task_name']
+        due_date = task['due_date']
+        is_notify_email = task['is_notify_email']
+        is_notify_on_website = task['is_notify_on_website']
+        date_message = task['date_message']
+
+        #format due date in format dd/mm/yyyy
+        formatted_due_date = due_date.strftime('%d/%m/%Y')
+
+        if bool(is_notify_on_website):
+            create_notification(connection, cursor, task_name, formatted_due_date, date_message)
+        
+        if bool(is_notify_email):
+            email_data['data'].append({
+                'task_name': task_name,
+                'due_date': formatted_due_date,
+                'date_message': date_message
+            })
+
+    return email_data
+
 if __name__ == '__main__':
     connection = connectDB()
     cursor = connection.cursor()
 
     tasks = fetch_all_tasks(connection, cursor)
-    due_tasks = check_due_tasks(tasks)
+    due_tasks = find_due_tasks(tasks)
 
     for task in due_tasks:
         task_name = task['task_name']

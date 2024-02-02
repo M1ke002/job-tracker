@@ -1,11 +1,5 @@
 #script used to run the scraper every day and update the database
-# from ...config import database_config
 import os 
-import sys
-#print the system path
-#append the path to the 'backend' folder to the system path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
-print(sys.path)
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -20,7 +14,7 @@ from app.utils.scraper.helper import findNewJobListings
 from app.utils.scraper.constants import SEEK, GRAD_CONNECTION
 from app.utils.scraper.url_builder import ausgradUrlBuilder, seekUrlBuilder
 from app.utils.send_mail.send_mail import send_mail, create_subject_and_body, should_send_email
-from app.script.utils import write_to_file
+from app.scripts.utils import write_to_file
 
 database_config = {
     "username": 'root',
@@ -87,6 +81,133 @@ def createNotification(connection, cursor, scraped_site_id, website_name, new_jo
         (scraped_site_id, f'Found {new_jobs_count} new jobs on {website_name}', 0)
     )
     connection.commit()
+
+#main function
+async def scrape_schedule(connection, cursor):
+    email_data = {
+        'type': 'scrape_schedule',
+        'data': []
+    }
+    found_jobs_dict = {
+        GRAD_CONNECTION: [],
+        SEEK: []
+    }
+
+    #delete all old job listings where created_at is older than 1 week
+    deleteOldJobListings(connection, cursor)
+
+    # get all scraped sites settings
+    scraped_sites = fetchAllScrapedSites(connection, cursor)
+
+    if (scraped_sites == None):
+        print('No scraped sites found')
+        cursor.close()
+        connection.close()
+        exit()
+
+    for scraped_site in scraped_sites:
+        # print(scraped_site)
+        # if (scraped_site[1] == SEEK): continue
+
+        site_id = scraped_site[0]
+        website_name = scraped_site[1]
+
+        #get scraped site settings
+        scraped_site_settings = fetchScrapeSiteSettings(connection, cursor, site_id)
+        if (scraped_site_settings == None):
+            print(f'No scraped site settings found for {website_name}')
+            continue
+        
+        #get settings
+        search_keyword = scraped_site_settings[4]
+        location = scraped_site_settings[5]
+        job_type = scraped_site_settings[6]
+        classification = scraped_site_settings[7]
+        max_pages_to_scrape = scraped_site_settings[8]
+        scrape_frequency = scraped_site_settings[2]
+        is_notify_email = scraped_site_settings[3]
+        is_notify_on_website = scraped_site_settings[9]
+
+        #if disabled scrape, continue
+        if scrape_frequency == -1:
+            continue
+
+        search_url = ''
+        if (website_name == GRAD_CONNECTION):
+            search_url = ausgradUrlBuilder(search_keyword, job_type, classification, location)
+        elif (website_name == SEEK):
+            search_url = seekUrlBuilder(search_keyword, job_type, classification, location)
+        
+        print(website_name, search_url)
+        # scraped_jobs = scrapeAllJobListings(website_name, 'https://au.gradconnection.com/internships/sydney/?title=Software+Engineer&ordering=-recent_job_created', site_id)
+        scraped_jobs = await scrapeAllJobListings(website_name, search_url, max_pages_to_scrape)
+
+        # get all job listings from db
+        old_jobs = fetchAllJobListings(connection, cursor, site_id)
+
+        old_jobs_dict = []
+        #old jobs is a list of tuples -> need to convert to a list of dicts
+        for job in old_jobs:
+            old_jobs_dict.append({
+                'id': job[0],
+                'scraped_site_id': job[1],
+                'job_title': job[2],
+                'company_name': job[3],
+                'location': job[4],
+                'job_description': job[5],
+                'additional_info': job[6],
+                'salary': job[7],
+                'job_url': job[8],
+                'is_new': job[9] == 1,
+                'job_date': job[10],
+                'created_at': job[11]
+            })
+
+        # find new job listings
+        new_jobs = findNewJobListings(old_jobs_dict, scraped_jobs)
+
+        total_new_jobs_count = len(new_jobs)
+        print(f'Found {total_new_jobs_count} new jobs for site: {website_name}')
+
+        #add new jobs to the found_jobs_dict
+        found_jobs_dict[website_name] = new_jobs
+
+        # update the is_new field of the existing job listings to false
+        updateJobListing(connection, cursor, old_jobs_dict)
+        # insert new job listings
+        addJobListings(connection, cursor, new_jobs, site_id)
+
+        if (len(new_jobs) > 0 and bool(is_notify_on_website)):
+            # create a notification
+            createNotification(connection, cursor, site_id, website_name, total_new_jobs_count)
+
+        if len(new_jobs) > 0 and bool(is_notify_email):
+            email_data['data'].append({
+                'site_name': website_name,
+                'jobs': new_jobs
+            })
+    
+        #update the last scraped date
+        now = datetime.now()
+        dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
+        query = f"UPDATE scraped_sites SET last_scrape_date = '{dt_string}' WHERE id = {site_id}"
+        cursor.execute(query)
+        connection.commit()
+
+    # write to a log.txt file
+    text = f"Scheduled job ran at {dt_string}. Found "
+    for site_name, jobs in found_jobs_dict.items():
+        text += f"{len(jobs)} new jobs for site: {site_name}, "
+
+    #remove the last 2 characters, which are ', '
+    text = text[:-2]
+    text += '.'
+    with open('log.txt', 'a') as f:
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        f.write(text + '\n')
+
+    return email_data
 
 async def main():
     connection = connectDB()

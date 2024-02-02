@@ -67,6 +67,67 @@ def create_subject_and_body(jobs_dict, email_notification_settings):
     subject += "."
     return subject, body
 
+def should_send_email_v1(email_data):
+    #not send email if there are no due tasks and no new jobs
+    should_send_email = False
+
+    for key, value in email_data.items():
+        if (len(value) > 0):
+            should_send_email = True
+            break
+    
+    return should_send_email
+
+def create_subject_and_body_v1(email_data):
+    subject = ""
+    body = ""
+
+    has_previous_data = False
+
+    now = datetime.now()
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    body += f"Scheduled job ran at {dt_string}.\n\n"
+
+    for key, value in email_data.items():
+        if (len(value) == 0):
+            continue
+
+
+        if key == "scrape_schedule":
+            subject += "Found"
+            found_jobs = False
+            has_previous_data = True
+
+            #value: array of obj: {site_name: [jobs]}
+            for data in value:
+                site_name = data['site_name']
+                jobs = data['jobs']
+                if (found_jobs):
+                    subject += ","
+                subject += f" {len(jobs)} new jobs for {site_name}"
+
+                if (found_jobs):
+                    body += "\n"
+                body += f"{site_name}:\n"
+                for job in jobs:
+                    body += f"{job['job_title']} - {job['job_url']}\n"
+
+                found_jobs = True
+
+        if key == "tasks":
+            if has_previous_data:
+                subject += ". "
+                body += "\n"
+
+            subject += f"{len(value)} due tasks found"
+            body += "Due tasks:\n"
+
+            for task in value:
+                body += f"Task: {task['task_name']} is due {task['date_message']} on {task['due_date']}.\n"
+
+    subject += "."
+    return subject, body
+
 def send_mail(sender, password, recipients, subject, body):
     msg = MIMEText(body)
     msg["Subject"] = subject
