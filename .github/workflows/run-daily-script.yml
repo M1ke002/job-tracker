@@ -1,4 +1,6 @@
 # github action to run python script on schedule
+#python script located in backend/app/scripts/script.py
+#requirements.txt located in backend/requirements.txt
 name: daily report
 
 #run twice a day, at 6:13 AM and 18:13 PM (VN time) -> 23:13 PM UTC, 11:13 AM UTC
@@ -22,10 +24,11 @@ jobs:
           cache: "pip" # caching pip dependencies
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          cd backend
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Run script
-        env:
-          GMAIL_USERNAME: ${{ secrets.GMAIL_USERNAME }}
-          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
-        run: python script.py
+        run: |
+          cd backend/app/scripts
+          python test_action.py
