@@ -30,9 +30,12 @@ const TaskItem = ({ task }: TaskItemProps) => {
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
 
   let type = "incomplete";
+  let dueDate = null;
   if (task.due_date) {
     const today = new Date();
-    const dueDate = new Date(task.due_date);
+    dueDate = new Date(task.due_date);
+    // must minus 7 hours to get the correct date
+    dueDate.setHours(dueDate.getHours() - 7);
     if (dueDate < today) {
       type = "overdue";
     }
@@ -106,10 +109,7 @@ const TaskItem = ({ task }: TaskItemProps) => {
         <span
           className={cn("text-gray-500", type === "overdue" && "text-rose-500")}
         >
-          Due:{" "}
-          {task.due_date
-            ? format(new Date(task.due_date), "MMM dd, yyyy")
-            : "N/A"}
+          Due: {dueDate ? format(new Date(dueDate), "MMM dd, yyyy") : "N/A"}
         </span>
       </div>
       <div className="flex items-center space-x-5">

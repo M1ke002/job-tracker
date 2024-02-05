@@ -5,7 +5,7 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 import asyncio
-from app.scripts.utils import connectDB
+from app.scripts.utils import create_sqlalchemy_session
 from app.scripts.check_due_tasks import check_due_tasks
 from app.scripts.scrape_schedule import scrape_schedule
 from app.utils.send_mail.send_mail import should_send_email_v1, create_subject_and_body_v1, send_mail
@@ -32,21 +32,16 @@ def construct_and_send_email(email_data):
 
 
 async def main():
-    connection = connectDB()
-    cursor = connection.cursor()
+    session = create_sqlalchemy_session()
     email_data = {}
 
     #scrape schedule
-    data = await scrape_schedule(connection, cursor)
+    data = await scrape_schedule(session)
     email_data[data['type']] = data['data']
 
     #check due tasks
-    #TODO: bug with notifications for due tasks: notification model not suitable for tasks (has scraped_site_id field)
-    data = check_due_tasks(connection, cursor)
+    data = check_due_tasks(session)
     email_data[data['type']] = data['data']
-
-    cursor.close()
-    connection.close()
 
     #send email
     construct_and_send_email(email_data)

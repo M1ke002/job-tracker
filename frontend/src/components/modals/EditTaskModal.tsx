@@ -106,10 +106,25 @@ const EditTaskModal = () => {
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       console.log(data);
+      //compare data.dueDate with task.due_date, in Date format
+      let isDueDateChanged = false;
+
+      if (task?.due_date && data.dueDate) {
+        const taskDueDate = new Date(task.due_date);
+        isDueDateChanged = taskDueDate.getDay() !== data.dueDate.getDay();
+      } else if (
+        (task?.due_date && !data.dueDate) ||
+        (!task?.due_date && data.dueDate)
+      ) {
+        isDueDateChanged = true;
+      }
+      console.log("isDueDateChanged", isDueDateChanged);
+
       const res = await axios.put(`/tasks/${task?.id}`, {
         taskName: data.taskName,
         dueDate: data.dueDate,
         isReminderEnabled: data.isReminderEnabled,
+        isReminded: isDueDateChanged ? false : task?.is_reminded,
         reminderDate: data.reminderDate,
         isNotifyEmail: data.isNotifyEmail,
         isNotifyOnWebsite: data.isNotifyOnWebsite,

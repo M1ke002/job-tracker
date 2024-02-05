@@ -21,7 +21,7 @@ def jobObjectToDict(job):
         'salary': job.salary,
         'job_url': job.job_url,
         'job_date': job.job_date,
-        'is_new': False,
+        'is_new': job.is_new,
         'created_at': job.created_at
     }
 

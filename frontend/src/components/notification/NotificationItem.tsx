@@ -13,6 +13,7 @@ import { useModal } from "@/hooks/zustand/useModal";
 import axios from "@/lib/axiosConfig";
 
 import { useNotifications } from "@/hooks/zustand/useNotifications";
+import { cn } from "@/lib/utils";
 
 interface NotificationItemProps {
   id: number;
@@ -44,14 +45,14 @@ const NotificationItem = ({
 
   return (
     <div className="relative grid grid-cols-[25px_1fr] items-start border-b-[1px] last:border-b-0 px-4 py-4 cursor-pointer hover:bg-gray-100">
-      {!isRead && (
-        <span className="flex h-2 w-2 translate-y-1 rounded-full bg-sky-500" />
-      )}
-      {isRead && (
-        <span className="flex h-2 w-2 translate-y-1 rounded-full bg-gray-400" />
-      )}
+      <span
+        className={cn(
+          "flex h-2 w-2 translate-y-1 mt-[2px] rounded-full bg-sky-500",
+          isRead && "bg-gray-400"
+        )}
+      />
       <div className="space-y-1">
-        <p className="text-sm font-medium leading-none">
+        <p className="text-sm font-medium leading-5">
           {message.length > 50 ? message.slice(0, 50) + "..." : message}
         </p>
         <p className="text-sm text-muted-foreground">

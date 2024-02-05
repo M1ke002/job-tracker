@@ -5,6 +5,7 @@ interface Task {
   due_date: string;
   is_completed: boolean;
   is_reminder_enabled: boolean;
+  is_reminded: boolean;
   reminder_date: string;
   is_notify_email: boolean;
   is_notify_on_website: boolean;

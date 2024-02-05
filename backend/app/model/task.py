@@ -13,6 +13,7 @@ class Task(db.Model):
     due_date: so.Mapped[Optional[datetime]] = so.mapped_column(sa.DateTime(timezone=True), nullable=True)
     is_completed: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=False)
     is_reminder_enabled: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=False)
+    is_reminded: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=False)
     #no of days before due date to send reminder
     reminder_date: so.Mapped[Optional[int]] = so.mapped_column(sa.Integer, default=1)
     is_notify_email: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=False)
@@ -29,6 +30,7 @@ class Task(db.Model):
             "due_date": self.due_date,
             "is_completed": self.is_completed,
             "is_reminder_enabled": self.is_reminder_enabled,
+            "is_reminded": self.is_reminded,
             "reminder_date": self.reminder_date,
             "is_notify_email": self.is_notify_email,
             "is_notify_on_website": self.is_notify_on_website
