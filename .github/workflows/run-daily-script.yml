@@ -1,0 +1,31 @@
+# github action to run python script on schedule
+name: daily report
+
+#run twice a day, at 6:13 AM and 18:13 PM (VN time) -> 23:13 PM UTC, 11:13 AM UTC
+#Vietnam time - 7 hours -> UTC time
+on:
+  schedule:
+    - cron: "13 11,23 * * *"
+  workflow_dispatch:
+
+jobs:
+  send_daily_report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: "pip" # caching pip dependencies
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run script
+        env:
+          GMAIL_USERNAME: ${{ secrets.GMAIL_USERNAME }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+        run: python script.py
