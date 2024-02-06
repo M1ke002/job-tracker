@@ -28,7 +28,8 @@ const CofirmationModal = () => {
       type === "deleteNote" ||
       type === "deleteApplicationStage" ||
       type === "deleteNotification" ||
-      type === "deleteDocument");
+      type === "deleteDocument" ||
+      type === "removeDocument");
 
   const handleCloseModal = () => {
     onClose();

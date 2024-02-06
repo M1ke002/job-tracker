@@ -16,11 +16,11 @@ class SavedJob(db.Model):
     rejected_at_stage_id: so.Mapped[Optional[int]] = so.mapped_column(sa.Integer, sa.ForeignKey('application_stages.id'))
     job_title: so.Mapped[str] = so.mapped_column(sa.String(150))
     company_name: so.Mapped[str] = so.mapped_column(sa.String(150))
-    location: so.Mapped[Optional[str]] = so.mapped_column(sa.String(250))
-    job_description: so.Mapped[Optional[str]] = so.mapped_column(sa.String(1000))
-    additional_info: so.Mapped[Optional[str]] = so.mapped_column(sa.String(1000))
+    location: so.Mapped[Optional[str]] = so.mapped_column(sa.String(200))
+    job_description: so.Mapped[Optional[str]] = so.mapped_column(sa.String(6000))
+    additional_info: so.Mapped[Optional[str]] = so.mapped_column(sa.String(500))
     salary: so.Mapped[Optional[str]] = so.mapped_column(sa.String(100))
-    job_url: so.Mapped[str] = so.mapped_column(sa.String(1000))
+    job_url: so.Mapped[str] = so.mapped_column(sa.String(500))
     job_date: so.Mapped[Optional[str]] = so.mapped_column(sa.String(100))
     notes: so.Mapped[Optional[str]] = so.mapped_column(sa.String(5000))
     position: so.Mapped[Optional[int]] = so.mapped_column(sa.Integer)
@@ -32,6 +32,7 @@ class SavedJob(db.Model):
     #delete all tasks and contacts associated with this job when job is deleted
     tasks: so.Mapped[List["Task"]] = so.relationship(cascade="all, delete-orphan", lazy=True)
     contacts: so.Mapped[List["Contact"]] = so.relationship(cascade="all, delete-orphan", lazy=True)
+    documents: so.Mapped[List["Document"]] = so.relationship("Document", back_populates="job", lazy=True)
 
     def __repr__(self) -> str:
         return f"<SavedJob {self.job_title} {self.company_name}>"
@@ -58,5 +59,6 @@ class SavedJob(db.Model):
                 "stage_name": self.stage.stage_name
             } if self.stage else None,
             "tasks": [task.to_dict() for task in self.tasks],
-            "contacts": [contact.to_dict() for contact in self.contacts]
+            "contacts": [contact.to_dict() for contact in self.contacts],
+            "documents": [document.to_dict() for document in self.documents]
         }

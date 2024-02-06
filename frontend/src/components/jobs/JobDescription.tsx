@@ -1,5 +1,5 @@
 import { ChevronDownCircle, FileEdit } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -9,18 +9,45 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
+import { isTextEmpty } from "@/utils/utils";
+import axios from "@/lib/axiosConfig";
+
+import { useCurrentSavedJob } from "@/hooks/zustand/useCurrentSavedJob";
 
 interface JobDescriptionProps {
   jobDescription: string;
 }
 
-const JobDescription = () => {
+const JobDescription = ({ jobDescription }: JobDescriptionProps) => {
+  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
   const [rotateChevron, setRotateChevron] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [value, setValue] = useState("");
 
   const handleRotate = () => setRotateChevron(!rotateChevron);
   const rotate = rotateChevron ? "rotate(-180deg)" : "rotate(0)";
+
+  useEffect(() => {
+    setValue(jobDescription);
+  }, [jobDescription]);
+
+  const handleSaveJobDescription = async () => {
+    try {
+      console.log(value);
+      const res = await axios.put(
+        `/saved-jobs/${currentSavedJob?.id}/job-description`,
+        {
+          jobDescription: value,
+        }
+      );
+      const updatedSavedJob = res.data;
+      setCurrentSavedJob(updatedSavedJob);
+      setIsEditMode(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <Collapsible defaultOpen={true}>
       <div className="p-6 bg-white border border-[#dbe9ff] w-full shadow-sm">
@@ -49,30 +76,33 @@ const JobDescription = () => {
         <hr className="mt-2 mb-3 border-[#d6eaff]" />
         <CollapsibleContent>
           {!isEditMode && (
-            <p className="text-gray-700">
-              Position title: Application Developer
-              <br />
-              Department: IT Status: Full Time, Non-Exempt
-              <br />
-              Location: Remote
-              <br />
-              Reports to: Sr. Director of IT & Volunteer Services Works with:
-              AHG Staff and Volunteers Pay range: $22 - $24 per hour
-              <br />
-              Position Description
-              <br />
-              Exhibits a Christ-like servant leadership spirit while developing
-              and maintaining all databases and websites in the environment.
-              This role is the primary administrator for all development
-              applications and projects.
-            </p>
+            <div className="text-gray-700">
+              {value !== "" && (
+                <div
+                  className="max-h-[500px] overflow-y-auto"
+                  dangerouslySetInnerHTML={{ __html: value }}
+                ></div>
+              )}
+              {value === "" && (
+                <p className="text-gray-700">
+                  No job description yet. Click the edit button to paste in the
+                  job description.
+                </p>
+              )}
+            </div>
           )}
           {isEditMode && (
             <div className="flex flex-col">
               <ReactQuill
                 theme="snow"
                 value={value}
-                onChange={setValue}
+                onChange={(value) => {
+                  if (isTextEmpty(value)) {
+                    setValue("");
+                  } else {
+                    setValue(value);
+                  }
+                }}
                 className="job-description-quill"
               />
               <div className="flex items-center space-x-2 mt-3">
@@ -80,7 +110,7 @@ const JobDescription = () => {
                   variant="primary"
                   size="sm"
                   className="text-white bg-blue-600 hover:bg-blue-700 px-5"
-                  onClick={() => setIsEditMode(!isEditMode)}
+                  onClick={handleSaveJobDescription}
                 >
                   Save
                 </Button>

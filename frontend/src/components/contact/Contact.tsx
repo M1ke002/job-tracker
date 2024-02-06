@@ -4,7 +4,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDownCircle } from "lucide-react";
+import { ChevronDownCircle, PlusCircle } from "lucide-react";
 import ContactItem from "@/components/contact/ContactItem";
 import { Input } from "../ui/input";
 import { Button } from "@/components/ui/button";
@@ -42,10 +42,11 @@ const Contact = ({ contacts, jobId }: ContactProps) => {
         ))}
         <Button
           variant="primary"
-          className="mt-2 w-full"
+          className="flex items-center justify-center mt-3 w-full"
           onClick={() => onOpen("createContact", { jobId: jobId?.toString() })}
         >
-          Create contact
+          <PlusCircle size={20} className="mr-2" />
+          Add a contact
         </Button>
       </CollapsibleContent>
     </Collapsible>

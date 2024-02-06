@@ -30,6 +30,7 @@ import { useApplicationStages } from "@/hooks/zustand/useApplicationStages";
 
 import ApplicationStage from "@/types/ApplicationStage";
 import ApplicationProgress from "@/components/application/ApplicationProgress";
+import AttachedDocuments from "@/components/document/AttachedDocuments";
 
 const JobDetailsPage = () => {
   const { applicationStages, setApplicationStages } = useApplicationStages();
@@ -214,7 +215,9 @@ const JobDetailsPage = () => {
       <div className="lg:grid grid-cols-5 gap-4 w-full">
         {/* left col */}
         <div className="col-span-3 space-y-4 mb-4 lg:mb-0">
-          <JobDescription />
+          <JobDescription
+            jobDescription={currentSavedJob?.job_description || ""}
+          />
           <Task jobId={currentSavedJob?.id.toString() || ""} />
         </div>
 
@@ -226,6 +229,7 @@ const JobDetailsPage = () => {
               contacts={currentSavedJob?.contacts}
               jobId={currentSavedJob?.id}
             />
+            <AttachedDocuments documents={currentSavedJob?.documents || []} />
           </div>
         </div>
       </div>

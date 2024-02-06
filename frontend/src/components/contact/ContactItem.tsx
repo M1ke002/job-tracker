@@ -31,7 +31,7 @@ const ContactItem = ({ contact }: ContactItemProps) => {
   };
 
   return (
-    <div className="relative flex flex-col my-3 p-3 rounded-md bg-[#f1f6fa] border border-[#c3dafe] shadow-sm">
+    <div className="group relative flex flex-col my-3 p-3 rounded-md border border-[#e4eefd] shadow">
       <div className="flex items-center space-x-1 mb-1">
         <h3 className="text-lg text-gray-700 font-semibold">
           {contact.person_name}
@@ -67,7 +67,7 @@ const ContactItem = ({ contact }: ContactItemProps) => {
           </p>
         </div>
       )}
-      <div className="absolute top-3 right-3 flex items-center space-x-1">
+      <div className="absolute top-3 right-3 flex items-center space-x-1 group-hover:opacity-100 opacity-0 transition-opacity duration-200">
         <button
           className="border-none focus:outline-none text-blue-700 hover:text-blue-700/80"
           onClick={() => {

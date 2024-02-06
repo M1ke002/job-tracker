@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from app.utils.utils import utc_to_vietnam_time
 from app.model import Task, Notification
 
 from sqlalchemy.orm.session import Session
@@ -17,7 +18,8 @@ def find_and_update_due_tasks(session: Session, tasks: list[Task]):
     for task in tasks:
         #check if current date + reminder_date is equal to due_date
         current_date = datetime.now()
-        expected_date = current_date + timedelta(days=task.reminder_date)
+        current_vn_time = utc_to_vietnam_time(current_date)
+        expected_date = current_vn_time + timedelta(days=task.reminder_date)
         #expected date format: 2024-02-02 21:00:00
         print(expected_date.day, task.due_date.day, task.task_name)
 
@@ -59,7 +61,8 @@ def create_notification(session: Session, task_name: str, due_date: str, date_me
     notification = Notification(
         scraped_site_id=None,
         message=message,
-        is_read=False
+        is_read=False,
+        created_at=utc_to_vietnam_time(datetime.now())
     )
     session.add(notification)
     session.commit()

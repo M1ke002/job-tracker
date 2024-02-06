@@ -62,6 +62,15 @@ def edit_document(document_id, data):
     db.session.commit()
     return document.to_dict()
 
+def unlink_job_from_document(document_id):
+    document = Document.query.get(document_id)
+    if document is None:
+        return None
+    
+    document.job_id = None
+    db.session.commit()
+    return document.to_dict()
+
 def delete_document(document_id):
     document = Document.query.get(document_id)
     if document is None:

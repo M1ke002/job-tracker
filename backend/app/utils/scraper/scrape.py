@@ -72,10 +72,12 @@ async def scrapeAusGradJobListings(soup: BeautifulSoup):
     jobs = list(jobs_dict.values())
     return jobs
 
+
 async def scrapeSeekJobListings(soup: BeautifulSoup):
     jobs_dict = {}
     job_listings = soup.find_all('div', class_='_1wkzzau0 a1msqi6m')
     print(f'Job Listings: {len(job_listings)}')
+
     for job in job_listings:
         # job_title_element = job.find('h3', class_='_1wkzzau0 a1msqi4y lnocuo0 lnocuol _1d0g9qk4 lnocuov lnocuo21')
         job_title = None
@@ -132,13 +134,16 @@ async def scrapeSeekJobListings(soup: BeautifulSoup):
     jobs = list(jobs_dict.values())
     return jobs
 
+
 async def fetchAndParseData(session, url, website_name):
     page = re.search(r'&page=(\d+)', url)
+    
     if not page:
         print(f"Fetching page 1...")
     else: 
         page = page.group(1)
         print(f"Fetching page {page}...")
+
     async with session.get(url) as response:
         html = await response.text()
         soup = BeautifulSoup(html, "html.parser")
@@ -150,6 +155,7 @@ async def fetchAndParseData(session, url, website_name):
             data = await scrapeSeekJobListings(soup)
 
         return data
+
 
 async def scrapeAllJobListings(
         website_name: str,

@@ -85,6 +85,14 @@ def edit_saved_job_notes(saved_job_id, notes):
     db.session.commit()
     return job.to_dict()
 
+def edit_saved_job_description(saved_job_id, description):
+    job = SavedJob.query.get(saved_job_id)
+    if job is None:
+        return None
+    job.job_description = description
+    db.session.commit()
+    return job.to_dict()
+
 def update_job_stage(job_id, stage_id):
     job = SavedJob.query.get(job_id)
     if job is None:

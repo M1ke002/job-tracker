@@ -100,7 +100,7 @@ const TaskItem = ({ task }: TaskItemProps) => {
   return (
     <div
       className={cn(
-        "relative flex flex-col my-3 p-3 border rounded-sm shadow-sm space-y-2 border-[#c3dafe]"
+        "relative flex flex-col my-3 p-3 border rounded-sm shadow space-y-2 border-[#e4eefd]"
       )}
     >
       <div className="flex items-center space-x-1">

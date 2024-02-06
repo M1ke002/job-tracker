@@ -1,4 +1,4 @@
-import { Contact, ListTodo, X } from "lucide-react";
+import { Contact, ListTodo, Paperclip, X } from "lucide-react";
 import React from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -59,6 +59,7 @@ const ApplicationStageBoxItem = ({
       <p className="flex items-center mt-1 text-zinc-700">
         {job.contacts.length > 0 && <Contact size={13} className="mr-1" />}
         {job.tasks.length > 0 && <ListTodo size={13} />}
+        {job.documents.length > 0 && <Paperclip size={13} />}
       </p>
       <button
         className="border-none focus:outline-none"

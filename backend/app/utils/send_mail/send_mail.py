@@ -6,6 +6,7 @@ import smtplib
 from email.mime.text import MIMEText
 
 from datetime import datetime
+from app.utils.utils import utc_to_vietnam_time
 
 
 def should_send_email(jobs_dict, email_notification_settings):
@@ -84,9 +85,10 @@ def create_subject_and_body_v1(email_data):
 
     has_previous_data = False
 
-    now = datetime.now()
-    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-    body += f"Scheduled job ran at {dt_string}.\n\n"
+    now = datetime.now() #UTC time
+    vn_time = utc_to_vietnam_time(now)
+    vn_time_dt_string = vn_time.strftime("%d/%m/%Y %H:%M:%S")
+    body += f"Scheduled job ran at {vn_time_dt_string}.\n\n"
 
     for key, value in email_data.items():
         if (len(value) == 0):

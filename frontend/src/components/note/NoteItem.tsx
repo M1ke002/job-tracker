@@ -6,17 +6,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { useCurrentSavedJob } from "@/hooks/zustand/useCurrentSavedJob";
 import axios from "@/lib/axiosConfig";
-
-const isTextEmpty = (text: string) => {
-  // Regular expression to match HTML tags
-  var htmlTagPattern = /<[^>]*>/g;
-
-  // Extract all HTML tags from the input string
-  var tags = text.match(htmlTagPattern);
-
-  // If there are tags and they cover the entire input string, it contains only tags
-  return tags && text.replace(htmlTagPattern, "").trim() === "";
-};
+import { isTextEmpty } from "@/utils/utils";
 
 const Note = () => {
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
@@ -100,21 +90,21 @@ const Note = () => {
         </div>
       )}
       {!isEditMode && (
-        <div className="relative p-3 rounded-md shadow-sm bg-[#f1f6fa] border border-[#c3dafe]">
+        <div className="group relative p-3 rounded-md shadow-sm bg-[#f1f6fa] border border-[#c3dafe]">
           {value !== "" && (
             <div
-              className="min-h-28 max-h-[600px] overflow-y-auto"
+              className="max-h-[600px] overflow-y-auto"
               dangerouslySetInnerHTML={{ __html: value }}
             ></div>
           )}
 
           {value === "" && (
-            <div className="flex items-center justify-center h-28 text-gray-400">
+            <div className="flex items-center justify-center h-16 text-gray-400">
               No notes yet
             </div>
           )}
 
-          <div className="absolute top-3 right-3 flex items-center space-x-1">
+          <div className="absolute top-3 right-3 flex items-center space-x-1 group-hover:opacity-100 opacity-0 transition-opacity duration-200">
             <button
               className="border-none focus:outline-none text-blue-700 hover:text-blue-700/80"
               onClick={() => setIsEditMode(!isEditMode)}

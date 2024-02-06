@@ -9,6 +9,7 @@ from app.utils.scraper.scrape import scrapeAllJobListings
 from app.utils.scraper.helper import findNewJobListings, jobObjectToDict
 from app.utils.scraper.constants import SEEK, GRAD_CONNECTION
 from app.utils.scraper.url_builder import ausgradUrlBuilder, seekUrlBuilder
+from app.utils.utils import utc_to_vietnam_time
 
 from sqlalchemy.orm.session import Session
 from app.model import ScrapedSiteSettings, JobListing, ScrapedSite, Notification
@@ -38,7 +39,7 @@ def updateJobListings(session: Session, jobs: list[JobListing]):
 
 #delete all old job listings where created_at is older than 3 days
 def deleteOldJobListings(session: Session):
-    cutoff_date = datetime.now() - timedelta(days=3)
+    cutoff_date = utc_to_vietnam_time(datetime.now()) - timedelta(days=3)
     session.query(JobListing).filter(JobListing.created_at < cutoff_date).delete()
     session.commit()
 
@@ -55,8 +56,7 @@ def updateLastScrapedDate(session: Session, scraped_site_id: int, date: datetime
     if site is None:
         return
     
-    dt_string = date.strftime("%Y-%m-%d %H:%M:%S")
-    site.last_scrape_date = dt_string
+    site.last_scrape_date = date
     session.commit()
     
 
@@ -67,13 +67,14 @@ def createNotification(session: Session, scraped_site_id: int, website_name: str
         scraped_site_id=scraped_site_id,
         message=message,
         is_read=False,
+        created_at=utc_to_vietnam_time(datetime.now())
     )
     session.add(notification)
     session.commit()
 
 
 def writeToLog(found_jobs_dict: dict[str, list]):
-    now = datetime.now()
+    now = utc_to_vietnam_time(datetime.now())
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
 
     text = f"Scheduled job ran at {dt_string}. Found "
@@ -168,7 +169,8 @@ async def scrape_schedule(session: Session):
                 salary=new_job['salary'],
                 job_url=new_job['job_url'],
                 job_date=new_job['job_date'],
-                is_new=new_job['is_new']
+                is_new=new_job['is_new'],
+                created_at=utc_to_vietnam_time(datetime.now())
             )
             new_jobs_objects.append(job_object)
 
@@ -194,8 +196,7 @@ async def scrape_schedule(session: Session):
             })
 
         #update the last scraped date
-        now = datetime.now()
-        updateLastScrapedDate(session, scraped_site.id, now)
+        updateLastScrapedDate(session, scraped_site.id, utc_to_vietnam_time(datetime.now()))
 
     # write to a log.txt file
     writeToLog(found_jobs_dict)

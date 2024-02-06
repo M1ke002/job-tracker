@@ -112,7 +112,7 @@ const JobItem = ({
           {jobTitle}
         </CardTitle>
         <div className="pt-1 flex  items-center flex-wrap">
-          <span className="text-sm font-semibold py-1 px-2 border border-blue-400 rounded-md">
+          <span className="text-sm font-semibold py-1 px-2 border border-blue-400 bg-[#f1f6fa] rounded-md">
             {companyName}
           </span>
           {jobDate && (
@@ -134,15 +134,10 @@ const JobItem = ({
           </p>
           <p className="text-sm">{salary}</p>
         </div>
-        <p className="mb-2 text-sm text-zinc-500">
-          {jobDescription.length > 250
-            ? jobDescription.substring(0, 250) + "..."
-            : jobDescription}
-          {/* IMC is a leading global market maker, using algorithmic trading and
-          advanced technology to buy and sell securities on multiple trading
-          venues worldwide. We provide liquidity to the financial markets,
-          driving efficiencies for buyers and sellers. */}
-        </p>
+        <div
+          className="mb-2 text-sm text-zinc-500 max-h-[120px] overflow-y-auto"
+          dangerouslySetInnerHTML={{ __html: jobDescription }}
+        ></div>
         {/* <hr className="border-[#d6eaff]" /> */}
       </CardContent>
       <CardFooter className="flex flex-col absolute bottom-0 right-0 left-0">

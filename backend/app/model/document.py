@@ -17,7 +17,7 @@ class Document(db.Model):
 
     #relationship
     document_type: so.Mapped["DocumentType"] = so.relationship("DocumentType", back_populates="documents")
-    job: so.Mapped[Optional["SavedJob"]] = so.relationship()
+    job: so.Mapped[Optional["SavedJob"]] = so.relationship("SavedJob", back_populates="documents")
 
     def __repr__(self) -> str:
         return f"<Document {self.file_name}>"

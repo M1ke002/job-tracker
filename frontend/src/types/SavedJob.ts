@@ -1,5 +1,6 @@
 import ApplicationStage from "./ApplicationStage";
 import Contact from "./Contact";
+import Document from "./Document";
 import Task from "./Task";
 
 interface SavedJob {
@@ -16,6 +17,7 @@ interface SavedJob {
   position: number;
   tasks: Task[];
   contacts: Contact[];
+  documents: Document[];
   stage_id: number | null;
   stage: ApplicationStage | null;
   rejected_at_stage_id: number | null;

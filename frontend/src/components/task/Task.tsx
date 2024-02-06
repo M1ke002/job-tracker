@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/collapsible";
 import TaskItem from "@/components/task/TaskItem";
 import { Button } from "@/components/ui/button";
-import { ChevronDownCircle } from "lucide-react";
+import { ChevronDownCircle, PlusCircle } from "lucide-react";
 
 import { useModal } from "@/hooks/zustand/useModal";
 import { useCurrentSavedJob } from "@/hooks/zustand/useCurrentSavedJob";
@@ -47,6 +47,7 @@ const Task = ({ jobId }: TaskProps) => {
             className="mt-2 w-full"
             onClick={() => onOpen("createTask", { jobId })}
           >
+            <PlusCircle size={20} className="mr-2" />
             Add a task
           </Button>
         </CollapsibleContent>

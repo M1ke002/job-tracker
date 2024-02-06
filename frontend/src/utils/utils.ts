@@ -210,3 +210,14 @@ export const seekUrlBuilder = (
   url += "?sortmode=ListedDate";
   return url;
 };
+
+export const isTextEmpty = (text: string) => {
+  // Regular expression to match HTML tags
+  var htmlTagPattern = /<[^>]*>/g;
+
+  // Extract all HTML tags from the input string
+  var tags = text.match(htmlTagPattern);
+
+  // If there are tags and they cover the entire input string, it contains only tags
+  return tags && text.replace(htmlTagPattern, "").trim() === "";
+};

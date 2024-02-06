@@ -29,7 +29,8 @@ export type ModalType =
   | "editJobAlertSetting"
   | "uploadDocument"
   | "deleteDocument"
-  | "editDocument";
+  | "editDocument"
+  | "removeDocument";
 
 interface ModalData {
   confirmModalTitle?: string;

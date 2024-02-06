@@ -9,6 +9,7 @@ from app.service.saved_job_service import update_job_stage
 from app.service.saved_job_service import update_job_order
 from app.service.saved_job_service import remove_job_from_stage
 from app.service.saved_job_service import edit_saved_job_notes
+from app.service.saved_job_service import edit_saved_job_description
 
 saved_job_routes = Blueprint('saved_job_routes', __name__)
 
@@ -92,6 +93,20 @@ def handle_update_saved_job_notes(saved_job_id):
     job = edit_saved_job_notes(saved_job_id, notes)
     if job is None:
         return jsonify({'error': 'Cannot update job notes'}), 400
+    return jsonify(job), 200
+
+#update job description for a saved job
+@saved_job_routes.route('/<int:saved_job_id>/job-description', methods=['PUT'])
+def handle_update_saved_job_description(saved_job_id):
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'No data provided'}), 400
+    job_description = data.get('jobDescription')
+    if job_description != "" and not job_description:
+        return jsonify({'error': 'No description provided'}), 400
+    job = edit_saved_job_description(saved_job_id, job_description)
+    if job is None:
+        return jsonify({'error': 'Cannot update job description'}), 400
     return jsonify(job), 200
 
 #delete a saved job
