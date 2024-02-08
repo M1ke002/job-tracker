@@ -3,17 +3,18 @@ from .constants import BASE_URL_GRAD_CONNECTION, BASE_URL_SEEK
 """
     keyword: string. ex: "software engineer"
     jobType: string. ex: "internships / graduate jobs". default: "all" - all job types, displayed as (jobs)
-    discipline: string. ex: "engineering-software". default: "engineering-software"
+    classification: string. ex: "engineering-software". default: "engineering-software"
     location: string. ex: "sydney". default: "australia"
 """
-def ausgradUrlBuilder(keyword, jobType, discipline, location):
+def ausgradUrlBuilder(keyword, jobType, classification, location):
     url = BASE_URL_GRAD_CONNECTION + "/"
 
+    if (jobType == ""): jobType = "all"
     if (jobType == "all"): jobType = "jobs"
     url += jobType.replace(" ", "-") + "/"
 
-    if (discipline == ""): discipline = "engineering-software"
-    url += discipline.replace(" ", "-") + "/"
+    if (classification == ""): classification = "engineering-software"
+    url += classification.replace(" ", "-") + "/"
 
     if (location != ""): url += location.lower() + "/"
 
@@ -40,6 +41,7 @@ def seekUrlBuilder(keyword, jobType, classification, location):
 
     if (location != ""): url += "/in-" + location.replace(" ", "-")
 
+    if (jobType == ""): jobType = "all"
     if (jobType != "all"): url += "/" + jobType.lower().replace(" ", "-")
 
     url += "?sortmode=ListedDate"

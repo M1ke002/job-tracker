@@ -21,6 +21,7 @@ def get_all_job_listings(scraped_site_id, page=1, per_page=30):
 def search_job_listings(scraped_site_id, query, page=1, per_page=30):
     #allow for partial matches on job title and job description and company name, case insensitive
     print("query: ", query)
+    
     job_listings = (
         JobListing.query.filter(
             and_(

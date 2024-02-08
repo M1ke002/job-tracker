@@ -8,67 +8,7 @@ from email.mime.text import MIMEText
 from datetime import datetime
 from app.utils.utils import utc_to_vietnam_time
 
-
-def should_send_email(jobs_dict, email_notification_settings):
-    #only send email if there are new jobs and if the email notification is enabled for at least one site
-    for site_name, jobs in jobs_dict.items():
-        if ((len(jobs) > 0) and (email_notification_settings[site_name])):
-            return True
-    return False
-
-
-"""
-    input: 1) jobs_dict. ex: {
-        GRAD_CONNECTION: [list of jobs],
-        SEEK: [list of jobs]
-    }
-    2) email_notification_settings. ex: {
-        GRAD_CONNECTION: True,
-        SEEK: False
-    }
-    subject: Found x new jobs for site_name, y new jobs for site_name
-    body: 
-        Scheduled job ran at x.
-
-        site_name:
-            job_title - job_url
-            job_title - job_url
-            ...
-
-        site_name:
-            job_title - job_url
-            job_title - job_url
-            ...
-"""
-def create_subject_and_body(jobs_dict, email_notification_settings):
-    subject = "Found"
-    body = ""
-
-    found_jobs = False
-
-    now = datetime.now()
-    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-    body += f"Scheduled job ran at {dt_string}.\n\n"
-
-    for site_name, jobs in jobs_dict.items():
-        if (len(jobs) == 0 or not email_notification_settings[site_name]):
-            continue
-        if (found_jobs):
-            subject += ","
-        subject += f" {len(jobs)} new jobs for {site_name}"
-
-        if (found_jobs):
-            body += "\n"
-        body += f"{site_name}:\n"
-        for job in jobs:
-            body += f"{job['job_title']} - {job['job_url']}\n"
-
-        found_jobs = True
-    
-    subject += "."
-    return subject, body
-
-def should_send_email_v1(email_data):
+def should_send_email(email_data):
     #not send email if there are no due tasks and no new jobs
     should_send_email = False
 
@@ -79,7 +19,7 @@ def should_send_email_v1(email_data):
     
     return should_send_email
 
-def create_subject_and_body_v1(email_data):
+def create_subject_and_body(email_data):
     subject = ""
     body = ""
 

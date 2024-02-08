@@ -8,17 +8,17 @@ import asyncio
 from app.scripts.utils import create_sqlalchemy_session
 from app.scripts.check_due_tasks import check_due_tasks
 from app.scripts.scrape_schedule import scrape_schedule
-from app.utils.send_mail.send_mail import should_send_email_v1, create_subject_and_body_v1, send_mail
+from app.utils.send_mail.send_mail import should_send_email, create_subject_and_body, send_mail
 
 def construct_and_send_email(email_data):
     GMAIL_USERNAME = os.getenv('GMAIL_USERNAME')
     GMAIL_APP_PASSWORD = os.getenv('GMAIL_APP_PASSWORD')
 
-    if not should_send_email_v1(email_data):
+    if not should_send_email(email_data):
         print("No email to send", email_data)
         return
     
-    subject, body = create_subject_and_body_v1(email_data)
+    subject, body = create_subject_and_body(email_data)
     # print(subject)
     # print(body)
 

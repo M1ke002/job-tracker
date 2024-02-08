@@ -38,9 +38,11 @@ def delete_document_type(document_type_id):
     
     # check if any documents are using this document type
     documents = Document.query.filter_by(document_type_id=document_type_id).all()
+
     if len(documents) > 0:
         print('Cannot delete document type with id ' + str(document_type_id) + ' as it is being used by documents with ids: ' + str([document.id for document in documents]))
         return None
+    
     db.session.delete(document_type)
     db.session.commit()
     return "Deleted document type successfully"

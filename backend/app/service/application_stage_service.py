@@ -2,6 +2,7 @@ from app.model import db, ApplicationStage, SavedJob
 
 def get_all_application_stages():
     application_stages = ApplicationStage.query.all()
+
     #first time running, need to init the stages
     if len(application_stages) == 0:
         application_stages = [
@@ -37,6 +38,7 @@ def create_application_stage(data):
 
 def update_stage_order(data):
     stage_positions = data.get('stagePositions')
+    
     # sample: [{'id': 2, 'position': 0}, {'id': 1, 'position': 1}, {'id': 3, 'position': 2}, {'id': 4, 'position': 3}, {'id': 5, 'position': 4}]}
     for stage_position in stage_positions:
         application_stage = ApplicationStage.query.get(stage_position['id'])
