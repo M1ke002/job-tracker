@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+
 import { Separator } from "../ui/separator";
+
 import NotificationItem from "./NotificationItem";
 import axios from "@/lib/axiosConfig";
 import NotificationType from "@/types/Notification";

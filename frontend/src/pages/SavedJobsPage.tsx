@@ -1,18 +1,14 @@
-import JobItem from "@/components/jobs/JobItem";
+import React, { useEffect } from "react";
+
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import React, { useEffect } from "react";
 import { Plus, SlidersHorizontal } from "lucide-react";
-import { useSavedJobs } from "@/hooks/zustand/useSavedJobs";
+
 import axios from "@/lib/axiosConfig";
-import { useModal } from "@/hooks/zustand/useModal";
+import JobItem from "@/components/jobs/JobItem";
+
+import { useSavedJobs } from "@/stores/useSavedJobs";
+import { useModal } from "@/stores/useModal";
 
 const SavedJobsPage = () => {
   const { savedJobs, setSavedJobs, isFetched } = useSavedJobs();

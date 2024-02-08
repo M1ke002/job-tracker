@@ -1,9 +1,12 @@
-import { FileEdit, Linkedin, Mail, Trash, StickyNote } from "lucide-react";
-import { useModal } from "@/hooks/zustand/useModal";
-import axios from "@/lib/axiosConfig";
-import { useCurrentSavedJob } from "@/hooks/zustand/useCurrentSavedJob";
 import React from "react";
+
+import { FileEdit, Linkedin, Mail, Trash, StickyNote } from "lucide-react";
+import axios from "@/lib/axiosConfig";
+
 import Contact from "@/types/Contact";
+
+import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
+import { useModal } from "@/stores/useModal";
 
 interface ContactItemProps {
   contact: Contact;
@@ -39,28 +42,31 @@ const ContactItem = ({ contact }: ContactItemProps) => {
         <span className="text-gray-500">-</span>
         <span className="text-gray-500">{contact.person_position}</span>
       </div>
-      {contact.person_linkedin && (
-        <span className="flex items-center space-x-1">
-          <Linkedin size={18} />
-          <a
-            href={contact.person_linkedin}
-            target="_blank"
-            className="text-blue-700"
-          >
-            {contact.person_linkedin}
-          </a>
-        </span>
-      )}
-      {contact.person_email && (
-        <span className="flex items-center space-x-1">
-          <Mail size={18} />
-          <a href="#" className="text-blue-700">
-            {contact.person_email}
-          </a>
-        </span>
-      )}
+      <div className="flex flex-wrap items-center">
+        {contact.person_email && (
+          <span className="flex items-center space-x-1 mr-4">
+            <Mail size={15} />
+            <a href="#" className="text-[#0077b5] hover:underline">
+              {contact.person_email}
+            </a>
+          </span>
+        )}
+        {contact.person_linkedin && (
+          <span className="flex items-center space-x-1">
+            <Linkedin size={15} />
+            <a
+              href={contact.person_linkedin}
+              target="_blank"
+              className="text-[#0077b5] hover:underline"
+            >
+              LinkedIn profile
+            </a>
+          </span>
+        )}
+      </div>
+
       {contact.note && (
-        <div className="flex flex-col mt-3">
+        <div className="flex flex-col mt-1">
           <p className="font-semibold">Notes:</p>
           <p className="text-gray-700 max-h-20 overflow-y-auto">
             {contact.note}

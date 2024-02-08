@@ -1,5 +1,5 @@
 import React from "react";
-import { Separator } from "../ui/separator";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { FileEdit, MoreHorizontal, Plus, Trash } from "lucide-react";
-import JobCard from "./JobCard";
+
 import {
   SortableContext,
   useSortable,
@@ -18,10 +18,11 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
-
-import { useModal } from "@/hooks/zustand/useModal";
 import ApplicationStage from "@/types/ApplicationStage";
 import SavedJob from "@/types/SavedJob";
+import JobCard from "./JobCard";
+
+import { useModal } from "@/stores/useModal";
 
 interface ApplicationStageColumnProps {
   id: number;

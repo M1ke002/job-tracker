@@ -8,13 +8,13 @@ import {
   FileEdit,
 } from "lucide-react";
 import { Button } from "../ui/button";
-import Document from "@/types/Document";
 import { format } from "date-fns";
 
-import { useModal } from "@/hooks/zustand/useModal";
-import { useDocumentList } from "@/hooks/zustand/useDocumentList";
-
+import Document from "@/types/Document";
 import axios from "@/lib/axiosConfig";
+
+import { useModal } from "@/stores/useModal";
+import { useDocumentList } from "@/stores/useDocumentList";
 
 const ActionCell = ({ row }: { row: Row<Document> }) => {
   const { documentLists, setDocumentLists } = useDocumentList();

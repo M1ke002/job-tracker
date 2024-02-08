@@ -1,16 +1,19 @@
-import { X, AlignJustify, Bell, CircleUserRound } from "lucide-react";
 import React, { useState, useEffect, useMemo } from "react";
+
 import { NavLink } from "react-router-dom";
 import { cn } from "@/lib/utils";
+
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { X, AlignJustify, Bell, CircleUserRound } from "lucide-react";
+
 import Notification from "../notification/Notification";
 import axios from "@/lib/axiosConfig";
 
-import { useNotifications } from "@/hooks/zustand/useNotifications";
+import { useNotifications } from "@/stores/useNotifications";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);

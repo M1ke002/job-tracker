@@ -1,6 +1,8 @@
-import { FileEdit, MoreVertical, Trash } from "lucide-react";
 import React from "react";
-import { Checkbox } from "../ui/checkbox";
+
+import { format } from "date-fns";
+
+import { FileEdit, MoreVertical, Trash } from "lucide-react";
 import { Button } from "../ui/button";
 import { Switch } from "../ui/switch";
 import {
@@ -11,15 +13,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import { cn } from "@/lib/utils";
-
-import { useModal } from "@/hooks/zustand/useModal";
-import { useCurrentSavedJob } from "@/hooks/zustand/useCurrentSavedJob";
-
 import Task from "@/types/Task";
-
-import { format } from "date-fns";
 import axios from "@/lib/axiosConfig";
+
+import { useModal } from "@/stores/useModal";
+import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 
 interface TaskItemProps {
   task: Task;

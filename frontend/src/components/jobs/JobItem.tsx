@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import {
   Card,
   CardContent,
@@ -8,7 +9,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Separator } from "../ui/separator";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,8 +18,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { useNavigate } from "react-router-dom";
-
 import {
   Bookmark,
   MoreVertical,
@@ -30,11 +28,14 @@ import {
   FileEdit,
   Check,
 } from "lucide-react";
+
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import axios from "@/lib/axiosConfig";
-import { useModal } from "@/hooks/zustand/useModal";
 import ApplicationStage from "@/types/ApplicationStage";
-import { useSavedJobs } from "@/hooks/zustand/useSavedJobs";
+
+import { useSavedJobs } from "@/stores/useSavedJobs";
+import { useModal } from "@/stores/useModal";
 
 interface JobItemProps {
   id?: number;

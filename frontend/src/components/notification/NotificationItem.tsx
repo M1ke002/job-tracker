@@ -1,4 +1,5 @@
 import React from "react";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,12 +9,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, Trash } from "lucide-react";
-import { getTimeDifference } from "@/utils/utils";
-import { useModal } from "@/hooks/zustand/useModal";
-import axios from "@/lib/axiosConfig";
 
-import { useNotifications } from "@/hooks/zustand/useNotifications";
+import { getTimeDifference } from "@/utils/utils";
+import axios from "@/lib/axiosConfig";
 import { cn } from "@/lib/utils";
+
+import { useNotifications } from "@/stores/useNotifications";
+import { useModal } from "@/stores/useModal";
 
 interface NotificationItemProps {
   id: number;

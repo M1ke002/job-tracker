@@ -1,9 +1,11 @@
-import { cn } from "@/lib/utils";
-import { Check } from "lucide-react";
 import React, { useState } from "react";
 
-import { useCurrentSavedJob } from "@/hooks/zustand/useCurrentSavedJob";
+import { cn } from "@/lib/utils";
+import { Check } from "lucide-react";
+
 import axios from "@/lib/axiosConfig";
+
+import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 
 interface ApplicationProgressItemProps {
   stageId: string;

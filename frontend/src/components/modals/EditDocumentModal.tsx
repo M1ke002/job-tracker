@@ -31,9 +31,9 @@ import { Button } from "../ui/button";
 
 import axios from "@/lib/axiosConfig";
 
-import { useSavedJobs } from "@/hooks/zustand/useSavedJobs";
-import { useModal } from "@/hooks/zustand/useModal";
-import { useDocumentList } from "@/hooks/zustand/useDocumentList";
+import { useSavedJobs } from "@/stores/useSavedJobs";
+import { useModal } from "@/stores/useModal";
+import { useDocumentList } from "@/stores/useDocumentList";
 
 const formSchema = z.object({
   documentType: z.string(),

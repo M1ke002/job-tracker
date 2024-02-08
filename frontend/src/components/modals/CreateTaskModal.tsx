@@ -34,20 +34,19 @@ import { Switch } from "@/components/ui/switch";
 import { Input } from "../ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "../ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
-import { useModal } from "@/hooks/zustand/useModal";
-import { useCurrentSavedJob } from "@/hooks/zustand/useCurrentSavedJob";
-
 import { CalendarIcon } from "lucide-react";
+
 import axios from "@/lib/axiosConfig";
 import { cn } from "@/lib/utils";
+
+import { useModal } from "@/stores/useModal";
+import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 
 const formSchema = z.object({
   taskName: z.string(),

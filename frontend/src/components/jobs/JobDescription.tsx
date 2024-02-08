@@ -1,5 +1,6 @@
-import { ChevronDownCircle, FileEdit } from "lucide-react";
 import React, { useEffect, useState } from "react";
+
+import { ChevronDownCircle, FileEdit } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -9,10 +10,11 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
+
 import { isTextEmpty } from "@/utils/utils";
 import axios from "@/lib/axiosConfig";
 
-import { useCurrentSavedJob } from "@/hooks/zustand/useCurrentSavedJob";
+import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 
 interface JobDescriptionProps {
   jobDescription: string;

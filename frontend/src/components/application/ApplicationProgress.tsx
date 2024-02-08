@@ -1,10 +1,11 @@
 import React, { useMemo } from "react";
 import ApplicationProgressItem from "./ApplicationProgressItem";
 
-import { useCurrentSavedJob } from "@/hooks/zustand/useCurrentSavedJob";
-import { useApplicationStages } from "@/hooks/zustand/useApplicationStages";
 import ApplicationStage from "@/types/ApplicationStage";
 import SavedJob from "@/types/SavedJob";
+
+import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
+import { useApplicationStages } from "@/stores/useApplicationStages";
 
 //returns an array of ApplicationProgressItems
 //order of stages: applied -> O.A. -> Interviewing -> Offer.

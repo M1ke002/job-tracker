@@ -16,11 +16,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "../ui/button";
-import { useModal } from "@/hooks/zustand/useModal";
-import axios from "@/lib/axiosConfig";
 
-import { useSavedJobs } from "@/hooks/zustand/useSavedJobs";
+import axios from "@/lib/axiosConfig";
 import SavedJob from "@/types/SavedJob";
+
+import { useSavedJobs } from "@/stores/useSavedJobs";
+import { useModal } from "@/stores/useModal";
 
 const AddJobToStageModal = () => {
   const { savedJobs, setSavedJobs } = useSavedJobs();

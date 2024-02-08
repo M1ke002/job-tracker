@@ -5,7 +5,9 @@ import React, {
   useMemo,
   useRef,
 } from "react";
+
 import { debounce } from "lodash";
+
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -23,21 +25,20 @@ import {
   Loader2,
   ChevronDown,
 } from "lucide-react";
-import JobItem from "@/components/jobs/JobItem";
 import { Separator } from "@/components/ui/separator";
+
+import JobItem from "@/components/jobs/JobItem";
 import PaginationBox from "@/components/pagination/PaginationBox";
-
-import axios from "@/lib/axiosConfig";
-import { useModal } from "@/hooks/zustand/useModal";
-import { useScrapedSites } from "@/hooks/zustand/useScrapedSites";
-import { useCurrentScrapedSiteId } from "@/hooks/zustand/useCurrentScrapedSiteId";
-import { useSavedJobs } from "@/hooks/zustand/useSavedJobs";
-
 import ScrapedSite from "@/types/ScrapedSite";
 import JobListing from "@/types/JobListing";
-
+import axios from "@/lib/axiosConfig";
 import { SEEK, GRAD_CONNECTION } from "@/utils/constants";
 import ScrollToTopBtn from "@/components/ScrollToTopBtn";
+
+import { useModal } from "@/stores/useModal";
+import { useScrapedSites } from "@/stores/useScrapedSites";
+import { useCurrentScrapedSiteId } from "@/stores/useCurrentScrapedSiteId";
+import { useSavedJobs } from "@/stores/useSavedJobs";
 
 const JobListingPage = () => {
   const { savedJobs, setSavedJobs } = useSavedJobs();

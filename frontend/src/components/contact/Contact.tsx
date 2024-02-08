@@ -1,15 +1,18 @@
 import React, { useState } from "react";
+
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ChevronDownCircle, PlusCircle } from "lucide-react";
-import ContactItem from "@/components/contact/ContactItem";
 import { Input } from "../ui/input";
 import { Button } from "@/components/ui/button";
-import { useModal } from "@/hooks/zustand/useModal";
+
+import ContactItem from "@/components/contact/ContactItem";
 import ContactType from "@/types/Contact";
+
+import { useModal } from "@/stores/useModal";
 
 interface ContactProps {
   contacts: ContactType[] | undefined;

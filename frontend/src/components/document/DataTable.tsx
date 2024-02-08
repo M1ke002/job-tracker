@@ -19,7 +19,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { DataTablePagination } from "./DataTablePagination";
-import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

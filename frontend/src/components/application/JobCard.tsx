@@ -1,10 +1,12 @@
-import { Contact, ListTodo, Paperclip, X } from "lucide-react";
 import React from "react";
+
+import { Contact, ListTodo, Paperclip, X } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
-import SavedJob from "@/types/SavedJob";
 import { useNavigate } from "react-router-dom";
+
+import SavedJob from "@/types/SavedJob";
 
 interface ApplicationStageBoxItemProps {
   isLoading: boolean;

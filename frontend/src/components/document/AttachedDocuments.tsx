@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ChevronDownCircle } from "lucide-react";
+
 import Document from "@/types/Document";
 import AttachedDocumentItem from "./AttachedDocumentItem";
 

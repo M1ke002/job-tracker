@@ -9,7 +9,8 @@ import {
   DialogDescription,
 } from "../ui/dialog";
 import { Button } from "../ui/button";
-import { useModal } from "@/hooks/zustand/useModal";
+
+import { useModal } from "@/stores/useModal";
 
 const CofirmationModal = () => {
   const { type, isOpen, onClose, data } = useModal();

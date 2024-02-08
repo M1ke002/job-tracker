@@ -1,12 +1,16 @@
-import { FileEdit, Trash } from "lucide-react";
-import { useModal } from "@/hooks/zustand/useModal";
+import React, { useEffect, useState } from "react";
+
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import React, { useEffect, useState } from "react";
+
 import { Button } from "../ui/button";
-import { useCurrentSavedJob } from "@/hooks/zustand/useCurrentSavedJob";
+import { FileEdit, Trash } from "lucide-react";
+
 import axios from "@/lib/axiosConfig";
 import { isTextEmpty } from "@/utils/utils";
+
+import { useModal } from "@/stores/useModal";
+import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 
 const Note = () => {
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();

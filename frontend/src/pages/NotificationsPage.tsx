@@ -1,7 +1,8 @@
+import React, { useEffect, useState } from "react";
+
 import NotificationItem from "@/components/notification/NotificationItem";
 import axios from "@/lib/axiosConfig";
 import Notification from "@/types/Notification";
-import React, { useEffect, useState } from "react";
 
 const NotificationsPage = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);

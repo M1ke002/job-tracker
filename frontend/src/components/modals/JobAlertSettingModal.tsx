@@ -28,11 +28,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-
-import { useModal } from "@/hooks/zustand/useModal";
-import { useScrapedSites } from "@/hooks/zustand/useScrapedSites";
-import { useCurrentScrapedSiteId } from "@/hooks/zustand/useCurrentScrapedSiteId";
-
 import { Input } from "../ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "../ui/button";
@@ -46,6 +41,10 @@ import {
 } from "@/utils/constants";
 import { ausgradUrlBuilder, seekUrlBuilder } from "@/utils/utils";
 import axios from "@/lib/axiosConfig";
+
+import { useModal } from "@/stores/useModal";
+import { useScrapedSites } from "@/stores/useScrapedSites";
+import { useCurrentScrapedSiteId } from "@/stores/useCurrentScrapedSiteId";
 
 const formSchema = z.object({
   keywords: z.string().optional(),

@@ -1,6 +1,7 @@
+import React, { useState, useEffect } from "react";
+
 import { cn } from "@/lib/utils";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import React, { useState, useEffect } from "react";
 
 const ScrollToTopBtn = () => {
   const [visible, setVisible] = useState(false);

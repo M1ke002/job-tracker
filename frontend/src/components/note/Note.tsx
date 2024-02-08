@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import {
   Collapsible,
   CollapsibleContent,
@@ -6,6 +7,7 @@ import {
 } from "@/components/ui/collapsible";
 import NoteItem from "@/components/note/NoteItem";
 import { ChevronDownCircle } from "lucide-react";
+
 const Note = () => {
   const [rotateChevron, setRotateChevron] = useState(false);
   const handleRotate = () => setRotateChevron(!rotateChevron);

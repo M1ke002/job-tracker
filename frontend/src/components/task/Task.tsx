@@ -1,15 +1,17 @@
 import React, { useState } from "react";
+
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import TaskItem from "@/components/task/TaskItem";
 import { Button } from "@/components/ui/button";
 import { ChevronDownCircle, PlusCircle } from "lucide-react";
 
-import { useModal } from "@/hooks/zustand/useModal";
-import { useCurrentSavedJob } from "@/hooks/zustand/useCurrentSavedJob";
+import TaskItem from "@/components/task/TaskItem";
+
+import { useModal } from "@/stores/useModal";
+import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 
 interface TaskProps {
   jobId: string;

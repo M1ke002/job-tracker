@@ -1,7 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import ApplicationStageColumn from "@/components/application/ApplicationStageColumn";
-import ApplicationStage from "@/components/application/ApplicationStage";
-import { Plus } from "lucide-react";
+
 import {
   DndContext,
   useDroppable,
@@ -21,12 +19,15 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable";
 
+import ApplicationStageColumn from "@/components/application/ApplicationStageColumn";
+import ApplicationStage from "@/components/application/ApplicationStage";
 import JobCard from "@/components/application/JobCard";
 import ApplicationStageType from "@/types/ApplicationStage";
 import axios from "@/lib/axiosConfig";
 import { getApplicationStatusCount } from "@/utils/utils";
 import SavedJob from "@/types/SavedJob";
-import { useSavedJobs } from "@/hooks/zustand/useSavedJobs";
+
+import { useSavedJobs } from "@/stores/useSavedJobs";
 
 const sortStagesByPosition = (
   applicationStageColumns: ApplicationStageType[]

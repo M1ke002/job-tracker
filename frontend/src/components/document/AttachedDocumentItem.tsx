@@ -2,9 +2,10 @@ import React from "react";
 import { Button } from "../ui/button";
 import { ArrowDownToLine, Paperclip, Trash } from "lucide-react";
 
-import { useModal } from "@/hooks/zustand/useModal";
-import { useCurrentSavedJob } from "@/hooks/zustand/useCurrentSavedJob";
 import axios from "@/lib/axiosConfig";
+
+import { useModal } from "@/stores/useModal";
+import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 
 interface AttachedDocumentItemProps {
   id: string;

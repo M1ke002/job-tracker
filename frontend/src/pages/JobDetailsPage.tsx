@@ -1,3 +1,5 @@
+import React, { useEffect, useState } from "react";
+
 import {
   Briefcase,
   ChevronDownCircle,
@@ -13,24 +15,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import React, { useEffect, useState } from "react";
+
+import ApplicationProgress from "@/components/application/ApplicationProgress";
+import AttachedDocuments from "@/components/document/AttachedDocuments";
 import Note from "@/components/note/Note";
 import Contact from "@/components/contact/Contact";
 import Task from "@/components/task/Task";
 import JobDescription from "@/components/jobs/JobDescription";
-
 import axios from "@/lib/axiosConfig";
 import { useParams, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
-import { useModal } from "@/hooks/zustand/useModal";
-import { useCurrentSavedJob } from "@/hooks/zustand/useCurrentSavedJob";
-import { useSavedJobs } from "@/hooks/zustand/useSavedJobs";
-import { useApplicationStages } from "@/hooks/zustand/useApplicationStages";
-
-import ApplicationStage from "@/types/ApplicationStage";
-import ApplicationProgress from "@/components/application/ApplicationProgress";
-import AttachedDocuments from "@/components/document/AttachedDocuments";
+import { useModal } from "@/stores/useModal";
+import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
+import { useApplicationStages } from "@/stores/useApplicationStages";
 
 const JobDetailsPage = () => {
   const { applicationStages, setApplicationStages } = useApplicationStages();

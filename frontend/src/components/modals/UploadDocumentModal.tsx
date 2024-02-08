@@ -28,16 +28,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "../ui/button";
-import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-
-import axios from "@/lib/axiosConfig";
-import { useSavedJobs } from "@/hooks/zustand/useSavedJobs";
-import UploadFileZone from "../UploadFileZone";
 import { FileIcon, X } from "lucide-react";
 
-import { useModal } from "@/hooks/zustand/useModal";
-import { useDocumentList } from "@/hooks/zustand/useDocumentList";
+import axios from "@/lib/axiosConfig";
+import UploadFileZone from "../UploadFileZone";
+
+import { useModal } from "@/stores/useModal";
+import { useDocumentList } from "@/stores/useDocumentList";
+import { useSavedJobs } from "@/stores/useSavedJobs";
 
 const formSchema = z.object({
   documentType: z.string(),

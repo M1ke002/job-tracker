@@ -40,13 +40,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
-import { useModal } from "@/hooks/zustand/useModal";
-import { useCurrentSavedJob } from "@/hooks/zustand/useCurrentSavedJob";
-
 import { CalendarIcon } from "lucide-react";
+
 import axios from "@/lib/axiosConfig";
 import { cn } from "@/lib/utils";
+
+import { useModal } from "@/stores/useModal";
+import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 
 const formSchema = z.object({
   taskName: z.string(),

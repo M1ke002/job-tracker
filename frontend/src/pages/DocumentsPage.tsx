@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { DataTable } from "@/components/document/DataTable";
-import { columns } from "@/components/document/DocumentTableColumns";
-import DocumentListTitle from "@/components/document/DocumentListTitle";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,12 +10,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { AlignJustify, Plus, Search, Settings } from "lucide-react";
+
 import DocumentType from "@/types/DocumentType";
 import axios from "@/lib/axiosConfig";
+import { DataTable } from "@/components/document/DataTable";
+import { columns } from "@/components/document/DocumentTableColumns";
+import DocumentListTitle from "@/components/document/DocumentListTitle";
 
-import { useModal } from "@/hooks/zustand/useModal";
-import { useSavedJobs } from "@/hooks/zustand/useSavedJobs";
-import { useDocumentList } from "@/hooks/zustand/useDocumentList";
+import { useModal } from "@/stores/useModal";
+import { useSavedJobs } from "@/stores/useSavedJobs";
+import { useDocumentList } from "@/stores/useDocumentList";
 
 const DocumentsPage = () => {
   // const [documentTypes, setDocumentTypes] = useState<DocumentType[]>([]);

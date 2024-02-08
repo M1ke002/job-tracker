@@ -21,11 +21,13 @@ import {
   DialogDescription,
 } from "../ui/dialog";
 import { Button } from "../ui/button";
-import { useModal } from "@/hooks/zustand/useModal";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
+
 import axios from "@/lib/axiosConfig";
-import { useSavedJobs } from "@/hooks/zustand/useSavedJobs";
+
+import { useSavedJobs } from "@/stores/useSavedJobs";
+import { useModal } from "@/stores/useModal";
 
 const formSchema = z.object({
   jobTitle: z.string(),
