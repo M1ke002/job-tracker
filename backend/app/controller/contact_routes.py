@@ -19,6 +19,10 @@ def handle_create_contact():
     data = request.get_json()
     if not data:
         return jsonify({'error': 'No data provided'}), 400
+    
+    if not data.get('jobId') or not data.get('personName'):
+        return jsonify({'error': 'jobId and personName are required'}), 400
+    
     contact = create_contact(data)
     if contact is None:
         return jsonify({'error': 'Cant create contact'}), 400
@@ -30,6 +34,10 @@ def handle_edit_contact(contact_id):
     data = request.get_json()
     if not data:
         return jsonify({'error': 'No data provided'}), 400
+    
+    if not data.get('personName'):
+        return jsonify({'error': 'personName is required'}), 400
+    
     contact = edit_contact(contact_id, data)
     if contact is None:
         return jsonify({'error': 'Cant edit contact'}), 400

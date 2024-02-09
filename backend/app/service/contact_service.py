@@ -11,9 +11,6 @@ def create_contact(data):
     person_linkedin = data.get('personLinkedin')
     person_email = data.get('personEmail')
     note = data.get('note')
-
-    if not job_id or not person_name:
-        return None
     
     contact = Contact(
         job_id = job_id,
@@ -35,9 +32,6 @@ def edit_contact(job_id, data):
     person_linkedin = data.get('personLinkedin')
     person_email = data.get('personEmail')
     note = data.get('note')
-
-    if not person_name:
-        return None
     
     contact = Contact.query.get(job_id)
     if contact is None:

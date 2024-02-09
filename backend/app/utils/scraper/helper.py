@@ -8,22 +8,6 @@ def addPageNumberToUrl(url: str, page: int, website_name: str):
         return url + f'&page={page}'
     else:
         return url
-    
-def jobObjectToDict(job):
-    return {
-        'id': job.id,
-        'scraped_site_id': job.scraped_site_id,
-        'job_title': job.job_title,
-        'company_name': job.company_name,
-        'location': job.location,
-        'job_description': job.job_description,
-        'additional_info': job.additional_info,
-        'salary': job.salary,
-        'job_url': job.job_url,
-        'job_date': job.job_date,
-        'is_new': job.is_new,
-        'created_at': job.created_at
-    }
 
 #compare the newly scraped job listings with the existing job listings in the db
 #compare by job title, company name, and job url

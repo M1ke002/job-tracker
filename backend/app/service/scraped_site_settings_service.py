@@ -14,9 +14,6 @@ def edit_scraped_site_settings(scraped_site_settings_id, data):
     location = data.get('location')
     job_type = data.get('jobType')
     classification = data.get('classification')
-
-    if not max_pages_to_scrape or not location or not job_type or not classification:
-        return None
     
     scraped_site_settings.is_scrape_enabled = is_scrape_enabled
     scraped_site_settings.scrape_frequency = scrape_frequency

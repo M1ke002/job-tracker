@@ -10,6 +10,13 @@ def get_saved_job(saved_job_id):
         return None
     return saved_job.to_dict()
 
+def is_similar_job_exists(job_title, company_name, job_url, compared_job_id=None):
+    existing_job = SavedJob.query.filter_by(job_title=job_title, company_name=company_name, job_url=job_url).first()
+    #if job exists and is not the same job being compared
+    if existing_job and existing_job.id != compared_job_id:
+        return True
+    return False
+
 def create_saved_job(data):
     job_title = data.get('jobTitle')
     company_name = data.get('companyName')
@@ -19,15 +26,6 @@ def create_saved_job(data):
     salary = data.get('salary')
     job_url = data.get('jobUrl')
     job_date = data.get('jobDate')
-
-    if not job_title or not company_name or not job_url:
-        return None
-    
-    #check if a job with same title, company, and url already exists
-    existing_job = SavedJob.query.filter_by(job_title=job_title, company_name=company_name, job_url=job_url).first()
-    if existing_job:
-        print("Job already exists")
-        return None
     
     job = SavedJob(
         job_title = job_title,
@@ -53,18 +51,9 @@ def edit_saved_job(saved_job_id, data):
     additional_info = data.get('additionalInfo')
     salary = data.get('salary')
     job_url = data.get('jobUrl')
-
-    if not job_title or not company_name or not job_url:
-        return None
     
     job = SavedJob.query.get(saved_job_id)
     if job is None:
-        return None
-    
-    #check if a job with same title, company, and url already exists (except for current job)
-    existing_job = SavedJob.query.filter_by(job_title=job_title, company_name=company_name, job_url=job_url).first()
-    if existing_job and existing_job.id != saved_job_id:
-        print("Job already exists")
         return None
     
     job.job_title = job_title
@@ -126,9 +115,7 @@ def update_job_stage(job_id, stage_id):
     db.session.commit()
     return job.to_dict()
 
-def update_job_order(data):
-    job_positions = data.get('jobPositions')
-    
+def update_job_order(job_positions):
     # sample: [{id: 1, stage_id: 1, position: 0}, {id: 2, stage_id: 1, position: 1}, ...]
     for job_position in job_positions:
         job = SavedJob.query.get(job_position['id'])
@@ -138,17 +125,16 @@ def update_job_order(data):
     db.session.commit()
     return "updated job order successfully"
 
-def remove_job_from_stage(job_id, data):
-    job_positions = data.get('jobPositions')
-    # sample: [{id: 1, position: 0}, {id: 2, position: 1}, ...]
-
+def remove_job_from_stage(job_id, job_positions):
     #remove stage_id from job
     job = SavedJob.query.get(job_id)
     if job is None:
         return None
+    
     job.stage_id = None
     job.rejected_at_stage_id = None
     
+    # sample job_positions: [{id: 1, position: 0}, {id: 2, position: 1}, ...]
     #update positions of remaining jobs in stage
     for job_position in job_positions:
         job = SavedJob.query.get(job_position['id'])

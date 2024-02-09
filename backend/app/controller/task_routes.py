@@ -19,8 +19,16 @@ def handle_get_all_tasks():
 @task_routes.route('', methods=['POST'])
 def handle_create_task():
     data = request.get_json()
+
     if not data:
         return jsonify({'error': 'No data provided'}), 400
+    
+    job_id = data.get('jobId')
+    task_name = data.get('taskName')
+
+    if not job_id or not task_name:
+        return jsonify({'error': 'Missing required fields'}), 400
+    
     task = create_task(data)
     if task is None:
         return jsonify({'error': 'Cannot create task'}), 400
@@ -30,8 +38,13 @@ def handle_create_task():
 @task_routes.route('/<int:task_id>', methods=['PUT'])
 def handle_edit_task(task_id):
     data = request.get_json()
+
     if not data:
         return jsonify({'error': 'No data provided'}), 400
+    
+    if not data.get('taskName'):
+        return jsonify({'error': 'Missing required fields'}), 400
+    
     task = edit_task(task_id, data)
     if task is None:
         return jsonify({'error': 'Cannot edit task'}), 400
@@ -41,9 +54,15 @@ def handle_edit_task(task_id):
 @task_routes.route('/<int:task_id>/complete', methods=['PUT'])
 def handle_set_task_complete(task_id):
     data = request.get_json()
+
     if not data:
         return jsonify({'error': 'No data provided'}), 400
-    task = set_task_complete(task_id, data)
+    
+    is_completed = data.get('isCompleted')
+    if is_completed is None:
+        return jsonify({'error': 'Missing required fields'}), 400
+    
+    task = set_task_complete(task_id, is_completed)
     if task is None:
         return jsonify({'error': 'Cannot edit task'}), 400
     return jsonify(task), 200
@@ -52,9 +71,15 @@ def handle_set_task_complete(task_id):
 @task_routes.route('/<int:task_id>/reminder', methods=['PUT'])
 def handle_toggle_task_reminder(task_id):
     data = request.get_json()
+
     if not data:
         return jsonify({'error': 'No data provided'}), 400
-    task = toggle_task_reminder(task_id, data)
+    
+    is_reminder_enabled = data.get('isReminderEnabled')
+    if is_reminder_enabled is None:
+        return jsonify({'error': 'Missing required fields'}), 400
+    
+    task = toggle_task_reminder(task_id, is_reminder_enabled)
     if task is None:
         return jsonify({'error': 'Cannot edit task'}), 400
     return jsonify(task), 200

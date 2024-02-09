@@ -19,7 +19,6 @@ from .model import Notification
 
 def register_blueprints(app: Flask):
     #import blueprints
-    from .controller import test_routes
     from .controller import job_listing_routes
     from .controller import saved_job_routes
     from .controller import scraped_site_routes
@@ -33,7 +32,6 @@ def register_blueprints(app: Flask):
     from .controller import document_type_routes
     from .controller import notification_routes
 
-    app.register_blueprint(test_routes, url_prefix='/')
     app.register_blueprint(job_listing_routes, url_prefix='/api/job-listings')
     app.register_blueprint(saved_job_routes, url_prefix='/api/saved-jobs')
     app.register_blueprint(scraped_site_routes, url_prefix='/api/scraped-sites')

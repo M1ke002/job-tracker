@@ -6,7 +6,7 @@ load_dotenv()
 
 from datetime import datetime, timezone, timedelta
 from app.utils.scraper.scrape import scrapeAllJobListings
-from app.utils.scraper.helper import findNewJobListings, jobObjectToDict
+from app.utils.scraper.helper import findNewJobListings
 from app.utils.scraper.constants import SEEK, GRAD_CONNECTION
 from app.utils.scraper.url_builder import ausgradUrlBuilder, seekUrlBuilder
 from app.utils.utils import utc_to_vietnam_time
@@ -150,8 +150,7 @@ async def scrape_schedule(session: Session):
         old_jobs = []
 
         #convert old job objects to list of dict
-        for job_object in old_job_objects:
-            old_jobs.append(jobObjectToDict(job_object))
+        old_jobs = [job.to_dict() for job in old_job_objects]
 
         # find new job listings. input: 2 lists of dicts. return: list of dicts
         new_jobs = findNewJobListings(old_jobs, scraped_jobs)

@@ -14,9 +14,6 @@ def create_task(data):
     reminder_date = data.get('reminderDate')
     is_notify_email = data.get('isNotifyEmail')
     is_notify_on_website = data.get('isNotifyOnWebsite')
-
-    if not job_id or not task_name:
-        return None
     
     if due_date: 
         # Parse the due_date string into a datetime object
@@ -53,9 +50,6 @@ def edit_task(task_id, data):
     reminder_date = data.get('reminderDate')
     is_notify_email = data.get('isNotifyEmail')
     is_notify_on_website = data.get('isNotifyOnWebsite')
-
-    if not task_name:
-        return None
     
     if due_date:
         # Parse the due_date string into a datetime object
@@ -82,10 +76,7 @@ def edit_task(task_id, data):
     db.session.commit()
     return task.to_dict()
 
-def set_task_complete(task_id, data):
-    is_completed = data.get('isCompleted')
-    if is_completed is None:
-        return None
+def set_task_complete(task_id, is_completed):
     task = Task.query.get(task_id)
     if task is None:
         return None
@@ -93,10 +84,7 @@ def set_task_complete(task_id, data):
     db.session.commit()
     return task.to_dict()
 
-def toggle_task_reminder(task_id, data):
-    is_reminder_enabled = data.get('isReminderEnabled')
-    if is_reminder_enabled is None:
-        return None
+def toggle_task_reminder(task_id, is_reminder_enabled):
     task = Task.query.get(task_id)
     if task is None:
         return None

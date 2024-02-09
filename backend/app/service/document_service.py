@@ -6,22 +6,16 @@ def get_all_documents():
     documents = Document.query.all()
     return [document.to_dict() for document in documents]
 
-def create_document(data, file):
+def is_document_exists_by_name(file_name):
+    document = Document.query.filter_by(file_name=file_name).first()
+    return document is not None
+
+def create_and_upload_document(data, file):
     document_type_id = data.get('documentTypeId')
     job_id = data.get('jobId')
-
-    print(document_type_id, job_id, file)
-
-    if not document_type_id or document_type_id == "" or not file:
-        return None
-    
     file_name = file.filename
 
-    #check if there is already a document with the same name
-    document = Document.query.filter_by(file_name=file_name).first()
-    if document:
-        print("document name already exists")
-        return None
+    print(document_type_id, job_id, file)
     
     #upload file to firebase
     is_uploaded = upload_file(file, file_name)
@@ -47,9 +41,7 @@ def create_document(data, file):
 def edit_document(document_id, data):
     document_type_id = data.get('documentTypeId')
     job_id = data.get('jobId')
-
-    if not document_type_id or document_type_id == "":
-        return None
+    
     job_id = job_id if job_id != "" else None
     
     document = Document.query.get(document_id)
