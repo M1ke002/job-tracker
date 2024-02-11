@@ -6,9 +6,11 @@ def get_all_documents():
     documents = Document.query.all()
     return [document.to_dict() for document in documents]
 
+
 def is_document_exists_by_name(file_name):
     document = Document.query.filter_by(file_name=file_name).first()
     return document is not None
+
 
 def create_and_upload_document(data, file):
     document_type_id = data.get('documentTypeId')
@@ -38,6 +40,7 @@ def create_and_upload_document(data, file):
     
     return document.to_dict()
 
+
 def edit_document(document_id, data):
     document_type_id = data.get('documentTypeId')
     job_id = data.get('jobId')
@@ -54,6 +57,7 @@ def edit_document(document_id, data):
     db.session.commit()
     return document.to_dict()
 
+
 def unlink_job_from_document(document_id):
     document = Document.query.get(document_id)
     if document is None:
@@ -62,6 +66,7 @@ def unlink_job_from_document(document_id):
     document.job_id = None
     db.session.commit()
     return document.to_dict()
+
 
 def delete_document(document_id):
     document = Document.query.get(document_id)

@@ -4,6 +4,7 @@ def get_all_contacts():
     contacts = Contact.query.all()
     return [contact.to_dict() for contact in contacts]
 
+
 def create_contact(data):
     job_id = data.get('jobId')
     person_name = data.get('personName')
@@ -26,6 +27,7 @@ def create_contact(data):
 
     return contact.to_dict()
 
+
 def edit_contact(job_id, data):
     person_name = data.get('personName')
     person_position = data.get('personPosition')
@@ -45,6 +47,7 @@ def edit_contact(job_id, data):
 
     db.session.commit()
     return contact.to_dict()
+
 
 def delete_contact(contact_id):
     contact = Contact.query.get(contact_id)

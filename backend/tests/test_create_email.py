@@ -2,26 +2,26 @@ from app.utils.send_mail.send_mail import should_send_email, create_subject_and_
 
 def test_should_send_email():
     email_data = {
-        "scrape_schedule": [],
+        "web_scraper": [],
         "tasks": []
     }
     assert should_send_email(email_data) == False
 
     email_data = {
-        "scrape_schedule": [{"site_name": "site1", "jobs": [{"job_title": "job1", "job_url": "url1"}]}],
+        "web_scraper": [{"site_name": "site1", "jobs": [{"job_title": "job1", "job_url": "url1"}]}],
         "tasks": []
     }
     assert should_send_email(email_data) == True
 
     email_data = {
-        "scrape_schedule": [],
+        "web_scraper": [],
         "tasks": [{"task_name": "task1", "due_date": "2021-01-01", "date_message": "today"}]
     }
     assert should_send_email(email_data) == True
 
 def test_create_subject_and_body_with_tasks():
     email_data = {
-        "scrape_schedule": [],
+        "web_scraper": [],
         "tasks": [
             {"task_name": "task1", "due_date": "2021-01-01", "date_message": "today"},
             {"task_name": "task2", "due_date": "2021-01-02", "date_message": "tomorrow"}
@@ -32,9 +32,9 @@ def test_create_subject_and_body_with_tasks():
     assert "Task: task1 is due today on 2021-01-01." in body
     assert "Task: task2 is due tomorrow on 2021-01-02." in body
 
-def test_create_subject_and_body_with_scrape_schedule():
+def test_create_subject_and_body_with_web_scraper():
     email_data1 = {
-        "scrape_schedule": [
+        "web_scraper": [
             {"site_name": "site1", "jobs": [{"job_title": "job1", "job_url": "url1"}]},
             {"site_name": "site2", "jobs": [{"job_title": "job2", "job_url": "url2"}, {"job_title": "job3", "job_url": "url3"}]}
         ],
@@ -46,7 +46,7 @@ def test_create_subject_and_body_with_scrape_schedule():
     assert "site2:\njob2 - url2\njob3 - url3" in body
 
     email_data2 = {
-        "scrape_schedule": [
+        "web_scraper": [
             {"site_name": "site2", "jobs": [{"job_title": "job1", "job_url": "url1"}]}
         ],
         "tasks": []
@@ -57,7 +57,7 @@ def test_create_subject_and_body_with_scrape_schedule():
 
 def test_create_subject_and_body():
     email_data = {
-        "scrape_schedule": [
+        "web_scraper": [
             {"site_name": "site1", "jobs": [{"job_title": "job1", "job_url": "url1"}]},
             {"site_name": "site2", "jobs": [{"job_title": "job2", "job_url": "url2"}, {"job_title": "job3", "job_url": "url3"}]}
         ],

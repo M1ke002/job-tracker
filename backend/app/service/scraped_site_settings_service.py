@@ -5,6 +5,7 @@ def get_scraped_site_settings_in_db(session: Session, scraped_site_settings_id: 
     query = session.query(ScrapedSiteSettings).filter(ScrapedSiteSettings.id == scraped_site_settings_id)
     return query.first()
 
+
 def edit_scraped_site_settings(scraped_site_settings_id, data):
     scraped_site_settings = ScrapedSiteSettings.query.get(scraped_site_settings_id)
     if scraped_site_settings is None:

@@ -35,7 +35,7 @@ def create_subject_and_body(email_data):
             continue
 
 
-        if key == "scrape_schedule":
+        if key == "web_scraper":
             subject += "Found"
             found_jobs = False
             has_previous_data = True

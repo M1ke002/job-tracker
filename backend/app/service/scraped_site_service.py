@@ -11,6 +11,7 @@ def get_all_scraped_sites_in_db(session: Session):
     query = session.query(ScrapedSite).all()
     return query
 
+
 def get_all_scraped_sites():
     scrapedSites = get_all_scraped_sites_in_db(db.session)
 
@@ -45,11 +46,13 @@ def get_all_scraped_sites():
 
     return [scrapedSite.to_dict() for scrapedSite in scrapedSites]
 
+
 def get_scraped_site(scraped_site_id):
     scrapedSite = ScrapedSite.query.get(scraped_site_id)
     if scrapedSite is None:
         return None
     return scrapedSite.to_dict()
+
 
 def create_scraped_site(website_name, scraped_site_settings):
     scrapedSite = ScrapedSite(
@@ -60,9 +63,11 @@ def create_scraped_site(website_name, scraped_site_settings):
     db.session.commit()
     return scrapedSite.to_dict()
 
+
 def update_last_scraped_date_in_db(session: Session, scraped_site: ScrapedSite, date: datetime):
     scraped_site.last_scrape_date = date
     session.commit()
+
 
 async def scrape_site(scrape_site_id):
     #find scraped site

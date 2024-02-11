@@ -1,7 +1,4 @@
 #script used to run the scraper every day and update the database
-from dotenv import load_dotenv
-load_dotenv()
-
 from datetime import datetime, timedelta
 from app.utils.scraper.scrape import scrape_all_job_listings
 from app.utils.scraper.helper import find_new_job_listings
@@ -75,9 +72,9 @@ def write_to_log(found_jobs_dict: dict[str, list]):
 
 
 #main function
-async def scrape_schedule(session: Session):
+async def web_scraper(session: Session):
     email_data = {
-        'type': 'scrape_schedule',
+        'type': 'web_scraper',
         'data': []
     }
     found_jobs_dict = {

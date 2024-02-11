@@ -12,9 +12,11 @@ def get_all_notifications(limit, page):
     has_next = notifications.has_next
     return [notification.to_dict() for notification in notifications], has_next
 
+
 def get_unread_notifications():
     notifications = Notification.query.filter_by(is_read=False).all()
     return [notification.to_dict() for notification in notifications]
+
 
 def set_notifications_to_read(unread_notifications):
     #input is a list of dictionaries
@@ -24,6 +26,7 @@ def set_notifications_to_read(unread_notifications):
 
     db.session.commit()
     return "Set notifications to read successfully"
+
 
 def create_notification_in_db(
         session: Session, 
@@ -40,6 +43,7 @@ def create_notification_in_db(
     session.commit()
     
     return notification
+
 
 def delete_notification(notification_id):
     notification = Notification.query.get(notification_id)
