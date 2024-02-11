@@ -5,7 +5,7 @@ from app.service.scraped_site_service import get_scraped_site
 from app.service.scraped_site_service import scrape_site
 
 from app.service.job_listing_service import get_all_job_listings_paginated
-from app.service.job_listing_service import find_new_job_listings
+from app.service.job_listing_service import get_new_job_listings
 from app.service.job_listing_service import create_job_listings_for_site
 
 scraped_site_routes = Blueprint('scraped_site_routes', __name__)
@@ -59,7 +59,7 @@ async def handle_scrape_site(scraped_site_id):
     if scraped_jobs is None:
         return jsonify({'error': 'Something wrong while scraping site'}), 400
     
-    new_jobs = find_new_job_listings(scraped_site_id, scraped_jobs)
+    new_jobs = get_new_job_listings(scraped_site_id, scraped_jobs)
 
     create_job_listings_for_site(scraped_site_id, new_jobs)
 

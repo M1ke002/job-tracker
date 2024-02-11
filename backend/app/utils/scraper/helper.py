@@ -1,6 +1,6 @@
 from .constants import GRAD_CONNECTION, SEEK
 
-def addPageNumberToUrl(url: str, page: int, website_name: str):
+def add_page_number_to_Url(url: str, page: int, website_name: str):
     if (page == 1): return url
     if (website_name == GRAD_CONNECTION):
         return url + f'&page={page}'
@@ -11,25 +11,25 @@ def addPageNumberToUrl(url: str, page: int, website_name: str):
 
 #compare the newly scraped job listings with the existing job listings in the db
 #compare by job title, company name, and job url
-def findNewJobListings(oldJobs, scrapedJobs):
-    newJobs = []
+def find_new_job_listings(old_jobs, scraped_jobs):
+    new_jobs = []
 
     #all jobs are new
-    if (len(oldJobs) == 0): 
-        for scrapedJob in scrapedJobs:
-            scrapedJob['is_new'] = True
-        return scrapedJobs
+    if (len(old_jobs) == 0): 
+        for scraped_job in scraped_jobs:
+            scraped_job['is_new'] = True
+        return scraped_jobs
     
-    for scrapedJob in scrapedJobs:
+    for scraped_job in scraped_jobs:
         isNew = True
-        for oldJob in oldJobs:
+        for old_job in old_jobs:
             #both are dicts
-            if (scrapedJob['job_title'] == oldJob['job_title'] and scrapedJob['company_name'] == oldJob['company_name'] and scrapedJob['job_url'] == oldJob['job_url']):
+            if (scraped_job['job_title'] == old_job['job_title'] and scraped_job['company_name'] == old_job['company_name'] and scraped_job['job_url'] == old_job['job_url']):
                 isNew = False
                 break
         if (isNew):
-            scrapedJob['is_new'] = True
-            newJobs.append(scrapedJob)
+            scraped_job['is_new'] = True
+            new_jobs.append(scraped_job)
 
-    return newJobs
+    return new_jobs
 

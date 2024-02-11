@@ -2,7 +2,7 @@ from app.model import db, JobListing
 from sqlalchemy import or_, and_
 from datetime import datetime, timedelta
 
-from app.utils.scraper.helper import findNewJobListings
+from app.utils.scraper.helper import find_new_job_listings
 
 def get_all_job_listings_paginated(scraped_site_id, page=1, per_page=30):
     #query job listings, paginate by 30/page and sort by created_at date, return total pages
@@ -79,7 +79,7 @@ def create_job_listings_for_site(scraped_site_id, job_listings):
 def get_job_count_for_site(scraped_site_id):
     return JobListing.query.filter_by(scraped_site_id=scraped_site_id).count()
 
-def find_new_job_listings(scraped_site_id, scraped_jobs):
+def get_new_job_listings(scraped_site_id, scraped_jobs):
     # get existing job listings from db
     existing_job_listings = JobListing.query.filter_by(scraped_site_id=scraped_site_id).all()
     existing_job_dict = [job.to_dict() for job in existing_job_listings]
@@ -96,5 +96,5 @@ def find_new_job_listings(scraped_site_id, scraped_jobs):
     db.session.commit()
 
    # find new job listings
-    new_jobs = findNewJobListings(existing_job_dict, scraped_jobs)
+    new_jobs = find_new_job_listings(existing_job_dict, scraped_jobs)
     return new_jobs

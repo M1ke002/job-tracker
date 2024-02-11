@@ -3,69 +3,69 @@ from time import time
 import aiohttp
 import asyncio
 from bs4 import BeautifulSoup
-from .url_builder import ausgradUrlBuilder, seekUrlBuilder
+from .url_builder import ausgrad_url_builder, seek_url_builder
 from .constants import BASE_URL_GRAD_CONNECTION, BASE_URL_SEEK, GRAD_CONNECTION, SEEK
-from .helper import addPageNumberToUrl
+from .helper import add_page_number_to_Url
 
-async def scrapeAusGradJobListings(soup: BeautifulSoup):
+async def scrape_ausgrad_job_listings(soup: BeautifulSoup):
     jobs_dict = {}
-    jobListContainer = soup.find("div", class_="jobs-container")
+    job_list_container = soup.find("div", class_="jobs-container")
 
-    if (jobListContainer == None): return []
-    job_listings = jobListContainer.find_all("div", class_="outer-container")
+    if (job_list_container == None): return []
+    job_listings = job_list_container.find_all("div", class_="outer-container")
 
     for job in job_listings:
-        jobTitle = job.find("h3")
-        if (jobTitle != None): jobTitle = jobTitle.text.strip()
+        job_title = job.find("h3")
+        if (job_title != None): job_title = job_title.text.strip()
 
-        companyName = job.find("p", class_="box-header-para")
-        if (companyName != None): companyName = companyName.text.strip()
+        company_name = job.find("p", class_="box-header-para")
+        if (company_name != None): company_name = company_name.text.strip()
 
         location = job.find("div", class_="ellipsis-text-paragraph location-name")
         if (location != None): location = location.text.strip().split(" ")[0]
         else: location = job.find("p", class_="ellipsis-text-paragraph location-name").text.strip().split(" ")[0]
 
-        jobDescription = job.find("p", class_="box-description-para")
-        if (jobDescription != None): jobDescription = jobDescription.text.strip()
+        job_description = job.find("p", class_="box-description-para")
+        if (job_description != None): job_description = job_description.text.strip()
 
-        jobLink = job.find("a", class_="box-header-title")
-        if (jobLink != None): 
-            jobLink = jobLink.get("href")
-            jobLink = BASE_URL_GRAD_CONNECTION + jobLink
+        job_link = job.find("a", class_="box-header-title")
+        if (job_link != None): 
+            job_link = job_link.get("href")
+            job_link = BASE_URL_GRAD_CONNECTION + job_link
 
-        jobDeadline = job.find("span", class_="closing-in closing-in-button")
-        if (jobDeadline != None):
-            jobDeadline = jobDeadline.text.strip()
+        job_deadline = job.find("span", class_="closing-in closing-in-button")
+        if (job_deadline != None):
+            job_deadline = job_deadline.text.strip()
         else:
-            jobDeadline = "None"
+            job_deadline = "None"
 
         # jobSalary = job.find("div", class_="job-salary").text.strip()
-        jobType = job.find("p", class_="ellipsis-text-paragraph")
-        if (jobType != None): jobType = jobType.text.strip()
+        job_type = job.find("p", class_="ellipsis-text-paragraph")
+        if (job_type != None): job_type = job_type.text.strip()
 
-        # print('title: '+jobTitle)
-        # print('company: '+companyName)
-        # print('job type: '+jobType)
+        # print('title: '+job_title)
+        # print('company: '+company_name)
+        # print('job type: '+job_type)
         # print('location: '+location)
-        # print('desc: '+jobDescription)
-        # print('link: '+jobLink)
-        # print('deadline: '+ jobDeadline)
+        # print('desc: '+job_description)
+        # print('link: '+job_link)
+        # print('deadline: '+ job_deadline)
         # print("")
         
-        if (jobTitle and companyName and jobLink):
+        if (job_title and company_name and job_link):
 
-            if (jobLink in jobs_dict):
+            if (job_link in jobs_dict):
                 continue
 
-            jobs_dict[jobLink] = {
-                'job_title': jobTitle,
-                'company_name': companyName,
+            jobs_dict[job_link] = {
+                'job_title': job_title,
+                'company_name': company_name,
                 'location': location,
-                'job_date': jobDeadline,
-                'job_description': jobDescription,
-                'additional_info': jobType,
+                'job_date': job_deadline,
+                'job_description': job_description,
+                'additional_info': job_type,
                 'salary': '',
-                'job_url': jobLink,
+                'job_url': job_link,
                 'is_new': False
             }
 
@@ -73,7 +73,7 @@ async def scrapeAusGradJobListings(soup: BeautifulSoup):
     return jobs
 
 
-async def scrapeSeekJobListings(soup: BeautifulSoup):
+async def scrape_seek_job_listings(soup: BeautifulSoup):
     jobs_dict = {}
     job_listings = soup.find_all('div', class_='_1wkzzau0 a1msqi6m')
     print(f'Job Listings: {len(job_listings)}')
@@ -93,18 +93,18 @@ async def scrapeSeekJobListings(soup: BeautifulSoup):
         if location:
             location = location.text.strip()   
 
-        jobListingDate = job.find(attrs={"data-automation": "jobListingDate"})
-        if jobListingDate:
-            jobListingDate = jobListingDate.text.strip()
+        job_listing_date = job.find(attrs={"data-automation": "jobListingDate"})
+        if job_listing_date:
+            job_listing_date = job_listing_date.text.strip()
         
-        jobDescription = job.find(attrs={"data-automation": "jobShortDescription"})
-        if jobDescription:
-            jobDescription = jobDescription.text.strip()
+        job_description = job.find(attrs={"data-automation": "jobShortDescription"})
+        if job_description:
+            job_description = job_description.text.strip()
 
-        jobSalary = job.find(attrs={"data-automation": "jobSalary"})
-        if jobSalary:
+        job_salary = job.find(attrs={"data-automation": "jobSalary"})
+        if job_salary:
             #get inner span
-            jobSalary = jobSalary.find('span').text.strip()
+            job_salary = job_salary.find('span').text.strip()
         
         link = job.find('a')
         actual_job_link = None
@@ -122,10 +122,10 @@ async def scrapeSeekJobListings(soup: BeautifulSoup):
                 'job_title': job_title,
                 'company_name': company,
                 'location': location,
-                'job_date': jobListingDate,
-                'job_description': jobDescription,
+                'job_date': job_listing_date,
+                'job_description': job_description,
                 'additional_info': '',
-                'salary': jobSalary,
+                'salary': job_salary,
                 'job_url': actual_job_link,
                 'is_new': False
             }
@@ -135,7 +135,7 @@ async def scrapeSeekJobListings(soup: BeautifulSoup):
     return jobs
 
 
-async def fetchAndParseData(session, url, website_name):
+async def fetch_and_parse_data(session, url, website_name):
     page = re.search(r'&page=(\d+)', url)
     
     if not page:
@@ -150,14 +150,14 @@ async def fetchAndParseData(session, url, website_name):
         data = []
 
         if (website_name == GRAD_CONNECTION):
-            data = await scrapeAusGradJobListings(soup)
+            data = await scrape_ausgrad_job_listings(soup)
         elif (website_name == SEEK):
-            data = await scrapeSeekJobListings(soup)
+            data = await scrape_seek_job_listings(soup)
 
         return data
 
 
-async def scrapeAllJobListings(
+async def scrape_all_job_listings(
         website_name: str,
         search_url: str,
         max_pages: int = 1
@@ -165,17 +165,17 @@ async def scrapeAllJobListings(
     start_time = time()
 
     jobs = []
-    urls = [addPageNumberToUrl(search_url, page+1, website_name) for page in range(max_pages)]
+    urls = [add_page_number_to_Url(search_url, page+1, website_name) for page in range(max_pages)]
 
     async with aiohttp.ClientSession() as session:
-        tasks = [fetchAndParseData(session, url, website_name) for url in urls]
+        tasks = [fetch_and_parse_data(session, url, website_name) for url in urls]
         result = await asyncio.gather(*tasks)
         for page in result:
             print(len(page))
             jobs.extend(page)
 
     # for page in range(max_pages):
-    #     search_url_with_page = addPageNumberToUrl(search_url, page+1, website_name)
+    #     search_url_with_page = add_page_number_to_Url(search_url, page+1, website_name)
     #     print(search_url_with_page)
     #     response = requests.get(search_url_with_page)
 
@@ -185,9 +185,9 @@ async def scrapeAllJobListings(
         
     #     soup = BeautifulSoup(response.content, 'html.parser')
     #     if (website_name == GRAD_CONNECTION):
-    #         jobs.extend(scrapeAusGradJobListings(soup))
+    #         jobs.extend(scrape_ausgrad_job_listings(soup))
     #     elif (website_name == SEEK):
-    #         jobs.extend(scrapeSeekJobListings(soup))
+    #         jobs.extend(scrape_seek_job_listings(soup))
 
     #     print(f'=======================================End of page {page+1}=======================================')
     # print(f'jobs length: {len(jobs)}')
@@ -197,10 +197,10 @@ async def scrapeAllJobListings(
     return jobs
 
 if __name__ == '__main__':
-    search_url = ausgradUrlBuilder(keyword='Software Engineer', jobType='internships', discipline='engineering-software', location='sydney')
-    # search_url = seekUrlBuilder(keyword='Software Engineer', classification='information-communication-technology', location='All Sydney NSW')
+    search_url = ausgrad_url_builder(keyword='Software Engineer', jobType='internships', discipline='engineering-software', location='sydney')
+    # search_url = seek_url_builder(keyword='Software Engineer', classification='information-communication-technology', location='All Sydney NSW')
     print(search_url)
-    # scrapeAllJobListings('ausgrad', 'https://au.gradconnection.com/internships/sydney/?title=Software+Engineer&ordering=-recent_job_created', 3)
+    # scrape_all_job_listings('ausgrad', 'https://au.gradconnection.com/internships/sydney/?title=Software+Engineer&ordering=-recent_job_created', 3)
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    jobs = asyncio.run(scrapeAllJobListings(GRAD_CONNECTION, search_url, 1))
+    jobs = asyncio.run(scrape_all_job_listings(GRAD_CONNECTION, search_url, 1))
 

@@ -2,16 +2,16 @@ from .constants import BASE_URL_GRAD_CONNECTION, BASE_URL_SEEK
 
 """
     keyword: string. ex: "software engineer"
-    jobType: string. ex: "internships / graduate jobs". default: "all" - all job types, displayed as (jobs)
+    job_type: string. ex: "internships / graduate jobs". default: "all" - all job types, displayed as (jobs)
     classification: string. ex: "engineering-software". default: "engineering-software"
     location: string. ex: "sydney". default: "australia"
 """
-def ausgradUrlBuilder(keyword, jobType, classification, location):
+def ausgrad_url_builder(keyword, job_type, classification, location):
     url = BASE_URL_GRAD_CONNECTION + "/"
 
-    if (jobType == ""): jobType = "all"
-    if (jobType == "all"): jobType = "jobs"
-    url += jobType.replace(" ", "-") + "/"
+    if (job_type == ""): job_type = "all"
+    if (job_type == "all"): job_type = "jobs"
+    url += job_type.replace(" ", "-") + "/"
 
     if (classification == ""): classification = "engineering-software"
     url += classification.replace(" ", "-") + "/"
@@ -27,11 +27,11 @@ def ausgradUrlBuilder(keyword, jobType, classification, location):
 
 """
     keyword: string. ex: "software engineer"
-    jobType: string. ex: "full time / part time". default: "all"
+    job_type: string. ex: "full time / part time". default: "all"
     classification: string. ex: "information-communication-technology". default: "information-communication-technology"
     location: string. ex: "All Australia / All Sydney NSW / All Melbourne VIC". default: ""
 """
-def seekUrlBuilder(keyword, jobType, classification, location):
+def seek_url_builder(keyword, job_type, classification, location):
     url = BASE_URL_SEEK + "/"
     if (keyword != ""): url += keyword.replace(" ", "-") + "-jobs"
     else: url += "jobs"
@@ -41,8 +41,8 @@ def seekUrlBuilder(keyword, jobType, classification, location):
 
     if (location != ""): url += "/in-" + location.replace(" ", "-")
 
-    if (jobType == ""): jobType = "all"
-    if (jobType != "all"): url += "/" + jobType.lower().replace(" ", "-")
+    if (job_type == ""): job_type = "all"
+    if (job_type != "all"): url += "/" + job_type.lower().replace(" ", "-")
 
     url += "?sortmode=ListedDate"
     return url

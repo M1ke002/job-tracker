@@ -1,9 +1,9 @@
 from app.utils.scraper.constants import BASE_URL_GRAD_CONNECTION, BASE_URL_SEEK
-from app.utils.scraper.url_builder import ausgradUrlBuilder, seekUrlBuilder
+from app.utils.scraper.url_builder import ausgrad_url_builder, seek_url_builder
 import pytest
 
-def test_ausgradUrlBuilder_default():
-    url = ausgradUrlBuilder("", "", "", "")
+def test_ausgrad_url_builder_default():
+    url = ausgrad_url_builder("", "", "", "")
     expected_url = BASE_URL_GRAD_CONNECTION + "/jobs/engineering-software/?ordering=-recent_job_created"
     assert url == expected_url
 
@@ -15,13 +15,13 @@ def test_ausgradUrlBuilder_default():
         ("software", "graduate jobs", "computer-science", "Sydney", BASE_URL_GRAD_CONNECTION + "/graduate-jobs/computer-science/sydney/?title=software&ordering=-recent_job_created")
     ]
 )
-def test_ausgradUrlBuilder_with_parameters(keyword, jobType, classification, location, expected_url):
-    url = ausgradUrlBuilder(keyword, jobType, classification, location)
+def test_ausgrad_url_builder_with_parameters(keyword, jobType, classification, location, expected_url):
+    url = ausgrad_url_builder(keyword, jobType, classification, location)
     assert url == expected_url
 
 
-def test_seekUrlBuilder_default():
-    url = seekUrlBuilder("", "", "", "")
+def test_seek_url_builder_default():
+    url = seek_url_builder("", "", "", "")
     expected_url = BASE_URL_SEEK + "/jobs-in-information-communication-technology?sortmode=ListedDate"
     assert url == expected_url
 
@@ -33,7 +33,7 @@ def test_seekUrlBuilder_default():
         ("software", "part time", "computer-science", "All Sydney NSW", BASE_URL_SEEK + "/software-jobs-in-computer-science/in-All-Sydney-NSW/part-time?sortmode=ListedDate")
     ]
 )
-def test_seekUrlBuilder_with_parameters(keyword, jobType, classification, location, expected_url):
-    url = seekUrlBuilder(keyword, jobType, classification, location)
+def test_seek_url_builder_with_parameters(keyword, jobType, classification, location, expected_url):
+    url = seek_url_builder(keyword, jobType, classification, location)
     assert url == expected_url
 
