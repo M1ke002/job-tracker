@@ -63,6 +63,8 @@ def handle_update_stage_order():
         return jsonify({'error': 'stagePositions are required'}), 400
     
     message = update_stage_order(stage_positions)
+    if message is None:
+        return jsonify({'error': 'cant update stage order'}), 400
     return jsonify(message), 200
 
 

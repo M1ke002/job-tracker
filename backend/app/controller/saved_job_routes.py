@@ -103,8 +103,11 @@ def handle_update_job_order():
     if not job_positions:
         return jsonify({'error': 'No job positions provided'}), 400
     
-    message = update_job_order(job_positions)
-    return jsonify(message), 200
+    res = update_job_order(job_positions)
+    if res is None:
+        return jsonify({'error': 'Cannot update job order'}), 400
+    
+    return jsonify(res), 200
 
 # remove job from stage
 @saved_job_routes.route('/<int:saved_job_id>/remove-stage', methods=['PUT'])
@@ -118,10 +121,11 @@ def handle_remove_job_from_stage(saved_job_id):
     if not job_positions:
         return jsonify({'error': 'No job positions provided'}), 400
     
-    message = remove_job_from_stage(saved_job_id, job_positions)
-    if message is None:
+    res = remove_job_from_stage(saved_job_id, job_positions)
+    if res is None:
         return jsonify({'error': 'Cannot remove job from stage'}), 400
-    return jsonify(message), 200
+    
+    return jsonify(res), 200
 
 #update notes for a saved job
 @saved_job_routes.route('/<int:saved_job_id>/notes', methods=['PUT'])

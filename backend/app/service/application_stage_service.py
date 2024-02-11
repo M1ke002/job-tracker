@@ -32,11 +32,15 @@ def create_multiple_application_stages(application_stages):
 
 def update_stage_order(stage_positions):
     # sample: [{'id': 2, 'position': 0}, {'id': 1, 'position': 1}, {'id': 3, 'position': 2}, {'id': 4, 'position': 3}, {'id': 5, 'position': 4}]}
+    res = []
     for stage_position in stage_positions:
         application_stage = ApplicationStage.query.get(stage_position['id'])
+        if application_stage is None:
+            return None
         application_stage.position = stage_position['position']
+        res.append(application_stage.to_dict())
     db.session.commit()
-    return "updated stage order successfully"
+    return res
 
 def delete_application_stage(application_stage_id):
     application_stage = ApplicationStage.query.get(application_stage_id)

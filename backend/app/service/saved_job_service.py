@@ -104,8 +104,8 @@ def update_job_stage(job_id, stage_id):
     #if stage is rejected, and job doesnt have a stage yet -> set default to stage with name = 'Applied'
     if stage.stage_name == "Rejected":
         if job.rejected_at_stage_id is None:
-            applied_stage = ApplicationStage.query.filter_by(stage_name="Applied").first()
-            job.rejected_at_stage_id = applied_stage.id
+            stage_apply = ApplicationStage.query.filter_by(stage_name="Applied").first()
+            job.rejected_at_stage_id = stage_apply.id
     else:
         job.rejected_at_stage_id = stage.id
 
@@ -117,13 +117,17 @@ def update_job_stage(job_id, stage_id):
 
 def update_job_order(job_positions):
     # sample: [{id: 1, stage_id: 1, position: 0}, {id: 2, stage_id: 1, position: 1}, ...]
+    res = []
     for job_position in job_positions:
         job = SavedJob.query.get(job_position['id'])
+        if job is None:
+            return None
         job.stage_id = job_position['stage_id']
         job.rejected_at_stage_id = job_position['rejected_at_stage_id']
         job.position = job_position['position']
+        res.append(job.to_dict())
     db.session.commit()
-    return "updated job order successfully"
+    return res
 
 def remove_job_from_stage(job_id, job_positions):
     #remove stage_id from job
@@ -136,12 +140,17 @@ def remove_job_from_stage(job_id, job_positions):
     
     # sample job_positions: [{id: 1, position: 0}, {id: 2, position: 1}, ...]
     #update positions of remaining jobs in stage
+    res = []
+
     for job_position in job_positions:
         job = SavedJob.query.get(job_position['id'])
+        if job is None:
+            return None
         job.position = job_position['position']
+        res.append(job.to_dict())
 
     db.session.commit()
-    return "removed job from stage successfully"
+    return res
 
 def delete_saved_job(saved_job_id):
     saved_job = SavedJob.query.get(saved_job_id)
