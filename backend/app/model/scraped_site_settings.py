@@ -1,8 +1,8 @@
-from datetime import datetime, timezone
-from typing import Optional, List
+from typing import Optional
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from .db import db
+
 
 class ScrapedSiteSettings(db.Model):
 
@@ -10,26 +10,27 @@ class ScrapedSiteSettings(db.Model):
 
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     is_scrape_enabled: so.Mapped[bool] = so.mapped_column(sa.Boolean)
-    #scrape frequency in days
+    # scrape frequency in days
     scrape_frequency: so.Mapped[int] = so.mapped_column(sa.Integer, default=1)
     max_pages_to_scrape: so.Mapped[int] = so.mapped_column(sa.Integer, default=1)
     is_notify_email: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=False)
     is_notify_on_website: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=True)
 
-    #url query settings
+    # url query settings
     search_keyword: so.Mapped[Optional[str]] = so.mapped_column(sa.String(150))
     location: so.Mapped[Optional[str]] = so.mapped_column(sa.String(150))
-    #url query settings
+    # url query settings
     job_type: so.Mapped[Optional[str]] = so.mapped_column(sa.String(150))
     classification: so.Mapped[Optional[str]] = so.mapped_column(sa.String(150))
 
-    #relationship
+    # relationship
     scraped_site: so.Mapped["ScrapedSite"] = so.relationship(
-        "ScrapedSite", back_populates="scraped_site_settings", lazy=True)
+        "ScrapedSite", back_populates="scraped_site_settings", lazy=True
+    )
 
     def __repr__(self) -> str:
         return f"<ScrapedSiteSettings {self.id}>"
-    
+
     def to_dict(self) -> dict:
         return {
             "id": self.id,
@@ -41,5 +42,5 @@ class ScrapedSiteSettings(db.Model):
             "search_keyword": self.search_keyword,
             "location": self.location,
             "job_type": self.job_type,
-            "classification": self.classification
+            "classification": self.classification,
         }

@@ -3,11 +3,14 @@ import sqlalchemy as sa
 import sqlalchemy.orm as so
 from .db import db
 
+
 class Contact(db.Model):
     __tablename__ = "contacts"
 
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    job_id: so.Mapped[int] = so.mapped_column(sa.Integer, sa.ForeignKey('saved_jobs.id'))
+    job_id: so.Mapped[int] = so.mapped_column(
+        sa.Integer, sa.ForeignKey("saved_jobs.id")
+    )
     person_name: so.Mapped[str] = so.mapped_column(sa.String(150))
     person_position: so.Mapped[Optional[str]] = so.mapped_column(sa.String(150))
     person_linkedin: so.Mapped[Optional[str]] = so.mapped_column(sa.String(250))
@@ -16,7 +19,7 @@ class Contact(db.Model):
 
     def __repr__(self) -> str:
         return f"<Contact {self.person_name} {self.person_position}>"
-    
+
     def to_dict(self) -> dict:
         return {
             "id": self.id,
@@ -25,5 +28,5 @@ class Contact(db.Model):
             "person_position": self.person_position,
             "person_linkedin": self.person_linkedin,
             "person_email": self.person_email,
-            "note": self.note
+            "note": self.note,
         }

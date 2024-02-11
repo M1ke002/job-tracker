@@ -1,23 +1,26 @@
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
 import smtplib
 from email.mime.text import MIMEText
 
 from datetime import datetime
 from app.utils.utils import utc_to_vietnam_time
 
+load_dotenv()
+
+
 def should_send_email(email_data):
-    #not send email if there are no due tasks and no new jobs
+    # not send email if there are no due tasks and no new jobs
     should_send_email = False
 
     for key, value in email_data.items():
-        if (len(value) > 0):
+        if len(value) > 0:
             should_send_email = True
             break
-    
+
     return should_send_email
+
 
 def create_subject_and_body(email_data):
     subject = ""
@@ -25,30 +28,29 @@ def create_subject_and_body(email_data):
 
     has_previous_data = False
 
-    now = datetime.now() #UTC time
+    now = datetime.now()  # UTC time
     vn_time = utc_to_vietnam_time(now)
     vn_time_dt_string = vn_time.strftime("%d/%m/%Y %H:%M:%S")
     body += f"Scheduled job ran at {vn_time_dt_string}.\n\n"
 
     for key, value in email_data.items():
-        if (len(value) == 0):
+        if len(value) == 0:
             continue
-
 
         if key == "web_scraper":
             subject += "Found"
             found_jobs = False
             has_previous_data = True
 
-            #value: array of obj: {site_name: [jobs]}
+            # value: array of obj: {site_name: [jobs]}
             for data in value:
-                site_name = data['site_name']
-                jobs = data['jobs']
-                if (found_jobs):
+                site_name = data["site_name"]
+                jobs = data["jobs"]
+                if found_jobs:
                     subject += ","
                 subject += f" {len(jobs)} new jobs for {site_name}"
 
-                if (found_jobs):
+                if found_jobs:
                     body += "\n"
                 body += f"{site_name}:\n"
                 for job in jobs:
@@ -70,27 +72,22 @@ def create_subject_and_body(email_data):
     subject += "."
     return subject, body
 
+
 def send_mail(sender, password, recipients, subject, body):
     msg = MIMEText(body)
     msg["Subject"] = subject
     msg["From"] = sender
     msg["To"] = ", ".join(recipients)
 
-    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp_server:
-       smtp_server.login(sender, password)
-       smtp_server.sendmail(sender, recipients, msg.as_string())
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp_server:
+        smtp_server.login(sender, password)
+        smtp_server.sendmail(sender, recipients, msg.as_string())
     print("Message sent!")
 
 
 if __name__ == "__main__":
-    GMAIL_USERNAME = os.getenv('GMAIL_USERNAME')
-    GMAIL_APP_PASSWORD = os.getenv('GMAIL_APP_PASSWORD')
+    GMAIL_USERNAME = os.getenv("GMAIL_USERNAME")
+    GMAIL_APP_PASSWORD = os.getenv("GMAIL_APP_PASSWORD")
     subject = "Test email"
     body = "This is a test email from Python"
-    send_mail(
-        GMAIL_USERNAME,
-        GMAIL_APP_PASSWORD,
-        [GMAIL_USERNAME],
-        subject,
-        body
-    )
+    send_mail(GMAIL_USERNAME, GMAIL_APP_PASSWORD, [GMAIL_USERNAME], subject, body)

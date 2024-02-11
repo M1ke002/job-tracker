@@ -2,13 +2,16 @@ from typing import Optional
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from .db import db
-from datetime import datetime, timezone
+from datetime import datetime
+
 
 class JobListing(db.Model):
     __tablename__ = "job_listings"
 
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    scraped_site_id: so.Mapped[int] = so.mapped_column(sa.Integer, sa.ForeignKey('scraped_sites.id'))
+    scraped_site_id: so.Mapped[int] = so.mapped_column(
+        sa.Integer, sa.ForeignKey("scraped_sites.id")
+    )
     job_title: so.Mapped[str] = so.mapped_column(sa.String(150))
     company_name: so.Mapped[str] = so.mapped_column(sa.String(150))
     location: so.Mapped[Optional[str]] = so.mapped_column(sa.String(200))
@@ -18,16 +21,16 @@ class JobListing(db.Model):
     job_url: so.Mapped[str] = so.mapped_column(sa.String(500))
     job_date: so.Mapped[Optional[str]] = so.mapped_column(sa.String(100))
     is_new: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=True)
-    created_at: so.Mapped[datetime] = so.mapped_column(
-        default=lambda: datetime.now())
+    created_at: so.Mapped[datetime] = so.mapped_column(default=lambda: datetime.now())
 
-    #relationship
+    # relationship
     scraped_site: so.Mapped["ScrapedSite"] = so.relationship(
-        "ScrapedSite", back_populates="job_listings", lazy=True)
+        "ScrapedSite", back_populates="job_listings", lazy=True
+    )
 
     def __repr__(self) -> str:
         return f"<JobListing {self.job_title} {self.company_name}>"
-    
+
     def to_dict(self) -> dict:
         return {
             "id": self.id,
@@ -41,5 +44,5 @@ class JobListing(db.Model):
             "job_url": self.job_url,
             "job_date": self.job_date,
             "is_new": self.is_new,
-            "created_at": self.created_at
+            "created_at": self.created_at,
         }

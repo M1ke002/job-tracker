@@ -1,4 +1,4 @@
-# import os 
+# import os
 # import sys
 
 # #append the path to the 'backend' folder to the system path
@@ -93,7 +93,6 @@
 
 #         # Assert
 #         self.assertEqual(response.status_code, 200)
-        
 
 
 # if __name__ == "__main__":
