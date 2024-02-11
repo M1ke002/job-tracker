@@ -1,4 +1,6 @@
 from app.model import db, Notification
+from sqlalchemy.orm.session import Session
+from datetime import datetime
 
 def get_all_notifications(limit, page):
     # notifications = Notification.query.order_by(Notification.created_at.desc()).limit(limit).all()
@@ -22,6 +24,22 @@ def set_notifications_to_read(unread_notifications):
 
     db.session.commit()
     return "Set notifications to read successfully"
+
+def create_notification_in_db(
+        session: Session, 
+        message: str, 
+        scraped_site_id: int,
+        created_at: datetime = datetime.now()):
+    notification = Notification(
+        message=message,
+        scraped_site_id=scraped_site_id,
+        is_read=False,
+        created_at=created_at
+    )
+    session.add(notification)
+    session.commit()
+    
+    return notification
 
 def delete_notification(notification_id):
     notification = Notification.query.get(notification_id)

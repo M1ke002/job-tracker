@@ -5,7 +5,9 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 import asyncio
-from app.scripts.utils import create_sqlalchemy_session
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from app.config import Config
 from app.scripts.check_due_tasks import check_due_tasks
 from app.scripts.scrape_schedule import scrape_schedule
 from app.utils.send_mail.send_mail import should_send_email, create_subject_and_body, send_mail
@@ -29,6 +31,12 @@ def construct_and_send_email(email_data):
         subject,
         body
     )
+
+def create_sqlalchemy_session():
+    engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    return session
 
 
 async def main():

@@ -3,11 +3,16 @@ from app.model import db, ScrapedSite, ScrapedSiteSettings
 from app.utils.scraper.scrape import scrape_all_job_listings
 from app.utils.scraper.url_builder import ausgrad_url_builder, seek_url_builder
 from app.utils.scraper.constants import GRAD_CONNECTION, SEEK
+from sqlalchemy.orm.session import Session
 
 from datetime import datetime
 
+def get_all_scraped_sites_in_db(session: Session):
+    query = session.query(ScrapedSite).all()
+    return query
+
 def get_all_scraped_sites():
-    scrapedSites = ScrapedSite.query.all()
+    scrapedSites = get_all_scraped_sites_in_db(db.session)
 
     #first time db is empty -> need to create scraped sites
     if (len(scrapedSites) == 0):
@@ -55,6 +60,10 @@ def create_scraped_site(website_name, scraped_site_settings):
     db.session.commit()
     return scrapedSite.to_dict()
 
+def update_last_scraped_date_in_db(session: Session, scraped_site: ScrapedSite, date: datetime):
+    scraped_site.last_scrape_date = date
+    session.commit()
+
 async def scrape_site(scrape_site_id):
     #find scraped site
     scrapedSite = ScrapedSite.query.get(scrape_site_id)
@@ -76,7 +85,6 @@ async def scrape_site(scrape_site_id):
     scraped_jobs = await scrape_all_job_listings(scrapedSite.website_name, search_url, scrapedSiteSettings.max_pages_to_scrape)
 
     # update scraped site last scrape date to db
-    scrapedSite.last_scrape_date = datetime.now()
-    db.session.commit()
+    update_last_scraped_date_in_db(db.session, scrapedSite, datetime.now())
 
     return scraped_jobs

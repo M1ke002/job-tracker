@@ -1,14 +1,14 @@
 from datetime import datetime, timedelta
 from app.utils.utils import utc_to_vietnam_time
-from app.model import Task, Notification
+from app.model import Task
+from app.service.task_service import set_tasks_reminded_in_db, get_all_due_tasks_in_db
+from app.service.notification_service import create_notification_in_db
 
 from sqlalchemy.orm.session import Session
 
 #input: connection, cursor, task_ids: list of tasks
 def set_tasks_as_reminded(session: Session, tasks: list[Task]):
-    for task in tasks:
-        task.is_reminded = True
-    session.commit()
+    set_tasks_reminded_in_db(session, tasks)
         
 
 def find_and_update_due_tasks(session: Session, tasks: list[Task]):
@@ -45,27 +45,18 @@ def find_and_update_due_tasks(session: Session, tasks: list[Task]):
 
 
 def fetch_all_due_tasks(session: Session):
-    #get all tasks which are not completed and is_reminder_enabled is true and due_date is not null
-    query = session.query(Task).filter(
-        Task.is_completed == False,
-        Task.is_reminder_enabled == True, 
-        Task.is_reminded == False, 
-        Task.due_date != None
-    )
-    return query.all()
+    return get_all_due_tasks_in_db(session)
 
 
 def create_notification(session: Session, task_name: str, due_date: str, date_message: str):
     #scraped_site_id is null for tasks
     message = f'Task: {task_name} is due {date_message} on {due_date}.'
-    notification = Notification(
-        scraped_site_id=None,
-        message=message,
-        is_read=False,
+    create_notification_in_db(
+        session=session, 
+        message=message, 
+        scraped_site_id=None, 
         created_at=utc_to_vietnam_time(datetime.now())
     )
-    session.add(notification)
-    session.commit()
 
 
 def check_due_tasks(session: Session):

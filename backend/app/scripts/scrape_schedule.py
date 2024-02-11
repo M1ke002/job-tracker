@@ -1,10 +1,8 @@
 #script used to run the scraper every day and update the database
-import os 
-
 from dotenv import load_dotenv
 load_dotenv()
 
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta
 from app.utils.scraper.scrape import scrape_all_job_listings
 from app.utils.scraper.helper import find_new_job_listings
 from app.utils.scraper.constants import SEEK, GRAD_CONNECTION
@@ -12,65 +10,53 @@ from app.utils.scraper.url_builder import ausgrad_url_builder, seek_url_builder
 from app.utils.utils import utc_to_vietnam_time
 
 from sqlalchemy.orm.session import Session
-from app.model import ScrapedSiteSettings, JobListing, ScrapedSite, Notification
+from app.model import JobListing, ScrapedSite
 
+from app.service.notification_service import create_notification_in_db
+from app.service.scraped_site_settings_service import get_scraped_site_settings_in_db
+from app.service.scraped_site_service import get_all_scraped_sites_in_db, update_last_scraped_date_in_db
+from app.service.job_listing_service import get_all_job_listings_in_db_for_site, set_job_listings_is_new_in_db, create_job_listings_in_db, delete_all_old_job_listings_in_db
 
-def fetch_scrape_site_settings(session: Session, site_id: int):
-    query = session.query(ScrapedSiteSettings).filter(ScrapedSiteSettings.id == site_id)
-    return query.first()
+def fetch_scrape_site_settings(session: Session, scraped_site_settings_id: int):
+    return get_scraped_site_settings_in_db(session, scraped_site_settings_id)
 
 
 def fetch_all_scraped_sites(session: Session):
-    query = session.query(ScrapedSite).all()
-    return query
+    return get_all_scraped_sites_in_db(session)
 
 
 def fetch_all_job_listings(session: Session, scraped_site_id: int):
-    query = session.query(JobListing).filter(JobListing.scraped_site_id == scraped_site_id)
-    return query.all()
+    return get_all_job_listings_in_db_for_site(session, scraped_site_id)
 
 
 #update the is_new field of the job listings to false
-def update_job_listings(session: Session, jobs: list[JobListing]):
-    for job in jobs:
-        job.is_new = False
-    session.commit()
+def set_job_listings_is_new(session: Session, jobs: list[JobListing], is_new: bool = False):
+    set_job_listings_is_new_in_db(session, jobs, is_new)
 
 
 #delete all old job listings where created_at is older than 3 days
 def delete_old_job_listings(session: Session):
     cutoff_date = utc_to_vietnam_time(datetime.now()) - timedelta(days=3)
-    session.query(JobListing).filter(JobListing.created_at < cutoff_date).delete()
-    session.commit()
+    delete_all_old_job_listings_in_db(session, cutoff_date)
 
 
 def add_job_listings(session: Session, jobs: list[JobListing]):
-    for job in jobs:
-        session.add(job)
-    session.commit()
+    create_job_listings_in_db(session, jobs)
 
 
-def update_last_scraped_date(session: Session, scraped_site_id: int, date: datetime):
-    query = session.query(ScrapedSite).filter(ScrapedSite.id == scraped_site_id)
-    site = query.first()
-    if site is None:
-        return
-    
-    site.last_scrape_date = date
-    session.commit()
+def update_last_scraped_date(session: Session, scraped_site: ScrapedSite, date: datetime):
+    update_last_scraped_date_in_db(session, scraped_site, date)
     
 
 def create_notification(session: Session, scraped_site_id: int, website_name: str, new_jobs_count: int):
     #create a new notification and save it to the database
     message = f"Found {new_jobs_count} new jobs on {website_name}"
-    notification = Notification(
-        scraped_site_id=scraped_site_id,
-        message=message,
-        is_read=False,
+    create_notification_in_db(
+        session=session, 
+        message=message, 
+        scraped_site_id=scraped_site_id, 
         created_at=utc_to_vietnam_time(datetime.now())
     )
-    session.add(notification)
-    session.commit()
 
 
 def write_to_log(found_jobs_dict: dict[str, list]):
@@ -111,7 +97,7 @@ async def scrape_schedule(session: Session):
     
     for scraped_site in scraped_sites:
         #get scraped site settings for each site
-        scraped_site_settings = fetch_scrape_site_settings(session, scraped_site.id)
+        scraped_site_settings = fetch_scrape_site_settings(session, scraped_site.scraped_site_settings_id)
 
         if scraped_site_settings is None:
             print(f"No scraped site settings found for site: {scraped_site.website_name}")
@@ -180,7 +166,7 @@ async def scrape_schedule(session: Session):
         found_jobs_dict[scraped_site.website_name] = new_jobs
 
         # update the is_new field of the existing job listings to false
-        update_job_listings(session, old_job_objects)
+        set_job_listings_is_new(session, old_job_objects, False)
         # insert new job listings
         add_job_listings(session, new_jobs_objects)
 
@@ -195,7 +181,7 @@ async def scrape_schedule(session: Session):
             })
 
         #update the last scraped date
-        update_last_scraped_date(session, scraped_site.id, utc_to_vietnam_time(datetime.now()))
+        update_last_scraped_date(session, scraped_site, utc_to_vietnam_time(datetime.now()))
 
     # write to a log.txt file
     write_to_log(found_jobs_dict)

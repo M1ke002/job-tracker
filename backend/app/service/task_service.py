@@ -1,10 +1,21 @@
 from app.model import db, Task
 from dateutil.parser import parse
 from datetime import timedelta, timezone
+from sqlalchemy.orm.session import Session
 
 def get_all_tasks():
     tasks = Task.query.all()
     return [task.to_dict() for task in tasks]
+
+def get_all_due_tasks_in_db(session: Session):
+    #get all tasks which are not completed and is_reminder_enabled is true and due_date is not null
+    query = session.query(Task).filter(
+        Task.is_completed == False,
+        Task.is_reminder_enabled == True, 
+        Task.is_reminded == False, 
+        Task.due_date != None
+    )
+    return query.all()
 
 def create_task(data):
     job_id = data.get('jobId')
@@ -83,6 +94,11 @@ def set_task_complete(task_id, is_completed):
     task.is_completed = is_completed
     db.session.commit()
     return task.to_dict()
+
+def set_tasks_reminded_in_db(session: Session, reminded_tasks: list[Task]):
+    for task in reminded_tasks:
+        task.is_reminded = True
+    session.commit()
 
 def toggle_task_reminder(task_id, is_reminder_enabled):
     task = Task.query.get(task_id)
