@@ -14,7 +14,6 @@ def edit_scraped_site_settings(scraped_site_settings_id, data):
     if scraped_site_settings is None:
         return None
 
-    is_scrape_enabled = data.get("isScrapeEnabled")
     scrape_frequency = data.get("scrapeFrequency")
     max_pages_to_scrape = data.get("maxPagesToScrape")
     is_notify_email = data.get("isNotifyEmail")
@@ -24,7 +23,6 @@ def edit_scraped_site_settings(scraped_site_settings_id, data):
     job_type = data.get("jobType")
     classification = data.get("classification")
 
-    scraped_site_settings.is_scrape_enabled = is_scrape_enabled
     scraped_site_settings.scrape_frequency = scrape_frequency
     scraped_site_settings.max_pages_to_scrape = max_pages_to_scrape
     scraped_site_settings.is_notify_email = is_notify_email

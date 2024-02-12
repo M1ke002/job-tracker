@@ -29,6 +29,7 @@ class SavedJob(db.Model):
     job_date: so.Mapped[Optional[str]] = so.mapped_column(sa.String(100))
     notes: so.Mapped[Optional[str]] = so.mapped_column(sa.String(5000))
     position: so.Mapped[Optional[int]] = so.mapped_column(sa.Integer)
+    is_favorite: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=False)
     created_at: so.Mapped[datetime] = so.mapped_column(default=lambda: datetime.now())
 
     # relationship
@@ -64,6 +65,7 @@ class SavedJob(db.Model):
             "job_date": self.job_date,
             "notes": self.notes,
             "position": self.position,
+            "is_favorite": self.is_favorite,
             "created_at": self.created_at,
             # for stage only need id and stage_name
             "stage": (

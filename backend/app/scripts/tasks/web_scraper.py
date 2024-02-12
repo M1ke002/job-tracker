@@ -59,14 +59,13 @@ def update_last_scraped_date(
 
 
 def create_notification(
-    session: Session, scraped_site_id: int, website_name: str, new_jobs_count: int
+    session: Session, website_name: str, new_jobs_count: int
 ):
     # create a new notification and save it to the database
     message = f"Found {new_jobs_count} new jobs on {website_name}"
     create_notification_in_db(
         session=session,
         message=message,
-        scraped_site_id=scraped_site_id,
         created_at=utc_to_vietnam_time(datetime.now()),
     )
 
@@ -185,10 +184,9 @@ async def web_scraper(session: Session):
         if len(new_jobs) > 0 and scraped_site_settings.is_notify_on_website:
             # create a new notification
             create_notification(
-                session,
-                scraped_site.id,
-                scraped_site.website_name,
-                total_new_jobs_count,
+                session=session,
+                website_name=scraped_site.website_name,
+                new_jobs_count=total_new_jobs_count,
             )
 
         if len(new_jobs) > 0 and scraped_site_settings.is_notify_email:

@@ -34,12 +34,10 @@ def set_notifications_to_read(unread_notifications):
 def create_notification_in_db(
     session: Session,
     message: str,
-    scraped_site_id: int,
     created_at: datetime = datetime.now(),
 ):
     notification = Notification(
         message=message,
-        scraped_site_id=scraped_site_id,
         is_read=False,
         created_at=created_at,
     )
@@ -56,3 +54,10 @@ def delete_notification(notification_id):
     db.session.delete(notification)
     db.session.commit()
     return "Deleted notification successfully"
+
+
+def delete_old_notifications_in_db(session: Session, cutoff_date: datetime):
+    query = session.query(Notification).filter(Notification.created_at < cutoff_date)
+    query.delete()
+    session.commit()
+    

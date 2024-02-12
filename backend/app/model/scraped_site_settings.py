@@ -9,7 +9,6 @@ class ScrapedSiteSettings(db.Model):
     __tablename__ = "scraped_site_settings"
 
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    is_scrape_enabled: so.Mapped[bool] = so.mapped_column(sa.Boolean)
     # scrape frequency in days
     scrape_frequency: so.Mapped[int] = so.mapped_column(sa.Integer, default=1)
     max_pages_to_scrape: so.Mapped[int] = so.mapped_column(sa.Integer, default=1)
@@ -34,7 +33,6 @@ class ScrapedSiteSettings(db.Model):
     def to_dict(self) -> dict:
         return {
             "id": self.id,
-            "is_scrape_enabled": self.is_scrape_enabled,
             "scrape_frequency": self.scrape_frequency,
             "max_pages_to_scrape": self.max_pages_to_scrape,
             "is_notify_email": self.is_notify_email,

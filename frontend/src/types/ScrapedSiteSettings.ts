@@ -2,7 +2,6 @@ interface ScrapedSiteSettings {
   id: number;
   is_notify_email: boolean;
   is_notify_on_website: boolean;
-  is_scrape_enabled: boolean;
   classification: string;
   job_type: string;
   location: string;

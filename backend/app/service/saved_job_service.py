@@ -42,6 +42,7 @@ def create_saved_job(data):
         salary=salary,
         job_url=job_url,
         job_date=job_date,
+        is_favorite=False,
     )
 
     db.session.add(job)
@@ -70,6 +71,15 @@ def edit_saved_job(saved_job_id, data):
     job.salary = salary
     job.job_url = job_url
 
+    db.session.commit()
+    return job.to_dict()
+
+
+def toggle_favorite(saved_job_id, is_favorite):
+    job = SavedJob.query.get(saved_job_id)
+    if job is None:
+        return None
+    job.is_favorite = is_favorite
     db.session.commit()
     return job.to_dict()
 

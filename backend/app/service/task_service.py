@@ -12,10 +12,10 @@ def get_all_tasks():
 def get_all_due_tasks_in_db(session: Session):
     # get all tasks which are not completed and is_reminder_enabled is true and due_date is not null
     query = session.query(Task).filter(
-        Task.is_completed is False,
-        Task.is_reminder_enabled is True,
-        Task.is_reminded is False,
-        Task.due_date is not None,
+        Task.is_completed == False,
+        Task.is_reminder_enabled == True,
+        Task.is_reminded == False,
+        Task.due_date != None,
     )
     return query.all()
 

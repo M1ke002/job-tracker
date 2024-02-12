@@ -61,16 +61,17 @@ def create_notification(
     create_notification_in_db(
         session=session,
         message=message,
-        scraped_site_id=None,
         created_at=utc_to_vietnam_time(datetime.now()),
     )
 
 
-def check_due_tasks(session: Session):
+async def check_due_tasks(session: Session):
     email_data = {"type": "tasks", "data": []}
 
     # fetch all tasks
     tasks = fetch_all_due_tasks(session)
+
+    print(tasks)
 
     # find and update due tasks
     due_tasks_data = find_and_update_due_tasks(session, tasks)
@@ -96,5 +97,6 @@ def check_due_tasks(session: Session):
                     "date_message": date_message,
                 }
             )
+    print("Check due tasks completed!!!")
 
     return email_data

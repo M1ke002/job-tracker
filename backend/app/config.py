@@ -3,31 +3,38 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# uncomment the line below for postgres database url from environment variable
-# postgres_local_base = os.environ['DATABASE_URL']
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 database_config = {
     "username": os.getenv("DB_USERNAME"),
     "password": os.getenv("DB_PASSWORD"),
-    "host": "localhost",
-    "port": "3306",
-    "database": "job_tracker",
+    "host": os.getenv("DB_HOST"),
+    "port": os.getenv("DB_PORT"),
+    "database": os.getenv("DB_NAME"),
 }
 
-basedir = os.path.abspath(os.path.dirname(__file__))
+
+def create_database_url(db_type: str = "mysql"):
+    username = database_config["username"]
+    password = database_config["password"]
+    host = database_config["host"]
+    port = database_config["port"]
+    database = database_config["database"]
+
+    if db_type == "postgres":
+        return f"postgresql+psycopg2://{username}:{password}@{host}:{port}/{database}"
+    else:
+        return f"mysql+pymysql://{username}:{password}@{host}:{port}/{database}"
 
 
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "my_precious_secret_key")
-    SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{database_config['username']}:{database_config['password']}@{database_config['host']}:{database_config['port']}/{database_config['database']}"
+    SQLALCHEMY_DATABASE_URI = create_database_url(db_type="mysql")
     DEBUG = False
 
 
 class DevelopmentConfig(Config):
-    # uncomment the line below to use postgres
-    # SQLALCHEMY_DATABASE_URI = postgres_local_base
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{database_config['username']}:{database_config['password']}@{database_config['host']}:{database_config['port']}/{database_config['database']}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
@@ -42,8 +49,6 @@ class TestingConfig(Config):
 
 class ProductionConfig(Config):
     DEBUG = False
-    # uncomment the line below to use postgres
-    # SQLALCHEMY_DATABASE_URI = postgres_local_base
 
 
 config_by_name = dict(dev=DevelopmentConfig, test=TestingConfig, prod=ProductionConfig)

@@ -23,7 +23,6 @@ def get_all_scraped_sites():
         for site in sites_to_scrape:
             # create scraped site settings object with default settings
             scrapedSiteSettings = ScrapedSiteSettings(
-                is_scrape_enabled=True,
                 scrape_frequency=1,
                 is_notification_enabled=True,
                 is_notify_email=True,

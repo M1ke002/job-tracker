@@ -132,7 +132,6 @@ const JobAlertSettingModal = () => {
       const res = await axios.put(
         `/scraped-site-settings/${alertSetting?.id}`,
         {
-          isScrapeEnabled: true, //default is true for now
           scrapeFrequency: data.frequency,
           maxPagesToScrape: data.maxPages,
           isNotifyEmail: data.isNotifyEmail,

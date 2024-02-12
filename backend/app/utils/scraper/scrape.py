@@ -205,5 +205,5 @@ async def scrape_all_job_listings(
     # print(f'jobs length: {len(jobs)}')
 
     time_difference = time() - start_time
-    print(f"Scraping time: %.2f seconds." % time_difference)
+    print("Scraping time: %.2f seconds." % time_difference)
     return jobs

@@ -20,7 +20,7 @@ firebase = pyrebase.initialize_app(firebaseConfig)
 storage = firebase.storage()
 
 
-# sample input: file = request.files['file']. <FileStorage: 'Hoang_Nam_Trinh_CV.pdf' ('application/pdf')>
+# sample input: file = request.files['file']. <FileStorage: 'name.pdf' ('application/pdf')>
 def upload_file(file, filename):
     print(filename)
     # save file to firebase with filename
