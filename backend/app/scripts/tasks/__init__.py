@@ -1,3 +1,3 @@
-from .web_scraper import web_scraper
+from .scrape_new_jobs import web_scraper
 from .delete_old_notifications import delete_old_notifications
-from .check_due_tasks import check_due_tasks
+from .remind_tasks import check_due_tasks

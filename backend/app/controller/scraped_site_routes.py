@@ -36,7 +36,7 @@ def handle_get_all_scraped_sites():
 def handle_get_scraped_site(scraped_site_id):
     scrapedSite = get_scraped_site(scraped_site_id)
     if scrapedSite is None:
-        return jsonify({}), 404
+        return jsonify({"error": "Scraped site not found"}), 404
 
     # query job listings, paginate by 30/page and sort by created_at date, return first page and total pages
     job_listings, total_pages, total_job_count = get_all_job_listings_paginated(

@@ -40,7 +40,7 @@ def handle_edit_document(document_id):
 def handle_unlink_job_from_document(document_id):
     document = unlink_job_from_document(document_id)
     if document is None:
-        return jsonify({}), 404
+        return jsonify({"error": "Document not found"}), 404
     return jsonify(document), 200
 
 
@@ -75,7 +75,7 @@ def handle_create_document():
 def handle_delete_document(document_id):
     message = delete_document(document_id)
     if message is None:
-        return jsonify({}), 404
+        return jsonify({"error": "Cannot delete document"}), 400
     return jsonify(message), 200
 
 

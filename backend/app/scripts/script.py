@@ -77,7 +77,7 @@ async def main():
 
     for result in results:
         if isinstance(result, Exception):
-            # Handle exceptions
+            # if there is error
             print(f"Error occurred: {result}")
         elif isinstance(result, dict):
             email_data[result["type"]] = result["data"]

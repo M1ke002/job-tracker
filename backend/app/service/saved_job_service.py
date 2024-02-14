@@ -137,7 +137,7 @@ def update_job_stage(job_id, stage_id):
 
 
 def update_job_order(job_positions):
-    # sample: [{id: 1, stage_id: 1, position: 0}, {id: 2, stage_id: 1, position: 1}, ...]
+    # sample: [{id: 1, stage_id: 1, position: 0, rejected_at_stage_id: 1}, {id: 2, stage_id: 1, position: 1, rejected_at_stage_id: 1}, ...]
     res = []
     for job_position in job_positions:
         job = SavedJob.query.get(job_position["id"])
@@ -161,7 +161,7 @@ def remove_job_from_stage(job_id, job_positions):
     job.rejected_at_stage_id = None
 
     # sample job_positions: [{id: 1, position: 0}, {id: 2, position: 1}, ...]
-    # update positions of remaining jobs in stage
+    # update positions of remaining jobs in the same stage
     res = []
 
     for job_position in job_positions:

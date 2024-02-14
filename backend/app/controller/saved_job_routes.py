@@ -125,9 +125,10 @@ def handle_remove_job_from_stage(saved_job_id):
         return jsonify({"error": "No data provided"}), 400
 
     job_positions = data.get("jobPositions")
-    if not job_positions:
+    if job_positions is None:
         return jsonify({"error": "No job positions provided"}), 400
 
+    print(job_positions, saved_job_id)
     res = remove_job_from_stage(saved_job_id, job_positions)
     if res is None:
         return jsonify({"error": "Cannot remove job from stage"}), 400
@@ -176,5 +177,5 @@ def handle_update_saved_job_description(saved_job_id):
 def handle_delete_saved_job(saved_job_id):
     message = delete_saved_job(saved_job_id)
     if message is None:
-        return jsonify({}), 404
+        return jsonify({"error": "Cannot delete job"}), 400
     return jsonify(message), 200

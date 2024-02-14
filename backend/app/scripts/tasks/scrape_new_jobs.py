@@ -43,8 +43,8 @@ def set_job_listings_is_new(
 
 
 # delete all old job listings where created_at is older than 3 days
-def delete_old_job_listings(session: Session):
-    cutoff_date = utc_to_vietnam_time(datetime.now()) - timedelta(days=3)
+def delete_old_job_listings(session: Session, current_date: datetime):
+    cutoff_date = current_date - timedelta(days=3)
     delete_all_old_job_listings_in_db(session, cutoff_date)
 
 
@@ -59,20 +59,19 @@ def update_last_scraped_date(
 
 
 def create_notification(
-    session: Session, website_name: str, new_jobs_count: int
+    session: Session, website_name: str, new_jobs_count: int, current_date: datetime
 ):
     # create a new notification and save it to the database
     message = f"Found {new_jobs_count} new jobs on {website_name}"
     create_notification_in_db(
         session=session,
         message=message,
-        created_at=utc_to_vietnam_time(datetime.now()),
+        created_at=current_date,
     )
 
 
-def write_to_log(found_jobs_dict: dict[str, list]):
-    now = utc_to_vietnam_time(datetime.now())
-    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+def write_to_log(found_jobs_dict: dict[str, list], current_date: datetime):
+    dt_string = current_date.strftime("%d/%m/%Y %H:%M:%S")
 
     text = f"Scheduled job ran at {dt_string}. Found "
     for site_name, jobs in found_jobs_dict.items():
@@ -89,9 +88,10 @@ def write_to_log(found_jobs_dict: dict[str, list]):
 async def web_scraper(session: Session):
     email_data = {"type": "web_scraper", "data": []}
     found_jobs_dict = {GRAD_CONNECTION: [], SEEK: []}
+    current_date = utc_to_vietnam_time(datetime.now())
 
     # delete all old job listings where created_at is older than 3 days
-    delete_old_job_listings(session)
+    delete_old_job_listings(session, current_date)
 
     # get all scraped sites settings
     scraped_sites = fetch_all_scraped_sites(session)
@@ -139,8 +139,9 @@ async def web_scraper(session: Session):
             search_url,
             scraped_site_settings.max_pages_to_scrape,
         )
+        # print(scraped_jobs)
 
-        # get all job listings from db
+        # get all job listings for a website from db
         old_job_objects = fetch_all_job_listings(session, scraped_site.id)
         old_jobs = []
 
@@ -164,7 +165,7 @@ async def web_scraper(session: Session):
                 job_url=new_job["job_url"],
                 job_date=new_job["job_date"],
                 is_new=new_job["is_new"],
-                created_at=utc_to_vietnam_time(datetime.now()),
+                created_at=current_date,
             )
             new_jobs_objects.append(job_object)
 
@@ -187,6 +188,7 @@ async def web_scraper(session: Session):
                 session=session,
                 website_name=scraped_site.website_name,
                 new_jobs_count=total_new_jobs_count,
+                current_date=current_date,
             )
 
         if len(new_jobs) > 0 and scraped_site_settings.is_notify_email:
@@ -196,10 +198,10 @@ async def web_scraper(session: Session):
 
         # update the last scraped date
         update_last_scraped_date(
-            session, scraped_site, utc_to_vietnam_time(datetime.now())
+            session, scraped_site, current_date
         )
 
     # write to a log.txt file
-    write_to_log(found_jobs_dict)
-
+    write_to_log(found_jobs_dict, current_date)
+    
     return email_data

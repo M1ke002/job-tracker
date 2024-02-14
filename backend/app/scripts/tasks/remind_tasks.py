@@ -12,15 +12,13 @@ def set_tasks_as_reminded(session: Session, tasks: list[Task]):
     set_tasks_reminded_in_db(session, tasks)
 
 
-def find_and_update_due_tasks(session: Session, tasks: list[Task]):
+def find_and_update_due_tasks(session: Session, tasks: list[Task], current_date: datetime):
     res = []
     reminded_tasks = []
 
     for task in tasks:
         # check if current date + reminder_date is equal to due_date
-        current_date = datetime.now()
-        current_vn_time = utc_to_vietnam_time(current_date)
-        expected_date = current_vn_time + timedelta(days=task.reminder_date)
+        expected_date = current_date + timedelta(days=task.reminder_date)
         # expected date format: 2024-02-02 21:00:00
         print(expected_date.day, task.due_date.day, task.task_name)
 
@@ -45,6 +43,7 @@ def find_and_update_due_tasks(session: Session, tasks: list[Task]):
             res.append(data)
             reminded_tasks.append(task)
 
+    print(f"Found {len(reminded_tasks)} tasks to remind")
     set_tasks_as_reminded(session, reminded_tasks)
     return res
 
@@ -54,19 +53,20 @@ def fetch_all_due_tasks(session: Session):
 
 
 def create_notification(
-    session: Session, task_name: str, due_date: str, date_message: str
+    session: Session, task_name: str, due_date: str, date_message: str, date: datetime
 ):
     # scraped_site_id is null for tasks
     message = f"Task: {task_name} is due {date_message} on {due_date}."
     create_notification_in_db(
         session=session,
         message=message,
-        created_at=utc_to_vietnam_time(datetime.now()),
+        created_at=date,
     )
 
 
 async def check_due_tasks(session: Session):
     email_data = {"type": "tasks", "data": []}
+    current_date = utc_to_vietnam_time(datetime.now())
 
     # fetch all tasks
     tasks = fetch_all_due_tasks(session)
@@ -74,7 +74,7 @@ async def check_due_tasks(session: Session):
     print(tasks)
 
     # find and update due tasks
-    due_tasks_data = find_and_update_due_tasks(session, tasks)
+    due_tasks_data = find_and_update_due_tasks(session, tasks, current_date)
 
     for task_data in due_tasks_data:
         task_name = task_data["task_name"]
@@ -87,7 +87,7 @@ async def check_due_tasks(session: Session):
         formatted_due_date = due_date.strftime("%d/%m/%Y")
 
         if is_notify_on_website:
-            create_notification(session, task_name, formatted_due_date, date_message)
+            create_notification(session, task_name, formatted_due_date, date_message, current_date)
 
         if is_notify_email:
             email_data["data"].append(
