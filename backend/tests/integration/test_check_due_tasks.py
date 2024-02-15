@@ -12,11 +12,10 @@ def setup_data(database):
             id=1,
             job_id=1,
             task_name="task1",
-            due_date=datetime.strptime("2024-02-18", "%Y-%m-%d"),
+            due_date=datetime.strptime("2024-02-15", "%Y-%m-%d"),
             is_completed=False,
             is_reminder_enabled=True,
             is_reminded=False,
-            reminder_date=1,
             is_notify_email=True,
             is_notify_on_website=True,
         ),
@@ -24,11 +23,10 @@ def setup_data(database):
             id=2,
             job_id=1,
             task_name="task2",
-            due_date=datetime.strptime("2024-02-15", "%Y-%m-%d"),
+            due_date=datetime.strptime("2024-02-14", "%Y-%m-%d"),
             is_completed=False,
             is_reminder_enabled=True,
             is_reminded=False,
-            reminder_date=1,
             is_notify_email=True,
             is_notify_on_website=True,
         ),
@@ -36,11 +34,10 @@ def setup_data(database):
             id=3,
             job_id=1,
             task_name="task3",
-            due_date=datetime.strptime("2024-02-21", "%Y-%m-%d"),
+            due_date=datetime.strptime("2024-02-14", "%Y-%m-%d"),
             is_completed=False,
             is_reminder_enabled=True,
             is_reminded=False,
-            reminder_date=7,
             is_notify_email=True,
             is_notify_on_website=True,
         ),
@@ -74,14 +71,14 @@ async def test_check_due_tasks(database, mock_datetime):
 
     assert email_data["data"][0] == {
         "task_name": "task2",
-        "due_date": "15/02/2024",
-        "date_message": "tomorrow",
+        "due_date": "14/02/2024",
+        "date_message": "today",
     }
 
     assert email_data["data"][1] == {
         "task_name": "task3",
-        "due_date": "21/02/2024",
-        "date_message": "in a week",
+        "due_date": "14/02/2024",
+        "date_message": "today",
     }
 
     # check the tasks in the database

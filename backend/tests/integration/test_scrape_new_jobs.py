@@ -55,7 +55,7 @@ def setup_job_listings_data(database):
             job_title="job1",
             company_name="company1",
             job_url="url1",
-            created_at=datetime.strptime("2024-02-10", "%Y-%m-%d"),
+            created_at=datetime.strptime("2024-02-06", "%Y-%m-%d"),
         ),
         JobListing(
             id=2,

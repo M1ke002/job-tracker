@@ -25,7 +25,6 @@ def create_task(data):
     task_name = data.get("taskName")
     due_date = data.get("dueDate")
     is_reminder_enabled = data.get("isReminderEnabled")
-    reminder_date = data.get("reminderDate")
     is_notify_email = data.get("isNotifyEmail")
     is_notify_on_website = data.get("isNotifyOnWebsite")
 
@@ -46,7 +45,6 @@ def create_task(data):
         is_completed=False,
         is_reminder_enabled=is_reminder_enabled,
         is_reminded=False,
-        reminder_date=reminder_date,
         is_notify_email=is_notify_email,
         is_notify_on_website=is_notify_on_website,
     )
@@ -62,7 +60,6 @@ def edit_task(task_id, data):
     due_date = data.get("dueDate")
     is_reminder_enabled = data.get("isReminderEnabled")
     is_reminded = data.get("isReminded")
-    reminder_date = data.get("reminderDate")
     is_notify_email = data.get("isNotifyEmail")
     is_notify_on_website = data.get("isNotifyOnWebsite")
 
@@ -84,7 +81,6 @@ def edit_task(task_id, data):
     task.due_date = due_date
     task.is_reminder_enabled = is_reminder_enabled
     task.is_reminded = is_reminded
-    task.reminder_date = reminder_date
     task.is_notify_email = is_notify_email
     task.is_notify_on_website = is_notify_on_website
 

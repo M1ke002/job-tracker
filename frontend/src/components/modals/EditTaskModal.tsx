@@ -52,7 +52,6 @@ const formSchema = z.object({
   taskName: z.string(),
   dueDate: z.date().optional(),
   isReminderEnabled: z.boolean(),
-  reminderDate: z.string(),
   isNotifyEmail: z.boolean(),
   isNotifyOnWebsite: z.boolean(),
 });
@@ -72,7 +71,6 @@ const EditTaskModal = () => {
       taskName: "",
       dueDate: undefined,
       isReminderEnabled: false,
-      reminderDate: "1",
       isNotifyEmail: false,
       isNotifyOnWebsite: false,
     },
@@ -85,7 +83,6 @@ const EditTaskModal = () => {
       if (task.due_date) form.setValue("dueDate", new Date(task.due_date));
       else form.setValue("dueDate", undefined);
       form.setValue("isReminderEnabled", task.is_reminder_enabled);
-      form.setValue("reminderDate", task.reminder_date.toString());
       form.setValue("isNotifyEmail", task.is_notify_email);
       form.setValue("isNotifyOnWebsite", task.is_notify_on_website);
     }
@@ -97,7 +94,6 @@ const EditTaskModal = () => {
       if (task.due_date) form.setValue("dueDate", new Date(task.due_date));
       else form.setValue("dueDate", undefined);
       form.setValue("isReminderEnabled", task.is_reminder_enabled);
-      form.setValue("reminderDate", task.reminder_date.toString());
       form.setValue("isNotifyEmail", task.is_notify_email);
       form.setValue("isNotifyOnWebsite", task.is_notify_on_website);
     }
@@ -125,7 +121,6 @@ const EditTaskModal = () => {
         dueDate: data.dueDate,
         isReminderEnabled: data.isReminderEnabled,
         isReminded: isDueDateChanged ? false : task?.is_reminded,
-        reminderDate: data.reminderDate,
         isNotifyEmail: data.isNotifyEmail,
         isNotifyOnWebsite: data.isNotifyOnWebsite,
       });
@@ -244,32 +239,6 @@ const EditTaskModal = () => {
                   )}
                 />
               </div>
-
-              <FormField
-                control={form.control}
-                name="reminderDate"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Reminder date</FormLabel>
-
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder={"Select an option"} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1">1 day before due</SelectItem>
-                        <SelectItem value="7">1 week before due</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>
-                      Date to remind you about the task before it's due
-                    </FormDescription>
-                  </FormItem>
-                )}
-              />
 
               <div className="flex flex-col space-y-2 w-full pt-2">
                 <Label>Notifications</Label>

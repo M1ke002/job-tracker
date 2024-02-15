@@ -111,8 +111,8 @@ def get_new_job_listings(scraped_site_id, scraped_jobs):
     current_new_jobs = [job for job in existing_job_listings if job.is_new]
     set_job_listings_is_new_in_db(db.session, current_new_jobs, False)
 
-    # delete old job listings
-    cut_off_date = datetime.now() - timedelta(days=3)
+    # delete old job listings older than 7 days
+    cut_off_date = datetime.now() - timedelta(days=7)
     delete_old_job_listings_in_db_for_site(db.session, scraped_site_id, cut_off_date)
 
     # find new job listings

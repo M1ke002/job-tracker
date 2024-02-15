@@ -42,9 +42,9 @@ def set_job_listings_is_new(
     set_job_listings_is_new_in_db(session, jobs, is_new)
 
 
-# delete all old job listings where created_at is older than 3 days
+# delete all old job listings where created_at is older than 7 days
 def delete_old_job_listings(session: Session, current_date: datetime):
-    cutoff_date = current_date - timedelta(days=3)
+    cutoff_date = current_date - timedelta(days=7)
     delete_all_old_job_listings_in_db(session, cutoff_date)
 
 

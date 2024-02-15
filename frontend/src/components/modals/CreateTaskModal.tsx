@@ -23,13 +23,6 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "../ui/input";
 import { Label } from "@/components/ui/label";
@@ -52,7 +45,6 @@ const formSchema = z.object({
   taskName: z.string(),
   dueDate: z.date().optional(),
   isReminderEnabled: z.boolean(),
-  reminderDate: z.string(),
   isNotifyEmail: z.boolean(),
   isNotifyOnWebsite: z.boolean(),
 });
@@ -69,7 +61,6 @@ const CreateTaskModal = () => {
     defaultValues: {
       taskName: "",
       isReminderEnabled: false,
-      reminderDate: "1",
       isNotifyEmail: false,
       isNotifyOnWebsite: false,
     },
@@ -83,7 +74,6 @@ const CreateTaskModal = () => {
         taskName: data.taskName,
         dueDate: data.dueDate,
         isReminderEnabled: data.isReminderEnabled,
-        reminderDate: data.reminderDate,
         isNotifyEmail: data.isNotifyEmail,
         isNotifyOnWebsite: data.isNotifyOnWebsite,
       });
@@ -193,32 +183,6 @@ const CreateTaskModal = () => {
                 />
               </div>
 
-              <FormField
-                control={form.control}
-                name="reminderDate"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Reminder date</FormLabel>
-
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder={"Select an option"} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1">1 day before due</SelectItem>
-                        <SelectItem value="7">1 week before due</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>
-                      Date to remind you about the task before it's due
-                    </FormDescription>
-                  </FormItem>
-                )}
-              />
-
               <div className="flex flex-col space-y-2 w-full pt-2">
                 <Label>Notifications</Label>
                 <div className="flex items-center space-x-6 pt-1">
@@ -285,7 +249,7 @@ const CreateTaskModal = () => {
                   variant="primary"
                   className="text-white bg-blue-500 hover:bg-blue-600"
                 >
-                  Save
+                  Create
                 </Button>
               </div>
             </DialogFooter>

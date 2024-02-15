@@ -7,7 +7,6 @@ my_env
 
 .env
 
-test.db
+.coverage
 
-app/script/Seek.json
-~/app/script/test.py
+test.db

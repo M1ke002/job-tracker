@@ -17,22 +17,13 @@ def find_and_update_due_tasks(session: Session, tasks: list[Task], current_date:
     reminded_tasks = []
 
     for task in tasks:
-        # check if current date + reminder_date is equal to due_date
-        expected_date = current_date + timedelta(days=task.reminder_date)
-        # expected date format: 2024-02-02 21:00:00
-        print(expected_date.day, task.due_date.day, task.task_name)
-
+        # check if current date is equal to due_date
         if (
-            (expected_date.year == task.due_date.year)
-            and (expected_date.month == task.due_date.month)
-            and (expected_date.day == task.due_date.day)
+            (current_date.year == task.due_date.year)
+            and (current_date.month == task.due_date.month)
+            and (current_date.day == task.due_date.day)
         ):
-            if task.reminder_date == 1:
-                date_message = "tomorrow"
-            elif task.reminder_date == 7:
-                date_message = "in a week"
-            else:
-                date_message = f"in {task.reminder_date} days"
+            date_message = "today"
             data = {
                 "task_name": task.task_name,
                 "due_date": task.due_date,

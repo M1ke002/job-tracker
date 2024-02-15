@@ -207,3 +207,7 @@ async def scrape_all_job_listings(
     time_difference = time() - start_time
     print("Scraping time: %.2f seconds." % time_difference)
     return jobs
+
+
+#TODO: use class for each website (SEEK, GRAD_CONNECTION) instead of multiple functions in multiple files
+#each class stays in 1 file, will have a method to scrape job listings, a url builder method, base url attribute
