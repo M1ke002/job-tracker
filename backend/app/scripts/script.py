@@ -37,6 +37,7 @@ def construct_and_send_email(email_data):
 
 
 def create_sqlalchemy_session():
+    print(f"Connecting to {Config.SQLALCHEMY_DATABASE_URI}")
     engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
     Session = sessionmaker(bind=engine)
     session = Session()
