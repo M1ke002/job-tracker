@@ -86,7 +86,7 @@ async def scrape_ausgrad_job_listings(soup: BeautifulSoup):
 
 async def scrape_seek_job_listings(soup: BeautifulSoup):
     jobs_dict = {}
-    job_listings = soup.find_all("div", class_="_1wkzzau0 a1msqi6m")
+    job_listings = soup.find_all("div", class_="y735df0 _1iz8dgs6m")
     print(f"Job Listings: {len(job_listings)}")
 
     for job in job_listings:

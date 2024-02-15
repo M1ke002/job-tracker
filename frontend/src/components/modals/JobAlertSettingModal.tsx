@@ -165,6 +165,8 @@ const JobAlertSettingModal = () => {
       //update scrapedSites
     } catch (error) {
       console.log(error);
+    } finally {
+      onClose();
     }
   };
 

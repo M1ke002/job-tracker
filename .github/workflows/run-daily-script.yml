@@ -31,4 +31,4 @@ jobs:
       - name: Run script
         run: |
           cd backend/app/scripts
-          python test_action.py
+          python script.py

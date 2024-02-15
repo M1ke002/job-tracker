@@ -68,9 +68,9 @@ const SavedJobsPage = () => {
           />
         ))}
       </div>
-      <Button className="mx-auto mt-4 mb-3 px-7" variant="primary">
+      {/* <Button className="mx-auto mt-4 mb-3 px-7" variant="primary">
         Load More
-      </Button>
+      </Button> */}
 
       {/* floating absolute add btn at bottom corner of screen */}
       {/* <div className="fixed bottom-0 right-0 mb-5 mr-5">

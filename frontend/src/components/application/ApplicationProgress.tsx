@@ -7,30 +7,61 @@ import SavedJob from "@/types/SavedJob";
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 import { useApplicationStages } from "@/stores/useApplicationStages";
 
+const sortApplicationStages = (applicationStages: ApplicationStage[]) => {
+  //output: [Applied, O.A., Interview, Offer, Rejected]
+  const orderedStages: ApplicationStage[] = [];
+
+  const stageApplied = applicationStages.find(
+    (stage) => stage.stage_name === "Applied"
+  );
+  const stageOA = applicationStages.find(
+    (stage) => stage.stage_name === "O.A."
+  );
+  const stageInterviewing = applicationStages.find(
+    (stage) => stage.stage_name === "Interviewing"
+  );
+  const stageOffer = applicationStages.find(
+    (stage) => stage.stage_name === "Offer"
+  );
+  const stageRejected = applicationStages.find(
+    (stage) => stage.stage_name === "Rejected"
+  );
+
+  if (stageApplied) orderedStages.push(stageApplied);
+  if (stageOA) orderedStages.push(stageOA);
+  if (stageInterviewing) orderedStages.push(stageInterviewing);
+  if (stageOffer) orderedStages.push(stageOffer);
+  if (stageRejected) orderedStages.push(stageRejected);
+
+  return orderedStages;
+};
+
 //returns an array of ApplicationProgressItems
-//order of stages: applied -> O.A. -> Interviewing -> Offer.
 const getApplicationProgressItems = (
   applicationStages: ApplicationStage[],
   currentSavedJob: SavedJob | null
 ) => {
   if (!currentSavedJob) return [];
-  const currentStage = applicationStages.find(
+
+  const orderedStages = sortApplicationStages(applicationStages);
+
+  const currentStage = orderedStages.find(
     (stage) => stage.id === currentSavedJob.stage_id
   );
-  let currentStageIndex = applicationStages.findIndex(
+  let currentStageIndex = orderedStages.findIndex(
     (stage) => stage.id === currentStage?.id
   );
 
   //if current job stage is rejected, then set currentStageIndex to the rejected_at_stage_id
   if (currentStage?.stage_name === "Rejected") {
-    currentStageIndex = applicationStages.findIndex(
+    currentStageIndex = orderedStages.findIndex(
       (stage) => stage.id === currentSavedJob.rejected_at_stage_id
     );
   }
 
   let applicationProgressItems = [];
-  for (let i = 0; i < applicationStages.length; i++) {
-    const stage = applicationStages[i];
+  for (let i = 0; i < orderedStages.length; i++) {
+    const stage = orderedStages[i];
     if (stage.stage_name === "Rejected") continue;
     const isPassed = i < currentStageIndex;
     const isCurrentStage = i === currentStageIndex;
@@ -43,6 +74,7 @@ const getApplicationProgressItems = (
       isRejected,
     });
   }
+  console.log(applicationProgressItems);
   return applicationProgressItems;
 };
 

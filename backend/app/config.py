@@ -28,8 +28,8 @@ def create_database_url(db_type: str = "mysql"):
 
 
 class Config:
-    SECRET_KEY = os.getenv("SECRET_KEY", "my_precious_secret_key")
-    SQLALCHEMY_DATABASE_URI = create_database_url(db_type="mysql")
+    # SECRET_KEY = os.getenv("SECRET_KEY", "my_precious_secret_key")
+    SQLALCHEMY_DATABASE_URI = create_database_url(db_type="postgres")
     DEBUG = False
 
 
@@ -53,4 +53,4 @@ class ProductionConfig(Config):
 
 config_by_name = dict(dev=DevelopmentConfig, test=TestingConfig, prod=ProductionConfig)
 
-key = Config.SECRET_KEY
+# key = Config.SECRET_KEY

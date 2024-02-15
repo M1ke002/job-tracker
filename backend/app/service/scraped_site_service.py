@@ -24,7 +24,6 @@ def get_all_scraped_sites():
             # create scraped site settings object with default settings
             scrapedSiteSettings = ScrapedSiteSettings(
                 scrape_frequency=1,
-                is_notification_enabled=True,
                 is_notify_email=True,
                 is_notify_on_website=True,
                 max_pages_to_scrape=2,
