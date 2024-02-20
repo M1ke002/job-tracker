@@ -187,7 +187,7 @@ const CreateJobModal = () => {
                   type="submit"
                   disabled={isSaving}
                 >
-                  Save contact
+                  Save job
                 </Button>
               </div>
             </DialogFooter>

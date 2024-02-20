@@ -5,7 +5,7 @@ import smtplib
 from email.mime.text import MIMEText
 
 from datetime import datetime
-from app.utils.utils import utc_to_vietnam_time
+from app.utils.utils import utc_to_sydney_time
 
 load_dotenv()
 
@@ -29,7 +29,7 @@ def create_subject_and_body(email_data):
     has_previous_data = False
 
     now = datetime.now()  # UTC time
-    vn_time = utc_to_vietnam_time(now)
+    vn_time = utc_to_sydney_time(now)
     vn_time_dt_string = vn_time.strftime("%d/%m/%Y %H:%M:%S")
     body += f"Scheduled job ran at {vn_time_dt_string}.\n\n"
 

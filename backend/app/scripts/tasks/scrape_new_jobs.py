@@ -4,7 +4,7 @@ from app.utils.scraper.scrape import scrape_all_job_listings
 from app.utils.scraper.helper import find_new_job_listings
 from app.utils.scraper.constants import SEEK, GRAD_CONNECTION
 from app.utils.scraper.url_builder import ausgrad_url_builder, seek_url_builder
-from app.utils.utils import utc_to_vietnam_time
+from app.utils.utils import utc_to_sydney_time
 
 from sqlalchemy.orm.session import Session
 from app.model import JobListing, ScrapedSite
@@ -88,7 +88,7 @@ def write_to_log(found_jobs_dict: dict[str, list], current_date: datetime):
 async def web_scraper(session: Session):
     email_data = {"type": "web_scraper", "data": []}
     found_jobs_dict = {GRAD_CONNECTION: [], SEEK: []}
-    current_date = utc_to_vietnam_time(datetime.now())
+    current_date = utc_to_sydney_time(datetime.now())
 
     # delete all old job listings where created_at is older than 3 days
     delete_old_job_listings(session, current_date)
