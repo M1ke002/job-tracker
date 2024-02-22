@@ -24,9 +24,9 @@ A web app to scrape job boards and track job application stages, built with Reac
 ## Screenshots
 
 
-<kbd><img src="https://github.com/M1ke002/job-tracker/assets/92376409/bad87362-3b7e-4bf9-9411-95900248f763" alt="first1" height="500" style="margin-bottom: 50px;"></kbd>
-<kbd><img src="https://github.com/M1ke002/job-tracker/assets/92376409/87f8627d-697f-477b-9b2e-0db9e6dd5bbf" alt="first2" height="500" style="margin-bottom: 50px;"></kbd>
-<kbd><img src="https://github.com/M1ke002/job-tracker/assets/92376409/f2536553-8bf7-4db7-8ffa-0800a2bf91dd" alt="first3" height="500" style="margin-bottom: 50px;"></kbd>
+<kbd><img src="https://github.com/M1ke002/job-tracker/assets/92376409/bad87362-3b7e-4bf9-9411-95900248f763" alt="first1" style="margin-bottom: 50px;"></kbd>
+<kbd><img src="https://github.com/M1ke002/job-tracker/assets/92376409/87f8627d-697f-477b-9b2e-0db9e6dd5bbf" alt="first2" style="margin-bottom: 50px;"></kbd>
+<kbd><img src="https://github.com/M1ke002/job-tracker/assets/92376409/f2536553-8bf7-4db7-8ffa-0800a2bf91dd" alt="first3" style="margin-bottom: 50px;"></kbd>
 
 ## Installation
 
