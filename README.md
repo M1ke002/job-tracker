@@ -14,7 +14,7 @@ A web app to scrape job boards and track job application stages, built with Reac
 - Set task reminders, contacts info and notes for a specific job
 - Allows uploading documents (CV, Cover letter) and attach them to jobs
 
-## Technologies Used
+## Tech stack
 
 - Frontend: React, TailwindCSS, shadcn-UI
 - Backend: Flask
