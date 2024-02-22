@@ -6,13 +6,13 @@ A web app to scrape job boards and track job application stages, built with Reac
 
 ## Features
 
-- Scrape and display job details of popular job websites, based on user-defined settings
-- Daily searches for new job postings and notify the user via email or on the website
-- Search, and filter the list of jobs based on user input
-- Save, edit, or delete a specific job
-- Track job application stages by dragging and dropping jobs on different columns (Applied, Interview, Offer, Rejected) 
-- Set task reminders, contacts info and notes for a specific job
-- Allows uploading documents (CV, Cover letter) and attach them to jobs
+- Scrapes and displays job details from popular job websites, customizable through user settings.
+- Automatically searches daily for new job postings and notifies users via email or within the website.
+- Search and filter the list of jobs based on user input criteria.
+- Save, edit, or delete specific job listings.
+- Tracks job application stages by dragging and dropping jobs across different columns (Applied, Interview, Offer, Rejected).
+- Set task reminders, store contact information, and add notes for specific job listings.
+- Upload documents (CV, cover letters) and attach  them to relevant job listings.
 
 ## Tech stack
 
@@ -20,6 +20,13 @@ A web app to scrape job boards and track job application stages, built with Reac
 - Backend: Flask
 - Database: MySQL
 - File storage: Firebase
+
+## Screenshots
+
+
+<kbd><img src="https://github.com/M1ke002/job-tracker/assets/92376409/bad87362-3b7e-4bf9-9411-95900248f763" alt="first1" height="500" style="margin-bottom: 50px;"></kbd>
+<kbd><img src="https://github.com/M1ke002/job-tracker/assets/92376409/87f8627d-697f-477b-9b2e-0db9e6dd5bbf" alt="first2" height="500" style="margin-bottom: 50px;"></kbd>
+<kbd><img src="https://github.com/M1ke002/job-tracker/assets/92376409/f2536553-8bf7-4db7-8ffa-0800a2bf91dd" alt="first3" height="500" style="margin-bottom: 50px;"></kbd>
 
 ## Installation
 
