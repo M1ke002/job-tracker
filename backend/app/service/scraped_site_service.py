@@ -1,9 +1,8 @@
+from sqlalchemy.orm.session import Session
 from app.model import db, ScrapedSite, ScrapedSiteSettings
 
-from app.utils.scraper.scrape import scrape_all_job_listings
-from app.utils.scraper.url_builder import ausgrad_url_builder, seek_url_builder
-from app.utils.scraper.constants import GRAD_CONNECTION, SEEK
-from sqlalchemy.orm.session import Session
+from app.utils.scrapers.grad_connection_scraper import GradConnectionScraper, GRAD_CONNECTION
+from app.utils.scrapers.seek_scraper import SeekScraper, SEEK
 
 from datetime import datetime
 
@@ -82,26 +81,18 @@ async def scrape_site(scrape_site_id):
     if scrapedSiteSettings is None:
         return None
 
+    scraper = None
+
     if scrapedSite.website_name == GRAD_CONNECTION:
-        search_url = ausgrad_url_builder(
-            scrapedSiteSettings.search_keyword,
-            scrapedSiteSettings.job_type,
-            scrapedSiteSettings.classification,
-            scrapedSiteSettings.location,
-        )
+        scraper = GradConnectionScraper(scrapedSiteSettings)
     elif scrapedSite.website_name == SEEK:
-        search_url = seek_url_builder(
-            scrapedSiteSettings.search_keyword,
-            scrapedSiteSettings.job_type,
-            scrapedSiteSettings.classification,
-            scrapedSiteSettings.location,
-        )
+        scraper = SeekScraper(scrapedSiteSettings)
+
+    if scraper is None:
+        return None
 
     # scrape site
-    print(search_url)
-    scraped_jobs = await scrape_all_job_listings(
-        scrapedSite.website_name, search_url, scrapedSiteSettings.max_pages_to_scrape
-    )
+    scraped_jobs = await scraper.scrape()
 
     # update scraped site last scrape date to db
     update_last_scraped_date_in_db(db.session, scrapedSite, datetime.now())

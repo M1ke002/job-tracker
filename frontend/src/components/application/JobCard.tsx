@@ -60,7 +60,7 @@ const ApplicationStageBoxItem = ({
       <p className="text-sm">{job.company_name}</p>
       <p className="flex items-center mt-1 text-zinc-700">
         {job.contacts.length > 0 && <Contact size={13} className="mr-1" />}
-        {job.tasks.length > 0 && <ListTodo size={13} />}
+        {job.tasks.length > 0 && <ListTodo size={13} className="mr-1" />}
         {job.documents.length > 0 && <Paperclip size={13} />}
       </p>
       <button

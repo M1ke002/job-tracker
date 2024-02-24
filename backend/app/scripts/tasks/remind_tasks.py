@@ -12,7 +12,9 @@ def set_tasks_as_reminded(session: Session, tasks: list[Task]):
     set_tasks_reminded_in_db(session, tasks)
 
 
-def find_and_update_due_tasks(session: Session, tasks: list[Task], current_date: datetime):
+def find_and_update_due_tasks(
+    session: Session, tasks: list[Task], current_date: datetime
+):
     res = []
     reminded_tasks = []
 
@@ -78,7 +80,9 @@ async def check_due_tasks(session: Session):
         formatted_due_date = due_date.strftime("%d/%m/%Y")
 
         if is_notify_on_website:
-            create_notification(session, task_name, formatted_due_date, date_message, current_date)
+            create_notification(
+                session, task_name, formatted_due_date, date_message, current_date
+            )
 
         if is_notify_email:
             email_data["data"].append(

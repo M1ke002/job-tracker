@@ -1,9 +1,14 @@
 # script used to run the scraper every day and update the database
 from datetime import datetime, timedelta
-from app.utils.scraper.scrape import scrape_all_job_listings
-from app.utils.scraper.helper import find_new_job_listings
-from app.utils.scraper.constants import SEEK, GRAD_CONNECTION
-from app.utils.scraper.url_builder import ausgrad_url_builder, seek_url_builder
+from app.utils.utils import find_new_job_listings
+
+from app.utils.scrapers.seek_scraper import SeekScraper, SEEK
+from app.utils.scrapers.grad_connection_scraper import (
+    GradConnectionScraper,
+    GRAD_CONNECTION,
+)
+
+
 from app.utils.utils import utc_to_sydney_time
 
 from sqlalchemy.orm.session import Session
@@ -116,29 +121,20 @@ async def web_scraper(session: Session):
             print(f"Scraping is disabled for site: {scraped_site.website_name}")
             continue
 
-        search_url = ""
+        scraper = None
+
         if scraped_site.website_name == GRAD_CONNECTION:
-            search_url = ausgrad_url_builder(
-                scraped_site_settings.search_keyword,
-                scraped_site_settings.job_type,
-                scraped_site_settings.classification,
-                scraped_site_settings.location,
-            )
+            scraper = GradConnectionScraper(scraped_site_settings)
         elif scraped_site.website_name == SEEK:
-            search_url = seek_url_builder(
-                scraped_site_settings.search_keyword,
-                scraped_site_settings.job_type,
-                scraped_site_settings.classification,
-                scraped_site_settings.location,
+            scraper = SeekScraper(scraped_site_settings)
+
+        if scraper is None:
+            print(
+                f"No scraper found for site: {scraped_site.website_name}. Skipping..."
             )
-        print(scraped_site.website_name, search_url)
 
         # scrape all job listings, return: list of dicts of scraped jobs
-        scraped_jobs = await scrape_all_job_listings(
-            scraped_site.website_name,
-            search_url,
-            scraped_site_settings.max_pages_to_scrape,
-        )
+        scraped_jobs = await scraper.scrape()
         # print(scraped_jobs)
 
         # get all job listings for a website from db
@@ -197,11 +193,9 @@ async def web_scraper(session: Session):
             )
 
         # update the last scraped date
-        update_last_scraped_date(
-            session, scraped_site, current_date
-        )
+        update_last_scraped_date(session, scraped_site, current_date)
 
     # write to a log.txt file
     write_to_log(found_jobs_dict, current_date)
-    
+
     return email_data

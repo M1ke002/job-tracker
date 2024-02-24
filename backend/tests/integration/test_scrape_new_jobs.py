@@ -1,7 +1,7 @@
 from datetime import datetime
 import pytest
 from unittest.mock import patch
-from app.utils.scraper.constants import SEEK
+from app.utils.scrapers.seek_scraper import SEEK, SeekScraper
 from app.scripts.tasks.scrape_new_jobs import web_scraper
 
 from app.model import ScrapedSiteSettings, ScrapedSite, JobListing, Notification
@@ -81,9 +81,9 @@ def setup_job_listings_data(database):
 
 @pytest.mark.asyncio
 @pytest.mark.usefixtures("setup_scraped_site_and_settings", "setup_job_listings_data")
-@patch("app.scripts.tasks.scrape_new_jobs.scrape_all_job_listings")
+@patch.object(SeekScraper, "scrape")
 async def test_new_jobs_found(
-    mock_scrape_all_job_listings,
+    mock_scrape,
     database,
     mock_datetime,
     mock_write_to_log,
@@ -118,7 +118,7 @@ async def test_new_jobs_found(
             "is_new": False,
         },
     ]
-    mock_scrape_all_job_listings.return_value = scraped_jobs
+    mock_scrape.return_value = scraped_jobs
 
     email_data = await web_scraper(database.session)
 
@@ -152,9 +152,9 @@ async def test_new_jobs_found(
 
 @pytest.mark.asyncio
 @pytest.mark.usefixtures("setup_scraped_site_and_settings", "setup_job_listings_data")
-@patch("app.scripts.tasks.scrape_new_jobs.scrape_all_job_listings")
+@patch.object(SeekScraper, "scrape")
 async def test_no_new_jobs_found(
-    mock_scrape_all_job_listings, database, mock_datetime, mock_write_to_log
+    mock_scrape, database, mock_datetime, mock_write_to_log
 ):
     # mock the current date
     current_date = datetime.strptime("2024-02-14", "%Y-%m-%d")
@@ -175,7 +175,7 @@ async def test_no_new_jobs_found(
             "is_new": False,
         }
     ]
-    mock_scrape_all_job_listings.return_value = scraped_jobs
+    mock_scrape.return_value = scraped_jobs
 
     email_data = await web_scraper(database.session)
 

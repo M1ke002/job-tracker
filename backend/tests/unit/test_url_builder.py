@@ -1,10 +1,22 @@
-from app.utils.scraper.constants import BASE_URL_GRAD_CONNECTION, BASE_URL_SEEK
-from app.utils.scraper.url_builder import ausgrad_url_builder, seek_url_builder
+from app.utils.scrapers.grad_connection_scraper import (
+    BASE_URL_GRAD_CONNECTION,
+    GradConnectionScraper,
+)
+from app.utils.scrapers.seek_scraper import BASE_URL_SEEK, SeekScraper
+from app.model import ScrapedSiteSettings
 import pytest
 
 
 def test_ausgrad_url_builder_default():
-    url = ausgrad_url_builder("", "", "", "")
+    scraped_site_settings = ScrapedSiteSettings(
+        search_keyword="",
+        job_type="",
+        classification="",
+        location="",
+    )
+
+    grad_connection_scraper = GradConnectionScraper(scraped_site_settings)
+    url = grad_connection_scraper.build_url()
     expected_url = (
         BASE_URL_GRAD_CONNECTION
         + "/jobs/engineering-software/?ordering=-recent_job_created"
@@ -44,12 +56,28 @@ def test_ausgrad_url_builder_default():
 def test_ausgrad_url_builder_with_parameters(
     keyword, jobType, classification, location, expected_url
 ):
-    url = ausgrad_url_builder(keyword, jobType, classification, location)
+    scraped_site_settings = ScrapedSiteSettings(
+        search_keyword=keyword,
+        job_type=jobType,
+        classification=classification,
+        location=location,
+    )
+
+    grad_connection_scraper = GradConnectionScraper(scraped_site_settings)
+    url = grad_connection_scraper.build_url()
     assert url == expected_url
 
 
 def test_seek_url_builder_default():
-    url = seek_url_builder("", "", "", "")
+    scraped_site_settings = ScrapedSiteSettings(
+        search_keyword="",
+        job_type="",
+        classification="",
+        location="",
+    )
+
+    seek_scraper = SeekScraper(scraped_site_settings)
+    url = seek_scraper.build_url()
     expected_url = (
         BASE_URL_SEEK
         + "/jobs-in-information-communication-technology?sortmode=ListedDate"
@@ -88,5 +116,13 @@ def test_seek_url_builder_default():
 def test_seek_url_builder_with_parameters(
     keyword, jobType, classification, location, expected_url
 ):
-    url = seek_url_builder(keyword, jobType, classification, location)
+    scraped_site_settings = ScrapedSiteSettings(
+        search_keyword=keyword,
+        job_type=jobType,
+        classification=classification,
+        location=location,
+    )
+
+    seek_scraper = SeekScraper(scraped_site_settings)
+    url = seek_scraper.build_url()
     assert url == expected_url

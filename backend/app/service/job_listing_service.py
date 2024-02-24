@@ -3,7 +3,7 @@ from sqlalchemy import or_, and_
 from sqlalchemy.orm.session import Session
 from datetime import datetime, timedelta
 
-from app.utils.scraper.helper import find_new_job_listings
+from app.utils.utils import find_new_job_listings
 
 
 def get_all_job_listings_paginated(scraped_site_id, page=1, per_page=30):

@@ -9,11 +9,7 @@ import asyncio
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.config import Config
-from app.scripts.tasks import (
-    check_due_tasks,
-    web_scraper,
-    delete_old_notifications
-)
+from app.scripts.tasks import check_due_tasks, web_scraper, delete_old_notifications
 from app.utils.send_mail.send_mail import (
     should_send_email,
     create_subject_and_body,
@@ -37,7 +33,6 @@ def construct_and_send_email(email_data):
 
 
 def create_sqlalchemy_session():
-    print(f"Connecting to {Config.SQLALCHEMY_DATABASE_URI}")
     engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
     Session = sessionmaker(bind=engine)
     session = Session()
@@ -63,7 +58,7 @@ def create_sqlalchemy_session():
 #     construct_and_send_email(email_data)
 
 
-#version using async for running all tasks
+# version using async for running all tasks
 async def main():
     session = create_sqlalchemy_session()
     email_data = {}
@@ -71,7 +66,7 @@ async def main():
     tasks = [
         delete_old_notifications(session),
         web_scraper(session),
-        check_due_tasks(session)
+        check_due_tasks(session),
     ]
 
     results = await asyncio.gather(*tasks, return_exceptions=True)
@@ -86,8 +81,9 @@ async def main():
     # send email
     construct_and_send_email(email_data)
 
+
 if __name__ == "__main__":
-    #only needed for Windows
+    # only needed for Windows
     if os.name == "nt":
         print("On Windows")
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())

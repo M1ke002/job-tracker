@@ -177,7 +177,7 @@ const JobAlertSettingModal = () => {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={handleCloseModal}>
-      <DialogContent className="bg-white text-black p-0 overflow-hidden max-w-[600px]">
+      <DialogContent className="bg-white text-black p-0 overflow-hidden max-w-[600px] max-h-[600px] overflow-y-auto">
         <DialogHeader className="pt-6 pb-2 px-6">
           <DialogTitle className="text-2xl text-center font-bold capitalize">
             Job Alerts
