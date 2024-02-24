@@ -20,9 +20,7 @@ def mock_db():
 
 @pytest.fixture(scope="function")
 def mock_application_stage():
-    mock_application_stage = patch(
-        "app.service.saved_job_service.ApplicationStage"
-    ).start()
+    mock_application_stage = patch("app.service.saved_job_service.ApplicationStage").start()
     yield mock_application_stage
     mock_application_stage.stop()
 
@@ -35,9 +33,7 @@ def mock_application_stage():
         ("Rejected", True),
     ],
 )
-def test_update_job_stage_successful(
-    mock_saved_job, mock_application_stage, mock_db, stage_name, has_rejected_at_stage
-):
+def test_update_job_stage_successful(mock_saved_job, mock_application_stage, mock_db, stage_name, has_rejected_at_stage):
     # init default job and stage based on params
     job = SavedJob(id=1, position=0)
     if has_rejected_at_stage:
@@ -99,9 +95,7 @@ def test_update_job_stage_to_none(mock_saved_job, mock_application_stage, mock_d
         (True, False),
     ],
 )
-def test_update_job_stage_unsuccessful(
-    mock_saved_job, mock_application_stage, mock_db, is_job_found, is_stage_found
-):
+def test_update_job_stage_unsuccessful(mock_saved_job, mock_application_stage, mock_db, is_job_found, is_stage_found):
     if is_job_found:
         job = SavedJob(id=1, stage_id=1, rejected_at_stage_id=1, position=0)
     else:
@@ -144,9 +138,7 @@ def test_remove_job_from_stage_successful(mock_saved_job, mock_db):
 
     for updated_job in result:
         # find the job position with the same id
-        job_position = next(
-            (job for job in job_positions if job["id"] == updated_job["id"]), None
-        )
+        job_position = next((job for job in job_positions if job["id"] == updated_job["id"]), None)
         assert updated_job["position"] == job_position["position"]
 
     mock_db.session.commit.assert_called_once()
@@ -165,9 +157,7 @@ def test_remove_job_from_stage_unsuccessful(mock_saved_job, mock_db):
     ]
 
     # mock the return value of the SavedJob.query.get method
-    mock_saved_job.query.get.side_effect = lambda id: (
-        saved_jobs[id - 1] if id in [1, 2] else None
-    )
+    mock_saved_job.query.get.side_effect = lambda id: (saved_jobs[id - 1] if id in [1, 2] else None)
 
     result = remove_job_from_stage(job_id=1, job_positions=job_positions)
     assert result is None

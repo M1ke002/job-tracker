@@ -35,9 +35,7 @@ def get_all_scraped_sites():
                 scrapedSiteSettings.classification = "engineering-software"
             elif site == SEEK:
                 scrapedSiteSettings.location = "All Australia"
-                scrapedSiteSettings.classification = (
-                    "information-communication-technology"
-                )
+                scrapedSiteSettings.classification = "information-communication-technology"
 
             # create scraped site object
             create_scraped_site(site, scrapedSiteSettings)
@@ -55,17 +53,13 @@ def get_scraped_site(scraped_site_id):
 
 
 def create_scraped_site(website_name, scraped_site_settings):
-    scrapedSite = ScrapedSite(
-        website_name=website_name, scraped_site_settings=scraped_site_settings
-    )
+    scrapedSite = ScrapedSite(website_name=website_name, scraped_site_settings=scraped_site_settings)
     db.session.add(scrapedSite)
     db.session.commit()
     return scrapedSite.to_dict()
 
 
-def update_last_scraped_date_in_db(
-    session: Session, scraped_site: ScrapedSite, date: datetime
-):
+def update_last_scraped_date_in_db(session: Session, scraped_site: ScrapedSite, date: datetime):
     scraped_site.last_scrape_date = date
     session.commit()
 

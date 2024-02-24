@@ -1,7 +1,9 @@
 [flake8]
-max-line-length = 120
+max-line-length = 130
 exclude = .git,__pycache__,.pytest_cache,docs/source/conf.py,old,build,dist,my_env,.env,migrations,.tox
-per-file-ignores = 
-    __init__.py:F401
-    app/model/*:F401,F821
-    app/scripts/script.py:E402
+per-file-ignores =
+    __init__.py:F401, F841
+    backend/app/model/*:F401, F821
+    backend/app/scripts/script.py:E402
+    backend/app/utils/*:E402
+    backend/app/service/*:E711, E712

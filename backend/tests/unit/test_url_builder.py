@@ -17,10 +17,7 @@ def test_ausgrad_url_builder_default():
 
     grad_connection_scraper = GradConnectionScraper(scraped_site_settings)
     url = grad_connection_scraper.build_url()
-    expected_url = (
-        BASE_URL_GRAD_CONNECTION
-        + "/jobs/engineering-software/?ordering=-recent_job_created"
-    )
+    expected_url = BASE_URL_GRAD_CONNECTION + "/jobs/engineering-software/?ordering=-recent_job_created"
     assert url == expected_url
 
 
@@ -40,22 +37,18 @@ def test_ausgrad_url_builder_default():
             "",
             "computer-science",
             "",
-            BASE_URL_GRAD_CONNECTION
-            + "/jobs/computer-science/?ordering=-recent_job_created",
+            BASE_URL_GRAD_CONNECTION + "/jobs/computer-science/?ordering=-recent_job_created",
         ),
         (
             "software",
             "graduate jobs",
             "computer-science",
             "Sydney",
-            BASE_URL_GRAD_CONNECTION
-            + "/graduate-jobs/computer-science/sydney/?title=software&ordering=-recent_job_created",
+            BASE_URL_GRAD_CONNECTION + "/graduate-jobs/computer-science/sydney/?title=software&ordering=-recent_job_created",
         ),
     ],
 )
-def test_ausgrad_url_builder_with_parameters(
-    keyword, jobType, classification, location, expected_url
-):
+def test_ausgrad_url_builder_with_parameters(keyword, jobType, classification, location, expected_url):
     scraped_site_settings = ScrapedSiteSettings(
         search_keyword=keyword,
         job_type=jobType,
@@ -78,10 +71,7 @@ def test_seek_url_builder_default():
 
     seek_scraper = SeekScraper(scraped_site_settings)
     url = seek_scraper.build_url()
-    expected_url = (
-        BASE_URL_SEEK
-        + "/jobs-in-information-communication-technology?sortmode=ListedDate"
-    )
+    expected_url = BASE_URL_SEEK + "/jobs-in-information-communication-technology?sortmode=ListedDate"
     assert url == expected_url
 
 
@@ -108,14 +98,11 @@ def test_seek_url_builder_default():
             "part time",
             "computer-science",
             "All Sydney NSW",
-            BASE_URL_SEEK
-            + "/software-jobs-in-computer-science/in-All-Sydney-NSW/part-time?sortmode=ListedDate",
+            BASE_URL_SEEK + "/software-jobs-in-computer-science/in-All-Sydney-NSW/part-time?sortmode=ListedDate",
         ),
     ],
 )
-def test_seek_url_builder_with_parameters(
-    keyword, jobType, classification, location, expected_url
-):
+def test_seek_url_builder_with_parameters(keyword, jobType, classification, location, expected_url):
     scraped_site_settings = ScrapedSiteSettings(
         search_keyword=keyword,
         job_type=jobType,

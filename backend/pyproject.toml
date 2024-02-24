@@ -1,0 +1,10 @@
+[tool.black]
+line-length = 130
+exclude = '''
+/(
+| __pycache__
+| \.pytest_cache
+| migrations
+| my_env
+)/
+'''

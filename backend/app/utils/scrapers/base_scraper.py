@@ -19,7 +19,7 @@ class ScrapeResult:
     salary: str
     job_url: str
     is_new: bool
-    
+
     def to_dict(self):
         return {
             "job_title": self.job_title,
@@ -51,7 +51,7 @@ class BaseScraper(ABC):
         raise NotImplementedError("build_url method not implemented!")
 
     @abstractmethod
-    #TODO: also add driver for selenium as input?
+    # TODO: also add driver for selenium as input?
     async def parse_job_fields(self, soup: BeautifulSoup) -> list[ScrapeResult]:
         raise NotImplementedError("parse_job_fields method not implemented!")
 
@@ -92,8 +92,7 @@ class BaseScraper(ABC):
         search_url = self.build_url()
 
         urls = [
-            self.add_page_number_to_url(search_url, page + 1)
-            for page in range(self.scraped_site_settings.max_pages_to_scrape)
+            self.add_page_number_to_url(search_url, page + 1) for page in range(self.scraped_site_settings.max_pages_to_scrape)
         ]
         print(urls)
 

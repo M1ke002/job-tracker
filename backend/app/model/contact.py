@@ -8,9 +8,7 @@ class Contact(db.Model):
     __tablename__ = "contacts"
 
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    job_id: so.Mapped[int] = so.mapped_column(
-        sa.Integer, sa.ForeignKey("saved_jobs.id")
-    )
+    job_id: so.Mapped[int] = so.mapped_column(sa.Integer, sa.ForeignKey("saved_jobs.id"))
     person_name: so.Mapped[str] = so.mapped_column(sa.String(150))
     person_position: so.Mapped[Optional[str]] = so.mapped_column(sa.String(150))
     person_linkedin: so.Mapped[Optional[str]] = so.mapped_column(sa.String(250))

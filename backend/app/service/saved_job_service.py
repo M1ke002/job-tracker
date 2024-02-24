@@ -14,9 +14,7 @@ def get_saved_job(saved_job_id):
 
 
 def is_similar_job_exists(job_title, company_name, job_url, compared_job_id=None):
-    existing_job = SavedJob.query.filter_by(
-        job_title=job_title, company_name=company_name, job_url=job_url
-    ).first()
+    existing_job = SavedJob.query.filter_by(job_title=job_title, company_name=company_name, job_url=job_url).first()
     # if job exists and is not the same job being compared
     if existing_job and existing_job.id != compared_job_id:
         return True
@@ -137,7 +135,8 @@ def update_job_stage(job_id, stage_id):
 
 
 def update_job_order(job_positions):
-    # sample: [{id: 1, stage_id: 1, position: 0, rejected_at_stage_id: 1}, {id: 2, stage_id: 1, position: 1, rejected_at_stage_id: 1}, ...]
+    # sample: [{id: 1, stage_id: 1, position: 0, rejected_at_stage_id: 1}
+    # {id: 2, stage_id: 1, position: 1, rejected_at_stage_id: 1}, ...]
     res = []
     for job_position in job_positions:
         job = SavedJob.query.get(job_position["id"])

@@ -41,9 +41,7 @@ def test_update_stage_order(client, setup_data):
         {"id": 4, "position": 3},
         {"id": 5, "position": 4},
     ]
-    res = client.put(
-        f"{API_ENDPOINT}/reorder-stages", json={"stagePositions": stage_positions}
-    )
+    res = client.put(f"{API_ENDPOINT}/reorder-stages", json={"stagePositions": stage_positions})
 
     assert res.status_code == 200
     assert res.json == [

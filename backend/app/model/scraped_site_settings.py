@@ -5,7 +5,6 @@ from .db import db
 
 
 class ScrapedSiteSettings(db.Model):
-
     __tablename__ = "scraped_site_settings"
 
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
@@ -23,9 +22,7 @@ class ScrapedSiteSettings(db.Model):
     classification: so.Mapped[Optional[str]] = so.mapped_column(sa.String(150))
 
     # relationship
-    scraped_site: so.Mapped["ScrapedSite"] = so.relationship(
-        "ScrapedSite", back_populates="scraped_site_settings", lazy=True
-    )
+    scraped_site: so.Mapped["ScrapedSite"] = so.relationship("ScrapedSite", back_populates="scraped_site_settings", lazy=True)
 
     def __repr__(self) -> str:
         return f"<ScrapedSiteSettings {self.id}>"

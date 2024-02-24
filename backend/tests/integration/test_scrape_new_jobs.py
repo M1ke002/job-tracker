@@ -153,9 +153,7 @@ async def test_new_jobs_found(
 @pytest.mark.asyncio
 @pytest.mark.usefixtures("setup_scraped_site_and_settings", "setup_job_listings_data")
 @patch.object(SeekScraper, "scrape")
-async def test_no_new_jobs_found(
-    mock_scrape, database, mock_datetime, mock_write_to_log
-):
+async def test_no_new_jobs_found(mock_scrape, database, mock_datetime, mock_write_to_log):
     # mock the current date
     current_date = datetime.strptime("2024-02-14", "%Y-%m-%d")
     mock_datetime.now.return_value = current_date

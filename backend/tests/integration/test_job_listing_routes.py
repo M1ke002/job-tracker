@@ -92,9 +92,7 @@ def test_search_job_listings(client, setup_data):
     assert total_job_count == 2
 
     # search for job listings that don't exist
-    response = client.get(
-        f"{API_ENDPOINT}/1/search?query=randomquerylol&page=1&per_page=2"
-    )
+    response = client.get(f"{API_ENDPOINT}/1/search?query=randomquerylol&page=1&per_page=2")
     data = response.json
     job_listings = data[0]
     total_pages = data[1]

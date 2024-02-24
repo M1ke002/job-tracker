@@ -45,11 +45,7 @@ class GradConnectionScraper(BaseScraper):
             if location is not None:
                 location = location.text.strip().split(" ")[0]
             else:
-                location = (
-                    job.find("p", class_="ellipsis-text-paragraph location-name")
-                    .text.strip()
-                    .split(" ")[0]
-                )
+                location = job.find("p", class_="ellipsis-text-paragraph location-name").text.strip().split(" ")[0]
 
             job_description = job.find("p", class_="box-description-para")
             if job_description is not None:
@@ -72,7 +68,6 @@ class GradConnectionScraper(BaseScraper):
                 job_type = job_type.text.strip()
 
             if job_title and company_name and job_link:
-
                 if job_link in jobs_dict:
                     continue
 

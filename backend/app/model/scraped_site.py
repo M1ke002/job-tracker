@@ -9,21 +9,15 @@ class ScrapedSite(db.Model):
     __tablename__ = "scraped_sites"
 
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    scraped_site_settings_id: so.Mapped[int] = so.mapped_column(
-        sa.Integer, sa.ForeignKey("scraped_site_settings.id")
-    )
+    scraped_site_settings_id: so.Mapped[int] = so.mapped_column(sa.Integer, sa.ForeignKey("scraped_site_settings.id"))
     website_name: so.Mapped[str] = so.mapped_column(sa.String(150))
-    last_scrape_date: so.Mapped[Optional[datetime]] = so.mapped_column(
-        sa.DateTime(timezone=True)
-    )
+    last_scrape_date: so.Mapped[Optional[datetime]] = so.mapped_column(sa.DateTime(timezone=True))
 
     # relationship
     scraped_site_settings: so.Mapped["ScrapedSiteSettings"] = so.relationship(
         "ScrapedSiteSettings", back_populates="scraped_site"
     )
-    job_listings: so.Mapped[List["JobListing"]] = so.relationship(
-        back_populates="scraped_site", lazy=True
-    )
+    job_listings: so.Mapped[List["JobListing"]] = so.relationship(back_populates="scraped_site", lazy=True)
 
     def __repr__(self) -> str:
         return f"<ScrapedSite {self.website_name}>"

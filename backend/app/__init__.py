@@ -36,14 +36,10 @@ def register_blueprints(app: Flask):
     app.register_blueprint(job_listing_routes, url_prefix="/api/job-listings")
     app.register_blueprint(saved_job_routes, url_prefix="/api/saved-jobs")
     app.register_blueprint(scraped_site_routes, url_prefix="/api/scraped-sites")
-    app.register_blueprint(
-        scraped_site_settings_routes, url_prefix="/api/scraped-site-settings"
-    )
+    app.register_blueprint(scraped_site_settings_routes, url_prefix="/api/scraped-site-settings")
     app.register_blueprint(auth_routes, url_prefix="/api/auth")
     app.register_blueprint(user_routes, url_prefix="/api/users")
-    app.register_blueprint(
-        application_stage_routes, url_prefix="/api/application-stages"
-    )
+    app.register_blueprint(application_stage_routes, url_prefix="/api/application-stages")
     app.register_blueprint(contact_routes, url_prefix="/api/contacts")
     app.register_blueprint(task_routes, url_prefix="/api/tasks")
     app.register_blueprint(document_routes, url_prefix="/api/documents")

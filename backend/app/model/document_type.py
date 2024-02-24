@@ -11,9 +11,7 @@ class DocumentType(db.Model):
     type_name: so.Mapped[str] = so.mapped_column(sa.String(150))
 
     # relationship
-    documents: so.Mapped[List["Document"]] = so.relationship(
-        "Document", back_populates="document_type"
-    )
+    documents: so.Mapped[List["Document"]] = so.relationship("Document", back_populates="document_type")
 
     def __repr__(self) -> str:
         return f"<DocumentType {self.type_name}>"

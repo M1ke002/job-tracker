@@ -37,9 +37,7 @@ def test_similar_job_exists(mock_saved_job):
 
 
 def test_similar_job_not_exists(mock_saved_job):
-    existing_job = SavedJob(
-        id=2, job_title="Software Dev", company_name="Google", job_url="www.google.com"
-    )
+    existing_job = SavedJob(id=2, job_title="Software Dev", company_name="Google", job_url="www.google.com")
     # mock the return value of the SavedJob.query.filter_by method
     mock_saved_job.query.filter_by.return_value.first.return_value = None
 

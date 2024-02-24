@@ -13,12 +13,8 @@ class SavedJob(db.Model):
 
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     # foreign key can be null
-    stage_id: so.Mapped[Optional[int]] = so.mapped_column(
-        sa.Integer, sa.ForeignKey("application_stages.id")
-    )
-    rejected_at_stage_id: so.Mapped[Optional[int]] = so.mapped_column(
-        sa.Integer, sa.ForeignKey("application_stages.id")
-    )
+    stage_id: so.Mapped[Optional[int]] = so.mapped_column(sa.Integer, sa.ForeignKey("application_stages.id"))
+    rejected_at_stage_id: so.Mapped[Optional[int]] = so.mapped_column(sa.Integer, sa.ForeignKey("application_stages.id"))
     job_title: so.Mapped[str] = so.mapped_column(sa.String(150))
     company_name: so.Mapped[str] = so.mapped_column(sa.String(150))
     location: so.Mapped[Optional[str]] = so.mapped_column(sa.String(200))
@@ -37,15 +33,9 @@ class SavedJob(db.Model):
         "ApplicationStage", back_populates="jobs", foreign_keys="SavedJob.stage_id"
     )
     # delete all tasks and contacts associated with this job when job is deleted
-    tasks: so.Mapped[List["Task"]] = so.relationship(
-        cascade="all, delete-orphan", lazy=True
-    )
-    contacts: so.Mapped[List["Contact"]] = so.relationship(
-        cascade="all, delete-orphan", lazy=True
-    )
-    documents: so.Mapped[List["Document"]] = so.relationship(
-        "Document", back_populates="job", lazy=True
-    )
+    tasks: so.Mapped[List["Task"]] = so.relationship(cascade="all, delete-orphan", lazy=True)
+    contacts: so.Mapped[List["Contact"]] = so.relationship(cascade="all, delete-orphan", lazy=True)
+    documents: so.Mapped[List["Document"]] = so.relationship("Document", back_populates="job", lazy=True)
 
     def __repr__(self) -> str:
         return f"<SavedJob {self.job_title} {self.company_name}>"
@@ -68,11 +58,7 @@ class SavedJob(db.Model):
             "is_favorite": self.is_favorite,
             "created_at": self.created_at,
             # for stage only need id and stage_name
-            "stage": (
-                {"id": self.stage.id, "stage_name": self.stage.stage_name}
-                if self.stage
-                else None
-            ),
+            "stage": ({"id": self.stage.id, "stage_name": self.stage.stage_name} if self.stage else None),
             "tasks": [task.to_dict() for task in self.tasks],
             "contacts": [contact.to_dict() for contact in self.contacts],
             "documents": [document.to_dict() for document in self.documents],

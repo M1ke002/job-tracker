@@ -37,11 +37,7 @@ def delete_document_type(document_type_id):
 
     # check if any documents are using this document type
     if is_document_type_in_use(document_type_id):
-        print(
-            "Cannot delete document type with id "
-            + str(document_type_id)
-            + " as it is being used by documents"
-        )
+        print("Cannot delete document type with id " + str(document_type_id) + " as it is being used by documents")
         return None
 
     db.session.delete(document_type)

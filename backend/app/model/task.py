@@ -9,13 +9,9 @@ class Task(db.Model):
     __tablename__ = "tasks"
 
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    job_id: so.Mapped[int] = so.mapped_column(
-        sa.Integer, sa.ForeignKey("saved_jobs.id")
-    )
+    job_id: so.Mapped[int] = so.mapped_column(sa.Integer, sa.ForeignKey("saved_jobs.id"))
     task_name: so.Mapped[str] = so.mapped_column(sa.String(150))
-    due_date: so.Mapped[Optional[datetime]] = so.mapped_column(
-        sa.DateTime(timezone=True), nullable=True
-    )
+    due_date: so.Mapped[Optional[datetime]] = so.mapped_column(sa.DateTime(timezone=True), nullable=True)
     is_completed: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=False)
     is_reminder_enabled: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=False)
     is_reminded: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=False)

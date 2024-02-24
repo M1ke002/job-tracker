@@ -5,9 +5,9 @@ from datetime import datetime
 
 def get_all_notifications(limit, page):
     # notifications = Notification.query.order_by(Notification.created_at.desc()).limit(limit).all()
-    notifications = Notification.query.order_by(
-        Notification.created_at.desc()
-    ).paginate(page=page, per_page=limit, error_out=False)
+    notifications = Notification.query.order_by(Notification.created_at.desc()).paginate(
+        page=page, per_page=limit, error_out=False
+    )
     if notifications is None:
         return None
 
@@ -60,4 +60,3 @@ def delete_old_notifications_in_db(session: Session, cutoff_date: datetime):
     query = session.query(Notification).filter(Notification.created_at < cutoff_date)
     query.delete()
     session.commit()
-    

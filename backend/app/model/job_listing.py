@@ -9,9 +9,7 @@ class JobListing(db.Model):
     __tablename__ = "job_listings"
 
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    scraped_site_id: so.Mapped[int] = so.mapped_column(
-        sa.Integer, sa.ForeignKey("scraped_sites.id")
-    )
+    scraped_site_id: so.Mapped[int] = so.mapped_column(sa.Integer, sa.ForeignKey("scraped_sites.id"))
     job_title: so.Mapped[str] = so.mapped_column(sa.String(150))
     company_name: so.Mapped[str] = so.mapped_column(sa.String(150))
     location: so.Mapped[Optional[str]] = so.mapped_column(sa.String(200))
@@ -24,9 +22,7 @@ class JobListing(db.Model):
     created_at: so.Mapped[datetime] = so.mapped_column(default=lambda: datetime.now())
 
     # relationship
-    scraped_site: so.Mapped["ScrapedSite"] = so.relationship(
-        "ScrapedSite", back_populates="job_listings", lazy=True
-    )
+    scraped_site: so.Mapped["ScrapedSite"] = so.relationship("ScrapedSite", back_populates="job_listings", lazy=True)
 
     def __repr__(self) -> str:
         return f"<JobListing {self.job_title} {self.company_name}>"

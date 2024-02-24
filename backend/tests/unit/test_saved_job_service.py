@@ -38,9 +38,7 @@ def test_update_job_order_same_stage(mock_saved_job, mock_db):
 
     for updated_job in result:
         # find the job position with the same id
-        job_position = next(
-            (job for job in job_positions if job["id"] == updated_job["id"]), None
-        )
+        job_position = next((job for job in job_positions if job["id"] == updated_job["id"]), None)
         assert updated_job["position"] == job_position["position"]
         assert updated_job["stage_id"] == job_position["stage_id"]
 
@@ -68,9 +66,7 @@ def test_update_job_order_different_stage(mock_saved_job, mock_db):
 
     for updated_job in result:
         # find the job position with the same id
-        job_position = next(
-            (job for job in job_positions if job["id"] == updated_job["id"]), None
-        )
+        job_position = next((job for job in job_positions if job["id"] == updated_job["id"]), None)
         assert updated_job["position"] == job_position["position"]
         assert updated_job["stage_id"] == job_position["stage_id"]
 
@@ -90,9 +86,7 @@ def test_update_job_order_unsuccessful(mock_saved_job, mock_db):
     ]
 
     # mock the return value of the SavedJob.query.get method
-    mock_saved_job.query.get.side_effect = lambda id: (
-        saved_jobs[id - 1] if id in [1, 2] else None
-    )
+    mock_saved_job.query.get.side_effect = lambda id: (saved_jobs[id - 1] if id in [1, 2] else None)
 
     result = update_job_order(job_positions)
     assert result is None

@@ -41,9 +41,7 @@ def fetch_all_job_listings(session: Session, scraped_site_id: int):
 
 
 # update the is_new field of the job listings to false
-def set_job_listings_is_new(
-    session: Session, jobs: list[JobListing], is_new: bool = False
-):
+def set_job_listings_is_new(session: Session, jobs: list[JobListing], is_new: bool = False):
     set_job_listings_is_new_in_db(session, jobs, is_new)
 
 
@@ -57,15 +55,11 @@ def add_job_listings(session: Session, jobs: list[JobListing]):
     create_job_listings_in_db(session, jobs)
 
 
-def update_last_scraped_date(
-    session: Session, scraped_site: ScrapedSite, date: datetime
-):
+def update_last_scraped_date(session: Session, scraped_site: ScrapedSite, date: datetime):
     update_last_scraped_date_in_db(session, scraped_site, date)
 
 
-def create_notification(
-    session: Session, website_name: str, new_jobs_count: int, current_date: datetime
-):
+def create_notification(session: Session, website_name: str, new_jobs_count: int, current_date: datetime):
     # create a new notification and save it to the database
     message = f"Found {new_jobs_count} new jobs on {website_name}"
     create_notification_in_db(
@@ -107,14 +101,10 @@ async def web_scraper(session: Session):
 
     for scraped_site in scraped_sites:
         # get scraped site settings for each site
-        scraped_site_settings = fetch_scrape_site_settings(
-            session, scraped_site.scraped_site_settings_id
-        )
+        scraped_site_settings = fetch_scrape_site_settings(session, scraped_site.scraped_site_settings_id)
 
         if scraped_site_settings is None:
-            print(
-                f"No scraped site settings found for site: {scraped_site.website_name}"
-            )
+            print(f"No scraped site settings found for site: {scraped_site.website_name}")
             continue
 
         if scraped_site_settings.scrape_frequency == -1:
@@ -129,9 +119,7 @@ async def web_scraper(session: Session):
             scraper = SeekScraper(scraped_site_settings)
 
         if scraper is None:
-            print(
-                f"No scraper found for site: {scraped_site.website_name}. Skipping..."
-            )
+            print(f"No scraper found for site: {scraped_site.website_name}. Skipping...")
 
         # scrape all job listings, return: list of dicts of scraped jobs
         scraped_jobs = await scraper.scrape()
@@ -166,9 +154,7 @@ async def web_scraper(session: Session):
             new_jobs_objects.append(job_object)
 
         total_new_jobs_count = len(new_jobs)
-        print(
-            f"Found {total_new_jobs_count} new jobs for site: {scraped_site.website_name}"
-        )
+        print(f"Found {total_new_jobs_count} new jobs for site: {scraped_site.website_name}")
 
         # add new jobs to the found_jobs_dict
         found_jobs_dict[scraped_site.website_name] = new_jobs
@@ -188,9 +174,7 @@ async def web_scraper(session: Session):
             )
 
         if len(new_jobs) > 0 and scraped_site_settings.is_notify_email:
-            email_data["data"].append(
-                {"site_name": scraped_site.website_name, "jobs": new_jobs}
-            )
+            email_data["data"].append({"site_name": scraped_site.website_name, "jobs": new_jobs})
 
         # update the last scraped date
         update_last_scraped_date(session, scraped_site, current_date)

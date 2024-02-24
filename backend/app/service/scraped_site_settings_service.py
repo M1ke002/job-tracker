@@ -3,9 +3,7 @@ from sqlalchemy.orm.session import Session
 
 
 def get_scraped_site_settings_in_db(session: Session, scraped_site_settings_id: int):
-    query = session.query(ScrapedSiteSettings).filter(
-        ScrapedSiteSettings.id == scraped_site_settings_id
-    )
+    query = session.query(ScrapedSiteSettings).filter(ScrapedSiteSettings.id == scraped_site_settings_id)
     return query.first()
 
 

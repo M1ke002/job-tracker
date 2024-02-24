@@ -86,10 +86,10 @@ class SeekScraper(BaseScraper):
 
     def build_url(self) -> str:
         """
-            keyword: string. ex: "software engineer"
-            job_type: string. ex: "full time / part time". default: "all"
-            classification: string. ex: "information-communication-technology". default: "information-communication-technology"
-            location: string. ex: "All Australia / All Sydney NSW / All Melbourne VIC". default: ""
+        keyword: string. ex: "software engineer"
+        job_type: string. ex: "full time / part time". default: "all"
+        classification: string. ex: "information-communication-technology". default: "information-communication-technology"
+        location: string. ex: "All Australia / All Sydney NSW / All Melbourne VIC". default: ""
         """
 
         keyword = self.scraped_site_settings.search_keyword

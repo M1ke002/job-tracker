@@ -7,9 +7,7 @@ import pytest
 
 @pytest.fixture(scope="function")
 def mock_application_stage():
-    mock_application_stage = patch(
-        "app.service.application_stage_service.ApplicationStage"
-    ).start()
+    mock_application_stage = patch("app.service.application_stage_service.ApplicationStage").start()
     yield mock_application_stage
     mock_application_stage.stop()
 
@@ -43,11 +41,7 @@ def test_successful_update(mock_application_stage, mock_db):
     for updated_application_stage in result:
         # find the stage position with the same id
         stage_position = next(
-            (
-                stage
-                for stage in stage_positions
-                if stage["id"] == updated_application_stage["id"]
-            ),
+            (stage for stage in stage_positions if stage["id"] == updated_application_stage["id"]),
             None,
         )
         assert updated_application_stage["position"] == stage_position["position"]
@@ -70,9 +64,7 @@ def test_unsuccessful_update(mock_application_stage, mock_db):
     ]
 
     # mock the return value of the ApplicationStage.query.get method
-    mock_application_stage.query.get.side_effect = lambda id: (
-        application_stages[id - 1] if id in [1, 2, 3] else None
-    )
+    mock_application_stage.query.get.side_effect = lambda id: (application_stages[id - 1] if id in [1, 2, 3] else None)
 
     result = update_stage_order(stage_positions)
 

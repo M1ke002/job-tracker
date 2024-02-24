@@ -39,9 +39,7 @@ def handle_get_scraped_site(scraped_site_id):
         return jsonify({"error": "Scraped site not found"}), 404
 
     # query job listings, paginate by 30/page and sort by created_at date, return first page and total pages
-    job_listings, total_pages, total_job_count = get_all_job_listings_paginated(
-        scraped_site_id, page=1, per_page=30
-    )
+    job_listings, total_pages, total_job_count = get_all_job_listings_paginated(scraped_site_id, page=1, per_page=30)
     scrapedSite["job_listings"] = job_listings
     scrapedSite["total_pages"] = total_pages
     scrapedSite["total_job_count"] = total_job_count
@@ -77,9 +75,7 @@ async def handle_scrape_site(scraped_site_id):
         return jsonify({"error": "Cant find scraped site"}), 400
 
     # query job listings, paginate by 30/page and sort by created_at date, return first page and total pages
-    job_listings, total_pages, total_job_count = get_all_job_listings_paginated(
-        scraped_site_id, page=1, per_page=30
-    )
+    job_listings, total_pages, total_job_count = get_all_job_listings_paginated(scraped_site_id, page=1, per_page=30)
     updated_scraped_site["job_listings"] = job_listings
     updated_scraped_site["total_pages"] = total_pages
     updated_scraped_site["total_job_count"] = total_job_count

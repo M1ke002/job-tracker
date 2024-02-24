@@ -42,9 +42,7 @@ def setup_data(database):
     ]
 
     application_stages = [
-        ApplicationStage(
-            id=1, stage_name="Applied", position=0, jobs=[saved_jobs[0], saved_jobs[3]]
-        ),
+        ApplicationStage(id=1, stage_name="Applied", position=0, jobs=[saved_jobs[0], saved_jobs[3]]),
         ApplicationStage(id=2, stage_name="O.A.", position=1, jobs=[]),
         ApplicationStage(id=3, stage_name="Interviewing", position=2, jobs=[]),
         ApplicationStage(id=4, stage_name="Offer", position=3, jobs=[]),
@@ -175,8 +173,8 @@ def test_move_saved_job_stage_rejected(client, setup_data):
     stage_id = "None"
     res = client.put(f"{API_ENDPOINT}/{job_id}/stage", json={"stageId": stage_id})
     assert res.status_code == 200
-    assert res.json["stage_id"] == None
-    assert res.json["rejected_at_stage_id"] == None
+    assert res.json["stage_id"] is None
+    assert res.json["rejected_at_stage_id"] is None
 
 
 @pytest.mark.usefixtures("database")
@@ -203,9 +201,7 @@ def test_update_job_order(client, setup_data):
         {"id": 3, "stage_id": 4, "position": 0, "rejected_at_stage_id": 4},
         {"id": 4, "stage_id": 5, "position": 0, "rejected_at_stage_id": 1},
     ]
-    res = client.put(
-        f"{API_ENDPOINT}/reorder-jobs", json={"jobPositions": job_positions}
-    )
+    res = client.put(f"{API_ENDPOINT}/reorder-jobs", json={"jobPositions": job_positions})
     assert res.status_code == 200
     assert res.json[0]["position"] == 0
     assert res.json[0]["stage_id"] == 2
@@ -229,9 +225,7 @@ def test_remove_job_from_stage(client, setup_data):
     # remove job with id = 1 from stage
     job_id = 1
     job_positions = [{"id": 4, "stage_id": 1, "position": 0, "rejected_at_stage_id": 1}]
-    res = client.put(
-        f"{API_ENDPOINT}/{job_id}/remove-stage", json={"jobPositions": job_positions}
-    )
+    res = client.put(f"{API_ENDPOINT}/{job_id}/remove-stage", json={"jobPositions": job_positions})
     assert res.status_code == 200
     assert res.json[0]["position"] == 0
     assert res.json[0]["stage_id"] == 1
@@ -240,9 +234,7 @@ def test_remove_job_from_stage(client, setup_data):
     # remove job with id = 2 from stage. no remaining jobs in the same stage -> empty job_positions
     job_id = 2
     job_positions = []
-    res = client.put(
-        f"{API_ENDPOINT}/{job_id}/remove-stage", json={"jobPositions": job_positions}
-    )
+    res = client.put(f"{API_ENDPOINT}/{job_id}/remove-stage", json={"jobPositions": job_positions})
     print(res.json)
     assert res.status_code == 200
     assert res.json == []

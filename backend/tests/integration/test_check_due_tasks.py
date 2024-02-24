@@ -86,9 +86,9 @@ async def test_check_due_tasks(database, mock_datetime):
 
     for task in tasks:
         if task.id == 1:
-            assert task.is_reminded == False
+            assert task.is_reminded is False
         else:
-            assert task.is_reminded == True
+            assert task.is_reminded is True
 
     # check the notifications
     notifications = database.session.query(Notification).all()

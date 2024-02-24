@@ -24,9 +24,7 @@ def get_all_job_listings_paginated(scraped_site_id, page=1, per_page=30):
 
 
 def get_all_job_listings_in_db_for_site(session: Session, scraped_site_id: int):
-    query = session.query(JobListing).filter(
-        JobListing.scraped_site_id == scraped_site_id
-    )
+    query = session.query(JobListing).filter(JobListing.scraped_site_id == scraped_site_id)
     return query.all()
 
 
@@ -101,9 +99,7 @@ def get_job_count_for_site(scraped_site_id):
 
 def get_new_job_listings(scraped_site_id, scraped_jobs):
     # get existing job listings from db
-    existing_job_listings = get_all_job_listings_in_db_for_site(
-        db.session, scraped_site_id
-    )
+    existing_job_listings = get_all_job_listings_in_db_for_site(db.session, scraped_site_id)
     existing_job_dict = [job.to_dict() for job in existing_job_listings]
 
     # update is_new to False for existing jobs.
@@ -126,9 +122,7 @@ def delete_all_old_job_listings_in_db(session: Session, cut_off_date: datetime):
     session.commit()
 
 
-def delete_old_job_listings_in_db_for_site(
-    session: Session, scraped_site_id: int, cut_off_date: datetime
-):
+def delete_old_job_listings_in_db_for_site(session: Session, scraped_site_id: int, cut_off_date: datetime):
     query = session.query(JobListing).filter(
         and_(
             JobListing.scraped_site_id == scraped_site_id,
@@ -139,9 +133,7 @@ def delete_old_job_listings_in_db_for_site(
     session.commit()
 
 
-def set_job_listings_is_new_in_db(
-    session: Session, job_listings: list[JobListing], is_new: bool = True
-):
+def set_job_listings_is_new_in_db(session: Session, job_listings: list[JobListing], is_new: bool = True):
     for job_listing in job_listings:
         job_listing.is_new = is_new
     session.commit()
