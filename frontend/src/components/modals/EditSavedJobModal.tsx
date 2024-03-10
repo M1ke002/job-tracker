@@ -24,6 +24,12 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 
 import axios from "@/lib/axiosConfig";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  refetchApplicationStagesData,
+  refetchSavedJobsData,
+  refetchJobDetailsData,
+} from "@/utils/refetch";
 
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 import { useModal } from "@/stores/useModal";
@@ -40,6 +46,7 @@ const formSchema = z.object({
 const EditSavedJobModal = () => {
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
   const { type, isOpen, onClose } = useModal();
+  const queryClient = useQueryClient();
 
   const isModalOpen = isOpen && type === "editJob";
 
@@ -81,6 +88,9 @@ const EditSavedJobModal = () => {
     try {
       const res = await axios.put(`/saved-jobs/${currentSavedJob?.id}`, values);
       setCurrentSavedJob(res.data);
+
+      // await refetchJobDetailsData(queryClient, currentSavedJob?.id.toString()!);
+      // await refetchSavedJobsData(queryClient);
     } catch (error) {
       console.log(error);
     } finally {

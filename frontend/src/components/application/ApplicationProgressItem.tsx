@@ -5,6 +5,13 @@ import { Check } from "lucide-react";
 
 import axios from "@/lib/axiosConfig";
 
+import {
+  refetchApplicationStagesData,
+  refetchSavedJobsData,
+  refetchJobDetailsData,
+} from "@/utils/refetch";
+import { useQueryClient } from "@tanstack/react-query";
+
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 
 interface ApplicationProgressItemProps {
@@ -24,6 +31,7 @@ const ApplicationProgressItem = ({
 }: ApplicationProgressItemProps) => {
   const [loading, setLoading] = useState(false);
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
+  const queryClient = useQueryClient();
 
   const changeJobStage = async (stageId: string) => {
     try {
@@ -34,6 +42,10 @@ const ApplicationProgressItem = ({
       });
       setLoading(false);
       setCurrentSavedJob(res.data);
+
+      // await refetchApplicationStagesData(queryClient);
+      // await refetchSavedJobsData(queryClient);
+      // await refetchJobDetailsData(queryClient, currentSavedJob?.id.toString()!);
     } catch (error) {
       console.log(error);
     }

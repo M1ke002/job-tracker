@@ -27,7 +27,15 @@ import axios from "@/lib/axiosConfig";
 import { getApplicationStatusCount } from "@/utils/utils";
 import SavedJob from "@/types/SavedJob";
 
+import { useQuery } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  refetchApplicationStagesData,
+  refetchSavedJobsData,
+} from "@/utils/refetch";
+
 import { useSavedJobs } from "@/stores/useSavedJobs";
+import ApplicationStageColumnSkeleton from "@/components/skeleton/ApplicationStageColumnSkeleton";
 
 const sortStagesByPosition = (
   applicationStageColumns: ApplicationStageType[]
@@ -45,20 +53,52 @@ const ApplicationsPage = () => {
   >([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { savedJobs, setSavedJobs, isFetched } = useSavedJobs();
+  const queryClient = useQueryClient();
+
+  const { data: savedJobsData, status: savedJobsStatus } = useQuery({
+    queryKey: ["saved-jobs"],
+    queryFn: async () => {
+      const res = await axios.get("/saved-jobs");
+      return res.data;
+    },
+    refetchOnMount: true,
+    retry: false,
+    retryOnMount: false,
+    refetchOnWindowFocus: false,
+  });
+
+  const { data: applicationStagesData, status: applicationStagesStatus } =
+    useQuery({
+      queryKey: ["application-stages"],
+      queryFn: async () => {
+        const res = await axios.get("/application-stages");
+        return res.data;
+      },
+      refetchOnMount: true,
+      retry: false,
+      retryOnMount: false,
+      refetchOnWindowFocus: false,
+    });
+
+  // useEffect(() => {
+  //   const fetchSavedJobs = async () => {
+  //     try {
+  //       // if (isFetched) return;
+  //       const res = await axios.get("/saved-jobs");
+  //       // console.log(res.data);
+  //       setSavedJobs(res.data);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetchSavedJobs();
+  // }, []);
 
   useEffect(() => {
-    const fetchSavedJobs = async () => {
-      try {
-        // if (isFetched) return;
-        const res = await axios.get("/saved-jobs");
-        // console.log(res.data);
-        setSavedJobs(res.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchSavedJobs();
-  }, []);
+    if (savedJobsData) {
+      setSavedJobs(savedJobsData);
+    }
+  }, [savedJobsData]);
 
   //the data of the item being dragged
   const [activeColumnData, setActiveColumnData] =
@@ -73,22 +113,33 @@ const ApplicationsPage = () => {
     id: `application-stages`,
   });
 
+  // useEffect(() => {
+  //   const fetchApplicationStages = async () => {
+  //     try {
+  //       const res = await axios.get("/application-stages");
+  //       const orderedStages = sortStagesByPosition(res.data);
+  //       //sort jobs by position
+  //       orderedStages.forEach((stage) => {
+  //         stage.jobs = sortJobsByPosition(stage.jobs);
+  //       });
+  //       setApplicationStageColumns(orderedStages);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetchApplicationStages();
+  // }, []);
+
   useEffect(() => {
-    const fetchApplicationStages = async () => {
-      try {
-        const res = await axios.get("/application-stages");
-        const orderedStages = sortStagesByPosition(res.data);
-        //sort jobs by position
-        orderedStages.forEach((stage) => {
-          stage.jobs = sortJobsByPosition(stage.jobs);
-        });
-        setApplicationStageColumns(orderedStages);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchApplicationStages();
-  }, []);
+    if (applicationStagesData) {
+      const orderedStages = sortStagesByPosition(applicationStagesData);
+      //sort jobs by position
+      orderedStages.forEach((stage) => {
+        stage.jobs = sortJobsByPosition(stage.jobs);
+      });
+      setApplicationStageColumns(orderedStages);
+    }
+  }, [applicationStagesData]);
 
   const pointerSensor = useSensor(PointerSensor, {
     // Require the mouse to move by 10 pixels before activating
@@ -111,6 +162,20 @@ const ApplicationsPage = () => {
   });
   const sensors = useSensors(mouseSensor, touchSensor);
 
+  // const refetchApplicationStagesData = async () => {
+  //   await queryClient.refetchQueries({
+  //     queryKey: ["application-stages"],
+  //     type: "active",
+  //   });
+  // };
+
+  // const refetchSavedJobsData = async () => {
+  //   await queryClient.refetchQueries({
+  //     queryKey: ["saved-jobs"],
+  //     type: "active",
+  //   });
+  // };
+
   const updateStageOrder = async (newStageColumns: ApplicationStageType[]) => {
     try {
       //send an array of [{id: 1, position: 0}, {id: 2, position: 1}, ...]
@@ -122,6 +187,8 @@ const ApplicationsPage = () => {
       const res = await axios.put("/application-stages/reorder-stages", {
         stagePositions,
       });
+      // await refetchApplicationStagesData(queryClient);
+      // refetchApplicationStages();
       // console.log(res.data);
     } catch (error) {
       console.log(error);
@@ -156,6 +223,8 @@ const ApplicationsPage = () => {
       const res = await axios.put("/saved-jobs/reorder-jobs", {
         jobPositions,
       });
+      // await refetchApplicationStagesData(queryClient);
+      // refetchApplicationStages();
     } catch (error) {
       console.log(error);
     }
@@ -208,6 +277,9 @@ const ApplicationsPage = () => {
           return job;
         });
         setSavedJobs(updatedSavedJobs);
+        // await refetchApplicationStagesData(queryClient);
+        // await refetchSavedJobsData(queryClient);
+        // refetchApplicationStages();
       } catch (error) {
         console.log(error);
       }
@@ -544,74 +616,96 @@ const ApplicationsPage = () => {
     <div className="bg-[#f7fafc]">
       <div className="border-[#dce6f8] border-b-[1px] bg-white">
         <div className="flex items-center justify-between max-w-[1450px] px-4 mx-auto py-2 overflow-y-auto h-[100px]">
-          {getApplicationStatusCount(applicationStageColumns).map(
-            (status, index) => (
-              <ApplicationStage
-                key={index}
-                stage={status.name}
-                count={status.count}
-              />
+          {applicationStagesStatus === "pending" ? (
+            <>
+              <ApplicationStage stage="Applied" count={0} />
+              <ApplicationStage stage="O.A." count={0} />
+              <ApplicationStage stage="Interviews" count={0} />
+              <ApplicationStage stage="Offers" count={0} />
+              <ApplicationStage stage="Rejected" count={0} />
+            </>
+          ) : (
+            getApplicationStatusCount(applicationStageColumns).map(
+              (status, index) => (
+                <ApplicationStage
+                  key={index}
+                  stage={status.name}
+                  count={status.count}
+                />
+              )
             )
           )}
         </div>
       </div>
       <div className="overflow-x-auto h-[calc(100vh-60px-101px)]">
-        <DndContext
-          onDragStart={handleDragStart}
-          onDragOver={handleDragOver}
-          onDragEnd={handleDragEnd}
-          // collisionDetection={closestCenter}
-          sensors={sensors}
-        >
-          <SortableContext
-            items={applicationStageColumns.map((stage) => `stage-${stage.id}`)}
-            strategy={horizontalListSortingStrategy}
+        {applicationStagesStatus === "pending" ? (
+          <div className=" mx-auto flex items-start mt-5 max-w-[1450px]">
+            <ApplicationStageColumnSkeleton jobNumber={4} />
+            <ApplicationStageColumnSkeleton jobNumber={1} />
+            <ApplicationStageColumnSkeleton jobNumber={1} />
+            <ApplicationStageColumnSkeleton jobNumber={3} />
+            <ApplicationStageColumnSkeleton jobNumber={2} />
+          </div>
+        ) : (
+          <DndContext
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDragEnd={handleDragEnd}
+            // collisionDetection={closestCenter}
+            sensors={sensors}
           >
-            <div
-              ref={setNodeRef}
-              className=" mx-auto flex items-start mt-5 max-w-[1450px]"
+            <SortableContext
+              items={applicationStageColumns.map(
+                (stage) => `stage-${stage.id}`
+              )}
+              strategy={horizontalListSortingStrategy}
             >
-              {applicationStageColumns.map((stage, index) => (
-                <ApplicationStageColumn
-                  key={stage.id}
-                  id={stage.id}
-                  stage_name={stage.stage_name}
-                  jobs={stage.jobs}
-                  removeJobFromStages={removeJobFromStages}
-                  setApplicationStageColumns={setApplicationStageColumns}
-                  isLoading={isLoading}
-                />
-              ))}
-              <DragOverlay dropAnimation={dropAnimation}>
-                {activeColumnData && (
+              <div
+                ref={setNodeRef}
+                className=" mx-auto flex items-start mt-5 max-w-[1450px]"
+              >
+                {applicationStageColumns.map((stage, index) => (
                   <ApplicationStageColumn
-                    id={activeColumnData.id}
-                    stage_name={activeColumnData.stage_name}
-                    isLoading={isLoading}
-                    jobs={activeColumnData.jobs}
+                    key={stage.id}
+                    id={stage.id}
+                    stage_name={stage.stage_name}
+                    jobs={stage.jobs}
                     removeJobFromStages={removeJobFromStages}
-                  />
-                )}
-                {activeCardData && (
-                  <JobCard
+                    setApplicationStageColumns={setApplicationStageColumns}
                     isLoading={isLoading}
-                    job={activeCardData}
-                    removeJobFromStages={removeJobFromStages}
                   />
-                )}
-              </DragOverlay>
-              {/* Add btn */}
-              {/* <div className="px-3 mb-auto">
-                <button className="flex items-center p-3 w-[250px] rounded-lg bg-[#fff] shadow-md border-[1px] border-[#c3dafe] hover:border-blue-400">
-                  <Plus size={20} className="mr-2" />
-                  <span className="text-sm font-medium text-[#3d3d3d]">
-                    Add Stage
-                  </span>
-                </button>
-              </div> */}
-            </div>
-          </SortableContext>
-        </DndContext>
+                ))}
+                <DragOverlay dropAnimation={dropAnimation}>
+                  {activeColumnData && (
+                    <ApplicationStageColumn
+                      id={activeColumnData.id}
+                      stage_name={activeColumnData.stage_name}
+                      isLoading={isLoading}
+                      jobs={activeColumnData.jobs}
+                      removeJobFromStages={removeJobFromStages}
+                    />
+                  )}
+                  {activeCardData && (
+                    <JobCard
+                      isLoading={isLoading}
+                      job={activeCardData}
+                      removeJobFromStages={removeJobFromStages}
+                    />
+                  )}
+                </DragOverlay>
+                {/* Add btn */}
+                {/* <div className="px-3 mb-auto">
+                  <button className="flex items-center p-3 w-[250px] rounded-lg bg-[#fff] shadow-md border-[1px] border-[#c3dafe] hover:border-blue-400">
+                    <Plus size={20} className="mr-2" />
+                    <span className="text-sm font-medium text-[#3d3d3d]">
+                      Add Stage
+                    </span>
+                  </button>
+                </div> */}
+              </div>
+            </SortableContext>
+          </DndContext>
+        )}
       </div>
     </div>
   );

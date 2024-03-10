@@ -6,6 +6,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { Skeleton } from "@/components/ui/skeleton";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { Button } from "../ui/button";
@@ -15,12 +16,14 @@ import { isTextEmpty } from "@/utils/utils";
 import axios from "@/lib/axiosConfig";
 
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
+import JobDescriptionSkeleton from "../skeleton/JobDescriptionSkeleton";
 
 interface JobDescriptionProps {
   jobDescription: string;
+  isLoading: boolean;
 }
 
-const JobDescription = ({ jobDescription }: JobDescriptionProps) => {
+const JobDescription = ({ jobDescription, isLoading }: JobDescriptionProps) => {
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
   const [rotateChevron, setRotateChevron] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -61,7 +64,10 @@ const JobDescription = ({ jobDescription }: JobDescriptionProps) => {
                 "border-none focus:outline-none text-blue-700 hover:text-blue-700/80",
                 isEditMode && "hidden"
               )}
-              onClick={() => setIsEditMode(!isEditMode)}
+              onClick={() => {
+                if (isLoading) return;
+                setIsEditMode(!isEditMode);
+              }}
             >
               <FileEdit size={20} />
             </button>
@@ -77,55 +83,61 @@ const JobDescription = ({ jobDescription }: JobDescriptionProps) => {
         </div>
         <hr className="mt-2 mb-3 border-[#d6eaff]" />
         <CollapsibleContent>
-          {!isEditMode && (
-            <div className="text-gray-700">
-              {value !== "" && (
-                <div
-                  className="max-h-[500px] overflow-y-auto"
-                  dangerouslySetInnerHTML={{ __html: value }}
-                ></div>
+          {isLoading ? (
+            <JobDescriptionSkeleton />
+          ) : (
+            <>
+              {!isEditMode && (
+                <div className="text-gray-700">
+                  {value !== "" && (
+                    <div
+                      className="max-h-[500px] overflow-y-auto"
+                      dangerouslySetInnerHTML={{ __html: value }}
+                    ></div>
+                  )}
+                  {value === "" && (
+                    <p className="text-gray-700">
+                      No job description yet. Click the edit button to paste in
+                      the job description.
+                    </p>
+                  )}
+                </div>
               )}
-              {value === "" && (
-                <p className="text-gray-700">
-                  No job description yet. Click the edit button to paste in the
-                  job description.
-                </p>
+              {isEditMode && (
+                <div className="flex flex-col">
+                  <ReactQuill
+                    theme="snow"
+                    value={value}
+                    onChange={(value) => {
+                      if (isTextEmpty(value)) {
+                        setValue("");
+                      } else {
+                        setValue(value);
+                      }
+                    }}
+                    className="job-description-quill"
+                  />
+                  <div className="flex items-center space-x-2 mt-3">
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      className="text-white bg-blue-600 hover:bg-blue-700 px-5"
+                      onClick={handleSaveJobDescription}
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-blue-600 hover:text-blue-700"
+                      onClick={() => setIsEditMode(!isEditMode)}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
               )}
-            </div>
-          )}
-          {isEditMode && (
-            <div className="flex flex-col">
-              <ReactQuill
-                theme="snow"
-                value={value}
-                onChange={(value) => {
-                  if (isTextEmpty(value)) {
-                    setValue("");
-                  } else {
-                    setValue(value);
-                  }
-                }}
-                className="job-description-quill"
-              />
-              <div className="flex items-center space-x-2 mt-3">
-                <Button
-                  variant="primary"
-                  size="sm"
-                  className="text-white bg-blue-600 hover:bg-blue-700 px-5"
-                  onClick={handleSaveJobDescription}
-                >
-                  Save
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-blue-600 hover:text-blue-700"
-                  onClick={() => setIsEditMode(!isEditMode)}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
+            </>
           )}
         </CollapsibleContent>
       </div>

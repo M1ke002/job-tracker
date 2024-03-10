@@ -23,6 +23,12 @@ import SavedJob from "@/types/SavedJob";
 import { useSavedJobs } from "@/stores/useSavedJobs";
 import { useModal } from "@/stores/useModal";
 
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  refetchApplicationStagesData,
+  refetchSavedJobsData,
+} from "@/utils/refetch";
+
 const AddJobToStageModal = () => {
   const { savedJobs, setSavedJobs } = useSavedJobs();
   const [filteredJobs, setFilteredJobs] = useState<SavedJob[]>([]);
@@ -30,6 +36,7 @@ const AddJobToStageModal = () => {
   const { type, isOpen, onClose, data } = useModal();
   const { stageId, setApplicationStageColumns } = data;
   const isModalOpen = isOpen && type === "addJobToStage";
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (savedJobs.length > 0) {
@@ -68,6 +75,9 @@ const AddJobToStageModal = () => {
         return job;
       });
       setSavedJobs(updatedSavedJobs);
+
+      // await refetchApplicationStagesData(queryClient);
+      // await refetchSavedJobsData(queryClient);
     } catch (error) {
       console.log(error);
     } finally {

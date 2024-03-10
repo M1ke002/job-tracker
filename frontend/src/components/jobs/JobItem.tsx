@@ -29,6 +29,9 @@ import {
   Check,
 } from "lucide-react";
 
+import { useQueryClient } from "@tanstack/react-query";
+import { refetchSavedJobsData } from "@/utils/refetch";
+
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import axios from "@/lib/axiosConfig";
@@ -72,6 +75,7 @@ const JobItem = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const { onOpen } = useModal();
+  const queryClient = useQueryClient();
 
   const onSave = async () => {
     try {
@@ -86,6 +90,7 @@ const JobItem = ({
         jobDate,
       });
       setSavedJobs([...savedJobs, res.data]);
+      // await refetchSavedJobsData(queryClient);
     } catch (error) {
       console.log(error);
     }
@@ -95,6 +100,7 @@ const JobItem = ({
     try {
       const res = await axios.delete(`/saved-jobs/${id}`);
       setSavedJobs(savedJobs.filter((job) => job.id !== id));
+      // await refetchSavedJobsData(queryClient);
     } catch (error) {
       console.log(error);
     }

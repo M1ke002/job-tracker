@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import ApplicationProgressItem from "./ApplicationProgressItem";
 
 import ApplicationStage from "@/types/ApplicationStage";
@@ -6,6 +6,7 @@ import SavedJob from "@/types/SavedJob";
 
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 import { useApplicationStages } from "@/stores/useApplicationStages";
+import ApplicationProgressItemSkeleton from "../skeleton/ApplicationProgressItemSkeleton";
 
 const sortApplicationStages = (applicationStages: ApplicationStage[]) => {
   //output: [Applied, O.A., Interview, Offer, Rejected]
@@ -78,7 +79,11 @@ const getApplicationProgressItems = (
   return applicationProgressItems;
 };
 
-const ApplicationProgress = () => {
+interface ApplicationProgressProps {
+  isLoading: boolean;
+}
+
+const ApplicationProgress = ({ isLoading }: ApplicationProgressProps) => {
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
   const { applicationStages, setApplicationStages } = useApplicationStages();
 
@@ -91,16 +96,25 @@ const ApplicationProgress = () => {
   return (
     <div className="p-6 bg-white border border-[#dbe9ff] w-full shadow-sm overflow-auto">
       <div className="flex items-center min-w-[600px]">
-        {applicationProgressItems.map((item, index) => (
-          <ApplicationProgressItem
-            key={index}
-            stageId={item.stageId.toString()}
-            stageName={item.stageName}
-            isPassed={item.isPassed}
-            isCurrentStage={item.isCurrentStage}
-            isRejected={item.isRejected}
-          />
-        ))}
+        {isLoading ? (
+          <>
+            <ApplicationProgressItemSkeleton position="first" />
+            <ApplicationProgressItemSkeleton position="middle" />
+            <ApplicationProgressItemSkeleton position="middle" />
+            <ApplicationProgressItemSkeleton position="last" />
+          </>
+        ) : (
+          applicationProgressItems.map((item, index) => (
+            <ApplicationProgressItem
+              key={index}
+              stageId={item.stageId.toString()}
+              stageName={item.stageName}
+              isPassed={item.isPassed}
+              isCurrentStage={item.isCurrentStage}
+              isRejected={item.isRejected}
+            />
+          ))
+        )}
       </div>
     </div>
   );

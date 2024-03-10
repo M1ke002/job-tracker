@@ -2,36 +2,62 @@ import React, { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Plus, SlidersHorizontal } from "lucide-react";
 
 import axios from "@/lib/axiosConfig";
 import JobItem from "@/components/jobs/JobItem";
 
+import { useQuery } from "@tanstack/react-query";
+
 import { useSavedJobs } from "@/stores/useSavedJobs";
 import { useModal } from "@/stores/useModal";
+import JobItemSkeleton from "@/components/skeleton/JobItemSkeleton";
 
 const SavedJobsPage = () => {
   const { savedJobs, setSavedJobs, isFetched } = useSavedJobs();
   const { onOpen } = useModal();
 
+  const { data: savedJobsData, status: savedJobsStatus } = useQuery({
+    queryKey: ["saved-jobs"],
+    queryFn: async () => {
+      const res = await axios.get("/saved-jobs");
+      return res.data;
+    },
+    refetchOnMount: true,
+    retry: false,
+    retryOnMount: false,
+    refetchOnWindowFocus: false,
+  });
+
+  // useEffect(() => {
+  //   const fetchSavedJobs = async () => {
+  //     try {
+  //       // if (isFetched) return;
+  //       const res = await axios.get("/saved-jobs");
+  //       console.log(res.data);
+  //       setSavedJobs(res.data);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetchSavedJobs();
+  // }, []);
+
   useEffect(() => {
-    const fetchSavedJobs = async () => {
-      try {
-        // if (isFetched) return;
-        const res = await axios.get("/saved-jobs");
-        console.log(res.data);
-        setSavedJobs(res.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchSavedJobs();
-  }, []);
+    if (savedJobsData) {
+      setSavedJobs(savedJobsData);
+    }
+  }, [savedJobsData]);
 
   return (
     <div className="relative mx-auto px-4 flex flex-col max-w-[1450px] min-h-[calc(100vh-60px)]">
       <div className="w-full flex items-center justify-between mt-4">
-        <p className="text-sm font-medium">{savedJobs.length} jobs</p>
+        {savedJobsStatus === "pending" ? (
+          <Skeleton className="w-28 h-6 bg-zinc-200" />
+        ) : (
+          <p className="text-sm font-medium">{savedJobs.length} jobs</p>
+        )}
         <div className="flex items-center space-x-2">
           <Button
             variant="primary"
@@ -51,22 +77,31 @@ const SavedJobsPage = () => {
       </div>
       <Separator className="my-3" />
       <div className="grid md:grid-cols-2 gap-2 grid-cols-1 justify-items-center">
-        {savedJobs.map((job) => (
-          <JobItem
-            type="savedJob"
-            key={job.id}
-            id={job.id}
-            jobTitle={job.job_title}
-            companyName={job.company_name}
-            jobUrl={job.job_url}
-            jobDescription={job.job_description}
-            jobDate={job.job_date}
-            location={job.location}
-            salary={job.salary}
-            additionalInfo={job.additional_info}
-            stage={job.stage || undefined}
-          />
-        ))}
+        {savedJobsStatus === "pending" ? (
+          <>
+            <JobItemSkeleton />
+            <JobItemSkeleton />
+            <JobItemSkeleton />
+            <JobItemSkeleton />
+          </>
+        ) : (
+          savedJobs.map((job) => (
+            <JobItem
+              type="savedJob"
+              key={job.id}
+              id={job.id}
+              jobTitle={job.job_title}
+              companyName={job.company_name}
+              jobUrl={job.job_url}
+              jobDescription={job.job_description}
+              jobDate={job.job_date}
+              location={job.location}
+              salary={job.salary}
+              additionalInfo={job.additional_info}
+              stage={job.stage || undefined}
+            />
+          ))
+        )}
       </div>
       {/* <Button className="mx-auto mt-4 mb-3 px-7" variant="primary">
         Load More

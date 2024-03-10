@@ -17,6 +17,8 @@ import { DataTable } from "@/components/document/DataTable";
 import { columns } from "@/components/document/DocumentTableColumns";
 import DocumentListTitle from "@/components/document/DocumentListTitle";
 
+import { useQuery } from "@tanstack/react-query";
+
 import { useModal } from "@/stores/useModal";
 import { useSavedJobs } from "@/stores/useSavedJobs";
 import { useDocumentList } from "@/stores/useDocumentList";
@@ -27,32 +29,68 @@ const DocumentsPage = () => {
   const { onOpen } = useModal();
   const { setSavedJobs, isFetched } = useSavedJobs();
 
-  useEffect(() => {
-    const fetchSavedJobs = async () => {
-      try {
-        // if (isFetched) return;
-        const res = await axios.get("/saved-jobs");
-        console.log(res.data);
-        setSavedJobs(res.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchSavedJobs();
-  }, []);
+  const { data: savedJobsData, status: savedJobsStatus } = useQuery({
+    queryKey: ["saved-jobs"],
+    queryFn: async () => {
+      const res = await axios.get("/saved-jobs");
+      return res.data;
+    },
+    refetchOnMount: true,
+    retry: false,
+    retryOnMount: false,
+    refetchOnWindowFocus: false,
+  });
+
+  const { data: documentListsData, status: documentListsStatus } = useQuery({
+    queryKey: ["document-lists"],
+    queryFn: async () => {
+      const res = await axios.get("/document-types");
+      return res.data;
+    },
+    refetchOnMount: true,
+    retry: false,
+    retryOnMount: false,
+    refetchOnWindowFocus: false,
+  });
+
+  // useEffect(() => {
+  //   const fetchSavedJobs = async () => {
+  //     try {
+  //       // if (isFetched) return;
+  //       const res = await axios.get("/saved-jobs");
+  //       console.log(res.data);
+  //       setSavedJobs(res.data);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetchSavedJobs();
+  // }, []);
 
   useEffect(() => {
-    const fetchDocumentTypes = async () => {
-      try {
-        const res = await axios.get("/document-types");
-        setDocumentLists(res.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
+    if (savedJobsData) {
+      setSavedJobs(savedJobsData);
+    }
+  }, [savedJobsData]);
 
-    fetchDocumentTypes();
-  }, []);
+  // useEffect(() => {
+  //   const fetchDocumentTypes = async () => {
+  //     try {
+  //       const res = await axios.get("/document-types");
+  //       setDocumentLists(res.data);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+
+  //   fetchDocumentTypes();
+  // }, []);
+
+  useEffect(() => {
+    if (documentListsData) {
+      setDocumentLists(documentListsData);
+    }
+  }, [documentListsData]);
 
   return (
     <div className="mx-auto px-4 flex flex-col items-center max-w-[1450px]">

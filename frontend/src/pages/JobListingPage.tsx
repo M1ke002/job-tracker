@@ -26,6 +26,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import JobItem from "@/components/jobs/JobItem";
 import PaginationBox from "@/components/pagination/PaginationBox";
@@ -34,6 +35,9 @@ import JobListing from "@/types/JobListing";
 import axios from "@/lib/axiosConfig";
 import { SEEK, GRAD_CONNECTION } from "@/utils/constants";
 import ScrollToTopBtn from "@/components/ScrollToTopBtn";
+import JobItemSkeleton from "@/components/skeleton/JobItemSkeleton";
+
+import { useQuery } from "@tanstack/react-query";
 
 import { useModal } from "@/stores/useModal";
 import { useScrapedSites } from "@/stores/useScrapedSites";
@@ -60,6 +64,30 @@ const JobListingPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { onOpen } = useModal();
 
+  const { data: scrapedSitesData, status: scrapedSitesStatus } = useQuery({
+    queryKey: ["scraped-sites"],
+    queryFn: async () => {
+      const res = await axios.get("/scraped-sites");
+      return res.data;
+    },
+    refetchOnMount: true,
+    retry: false,
+    retryOnMount: false,
+    refetchOnWindowFocus: false,
+  });
+
+  const { data: savedJobsData, status: savedJobsStatus } = useQuery({
+    queryKey: ["saved-jobs"],
+    queryFn: async () => {
+      const res = await axios.get("/saved-jobs");
+      return res.data;
+    },
+    refetchOnMount: true,
+    retry: false,
+    retryOnMount: false,
+    refetchOnWindowFocus: false,
+  });
+
   useEffect(() => {
     const currentScrapedSite = scrapedSites.find((site) => {
       return site.id.toString() === currentScrapedSiteId;
@@ -69,39 +97,60 @@ const JobListingPage = () => {
     }
   }, [currentScrapedSiteId, scrapedSites]);
 
+  // useEffect(() => {
+  //   const fetchScrapedSites = async () => {
+  //     setIsLoading(true);
+  //     const res = await axios.get("/scraped-sites");
+  //     setIsLoading(false);
+  //     console.log(res.data);
+  //     setScrapedSites(res.data);
+
+  //     //set default currentScrapedSiteId to the first site
+  //     setCurrentScrapedSiteId(res.data[0].id.toString());
+
+  //     //set pageSiteMapping
+  //     const pageSiteMapping = res.data.map((site: ScrapedSite) => {
+  //       return { currentPage: 1, siteId: site.id };
+  //     });
+  //     setPageSiteMapping(pageSiteMapping);
+  //   };
+  //   fetchScrapedSites();
+  // }, []);
+
   useEffect(() => {
-    const fetchScrapedSites = async () => {
-      setIsLoading(true);
-      const res = await axios.get("/scraped-sites");
-      setIsLoading(false);
-      console.log(res.data);
-      setScrapedSites(res.data);
+    if (scrapedSitesData) {
+      setScrapedSites(scrapedSitesData);
 
       //set default currentScrapedSiteId to the first site
-      setCurrentScrapedSiteId(res.data[0].id.toString());
+      setCurrentScrapedSiteId(scrapedSitesData[0].id.toString());
 
       //set pageSiteMapping
-      const pageSiteMapping = res.data.map((site: ScrapedSite) => {
+      const pageSiteMapping = scrapedSitesData.map((site: ScrapedSite) => {
         return { currentPage: 1, siteId: site.id };
       });
       setPageSiteMapping(pageSiteMapping);
-    };
-    fetchScrapedSites();
-  }, []);
+    }
+  }, [scrapedSitesData]);
+
+  // useEffect(() => {
+  //   const fetchSavedJobs = async () => {
+  //     try {
+  //       // if (isFetched) return;
+  //       const res = await axios.get("/saved-jobs");
+  //       console.log(res.data);
+  //       setSavedJobs(res.data);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetchSavedJobs();
+  // }, []);
 
   useEffect(() => {
-    const fetchSavedJobs = async () => {
-      try {
-        // if (isFetched) return;
-        const res = await axios.get("/saved-jobs");
-        console.log(res.data);
-        setSavedJobs(res.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchSavedJobs();
-  }, []);
+    if (savedJobsData) {
+      setSavedJobs(savedJobsData);
+    }
+  }, [savedJobsData]);
 
   useEffect(() => {
     //scroll to top of page when currentScrapedSite changes
@@ -316,25 +365,33 @@ const JobListingPage = () => {
       <div className="max-w-[1450px] mx-auto py-3 px-4 min-h-[calc(100vh-60px-24px-64px)]">
         <div className="w-full flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium">
-              {currentScrapedSite?.total_job_count} jobs on{" "}
-              <a
-                href={
-                  currentScrapedSite?.website_name === GRAD_CONNECTION
-                    ? "https://au.gradconnection.com/"
-                    : "https://www.seek.com.au/"
-                }
-                target="_blank"
-                className="underline text-blue-500"
-              >
-                {currentScrapedSite?.website_name}{" "}
-              </a>
-            </p>
+            {scrapedSitesStatus === "pending" ? (
+              <Skeleton className="w-40 h-8 bg-zinc-200" />
+            ) : (
+              <p className="text-sm font-medium">
+                {currentScrapedSite?.total_job_count} jobs on{" "}
+                <a
+                  href={
+                    currentScrapedSite?.website_name === GRAD_CONNECTION
+                      ? "https://au.gradconnection.com/"
+                      : "https://www.seek.com.au/"
+                  }
+                  target="_blank"
+                  className="underline text-blue-500"
+                >
+                  {currentScrapedSite?.website_name}{" "}
+                </a>
+              </p>
+            )}
           </div>
           <div className="flex items-center space-x-2">
-            <p className="text-sm font-medium">
-              Last updated: {currentScrapedSite?.last_scrape_date}
-            </p>
+            {scrapedSitesStatus === "pending" ? (
+              <Skeleton className="bg-zinc-200 w-60 h-8" />
+            ) : (
+              <p className="text-sm font-medium">
+                Last updated: {currentScrapedSite?.last_scrape_date}
+              </p>
+            )}
             <Button
               className="text-sm font-medium text-[#3d3d3d] hover:text-[#3d3d3d] px-2 bg-white"
               variant="outlinePrimary"
@@ -370,46 +427,58 @@ const JobListingPage = () => {
         <Separator className="my-2" />
 
         <div className="grid md:grid-cols-2 gap-2 grid-cols-1 justify-items-center">
-          {currentScrapedSite?.job_listings.map((job, index) => {
-            return (
-              <JobItem
-                key={index}
-                type="jobListing"
-                jobTitle={job.job_title}
-                jobDescription={job.job_description}
-                location={job.location}
-                jobUrl={job.job_url}
-                companyName={job.company_name}
-                additionalInfo={job.additional_info}
-                jobDate={job.job_date}
-                salary={job.salary}
-                isNewJob={job.is_new}
-                isSaved={savedJobs.some(
-                  (savedJob) =>
-                    savedJob.job_url === job.job_url &&
-                    savedJob.company_name === job.company_name &&
-                    savedJob.job_title === job.job_title
-                )}
-              />
-            );
-          })}
+          {scrapedSitesStatus === "pending" || savedJobsStatus === "pending" ? (
+            <>
+              <JobItemSkeleton />
+              <JobItemSkeleton />
+              <JobItemSkeleton />
+              <JobItemSkeleton />
+            </>
+          ) : (
+            currentScrapedSite?.job_listings.map((job, index) => {
+              return (
+                <JobItem
+                  key={index}
+                  type="jobListing"
+                  jobTitle={job.job_title}
+                  jobDescription={job.job_description}
+                  location={job.location}
+                  jobUrl={job.job_url}
+                  companyName={job.company_name}
+                  additionalInfo={job.additional_info}
+                  jobDate={job.job_date}
+                  salary={job.salary}
+                  isNewJob={job.is_new}
+                  isSaved={savedJobs.some(
+                    (savedJob) =>
+                      savedJob.job_url === job.job_url &&
+                      savedJob.company_name === job.company_name &&
+                      savedJob.job_title === job.job_title
+                  )}
+                />
+              );
+            })
+          )}
         </div>
-        {currentScrapedSite?.job_listings.length === 0 && (
-          <div className="flex items-center justify-center w-full h-60">
-            <p className="text-lg font-medium text-gray-400">No jobs found</p>
-          </div>
-        )}
-        {currentScrapedSite && currentScrapedSite?.total_pages > 1 && (
-          <PaginationBox
-            totalPages={currentScrapedSite.total_pages || 1}
-            currentPage={
-              pageSiteMapping.find(
-                (mapping) => mapping.siteId === currentScrapedSite.id
-              )?.currentPage || 1
-            }
-            fetchPage={fetchPage}
-          />
-        )}
+        {currentScrapedSite?.job_listings.length === 0 &&
+          scrapedSitesStatus !== "pending" && (
+            <div className="flex items-center justify-center w-full h-60">
+              <p className="text-lg font-medium text-gray-400">No jobs found</p>
+            </div>
+          )}
+        {currentScrapedSite &&
+          currentScrapedSite?.total_pages > 1 &&
+          scrapedSitesStatus !== "pending" && (
+            <PaginationBox
+              totalPages={currentScrapedSite.total_pages || 1}
+              currentPage={
+                pageSiteMapping.find(
+                  (mapping) => mapping.siteId === currentScrapedSite.id
+                )?.currentPage || 1
+              }
+              fetchPage={fetchPage}
+            />
+          )}
       </div>
 
       <div className="fixed bottom-4 right-4">

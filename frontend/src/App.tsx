@@ -10,25 +10,28 @@ import SavedJobsPage from "./pages/SavedJobsPage";
 import JobDetailsPage from "./pages/JobDetailsPage";
 import ModalProvider from "./components/providers/ModalProvider";
 import NotificationsPage from "./pages/NotificationsPage";
+import { QueryProvider } from "./components/providers/QueryProvider";
 
 function App() {
   return (
     <>
-      <Router>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route element={<ProtectedRoutes />}>
-            <Route path="/jobs" element={<JobListingPage />} />
-            <Route path="/saved-jobs" element={<SavedJobsPage />} />
-            <Route path="/saved-jobs/:id" element={<JobDetailsPage />} />
-            <Route path="/applications" element={<ApplicationsPage />} />
-            <Route path="/documents" element={<DocumentsPage />} />
-            <Route path="/notifications" element={<NotificationsPage />} />
-          </Route>
-        </Routes>
-      </Router>
-      <ModalProvider />
+      <QueryProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route element={<ProtectedRoutes />}>
+              <Route path="/jobs" element={<JobListingPage />} />
+              <Route path="/saved-jobs" element={<SavedJobsPage />} />
+              <Route path="/saved-jobs/:id" element={<JobDetailsPage />} />
+              <Route path="/applications" element={<ApplicationsPage />} />
+              <Route path="/documents" element={<DocumentsPage />} />
+              <Route path="/notifications" element={<NotificationsPage />} />
+            </Route>
+          </Routes>
+        </Router>
+        <ModalProvider />
+      </QueryProvider>
     </>
   );
 }
