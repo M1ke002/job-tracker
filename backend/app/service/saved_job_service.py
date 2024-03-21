@@ -1,4 +1,5 @@
 from app.model import db, SavedJob, ApplicationStage
+from datetime import datetime
 
 
 def get_all_saved_jobs():
@@ -109,6 +110,7 @@ def update_job_stage(job_id, stage_id):
     if stage_id == "None":
         job.stage_id = None
         job.rejected_at_stage_id = None
+        job.applied_date = None
         db.session.commit()
         return job.to_dict()
 
@@ -118,6 +120,10 @@ def update_job_stage(job_id, stage_id):
 
     if stage is None:
         return None
+
+    # if job doesnt have a stage yet -> set applied_date to current date
+    if job.stage_id is None:
+        job.applied_date = datetime.now()
 
     # if stage is rejected, and job doesnt have a stage yet -> set default to stage with name = 'Applied'
     if stage.stage_name == "Rejected":
@@ -158,6 +164,7 @@ def remove_job_from_stage(job_id, job_positions):
 
     job.stage_id = None
     job.rejected_at_stage_id = None
+    job.applied_date = None
 
     # sample job_positions: [{id: 1, position: 0}, {id: 2, position: 1}, ...]
     # update positions of remaining jobs in the same stage

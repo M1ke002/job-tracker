@@ -19,15 +19,9 @@ const JobItemSkeleton = () => {
           {/* {jobTitle.length > 75 ? jobTitle.substring(0, 75) + "..." : jobTitle} */}
           <Skeleton className="w-3/4 h-6 bg-zinc-200" />
         </CardTitle>
-        <div className="pt-1 flex items-center flex-wrap">
-          <span className="text-sm font-semibold py-1 px-2 rounded-md">
-            {/* {companyName} */}
-            <Skeleton className="w-20 h-4" />
-          </span>
-          <span className="ml-3 text-xs uppercase p-1 px-2 rounded-md font-bold">
-            {/* {jobDate} */}
-            <Skeleton className="w-20 h-4" />
-          </span>
+        <div className="pt-1 flex items-center flex-wrap space-x-2">
+          <Skeleton className="w-20 h-4" />
+          <Skeleton className="w-20 h-4" />
         </div>
       </CardHeader>
       <CardContent className="mb-[77px] pb-3">

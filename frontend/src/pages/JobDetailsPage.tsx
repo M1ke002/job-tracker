@@ -5,6 +5,7 @@ import {
   ChevronDownCircle,
   CircleDollarSign,
   FileEdit,
+  Info,
   MapPin,
   Trash,
 } from "lucide-react";
@@ -26,6 +27,7 @@ import JobDescription from "@/components/jobs/JobDescription";
 import axios from "@/lib/axiosConfig";
 import { useParams, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -37,6 +39,7 @@ import {
 import { useModal } from "@/stores/useModal";
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 import { useApplicationStages } from "@/stores/useApplicationStages";
+import { ApplicationStageNames } from "@/utils/constants";
 
 const JobDetailsPage = () => {
   const { applicationStages, setApplicationStages } = useApplicationStages();
@@ -194,14 +197,14 @@ const JobDetailsPage = () => {
             <SelectTrigger
               className={cn(
                 "w-[150px] border-blue-200",
-                currentSavedJob?.stage?.stage_name === "O.A." &&
-                  "border-[#a3e8f8]",
-                currentSavedJob?.stage?.stage_name === "Interviewing" &&
-                  "border-amber-200",
-                currentSavedJob?.stage?.stage_name === "Offer" &&
-                  "border-green-300",
-                currentSavedJob?.stage?.stage_name === "Rejected" &&
-                  "border-rose-300"
+                currentSavedJob?.stage?.stage_name ===
+                  ApplicationStageNames.OA && "border-[#a3e8f8]",
+                currentSavedJob?.stage?.stage_name ===
+                  ApplicationStageNames.INTERVIEWING && "border-amber-200",
+                currentSavedJob?.stage?.stage_name ===
+                  ApplicationStageNames.OFFER && "border-green-300",
+                currentSavedJob?.stage?.stage_name ===
+                  ApplicationStageNames.REJECTED && "border-rose-300"
               )}
               disabled={isLoading}
             >
@@ -234,7 +237,7 @@ const JobDetailsPage = () => {
             <span className="text-gray-700">—</span>
             <span className="text-gray-700">
               {jobDetailsStatus === "pending" ? (
-                <Skeleton className="w-16 h-6 bg-zinc-100 mb-1" />
+                <Skeleton className="w-16 h-6 bg-zinc-200 mt-1 mb-1" />
               ) : (
                 currentSavedJob?.location
               )}
@@ -291,6 +294,23 @@ const JobDetailsPage = () => {
                 )}
               </span>
             </div>
+
+            <div className="flex items-center space-x-2">
+              <span
+                className={cn("flex h-2 w-2 rounded-full mt-[1px] bg-blue-600")}
+              />
+              <span className="text-gray-700">
+                {jobDetailsStatus === "pending" ? (
+                  <Skeleton className="w-24 h-6 bg-zinc-100" />
+                ) : (
+                  currentSavedJob?.created_at &&
+                  `Saved on: ${format(
+                    new Date(currentSavedJob?.created_at),
+                    "dd/MM/yyyy"
+                  )}`
+                )}
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -314,7 +334,25 @@ const JobDetailsPage = () => {
         </div>
 
         {/* right col */}
+
         <div className="col-span-2 space-y-4">
+          {currentSavedJob?.applied_date && (
+            <div className="p-6 bg-white border border-[#dbe9ff] w-full shadow-sm space-y-4">
+              <div className="flex items-center space-x-2">
+                <Info className="text-blue-700" size={23} />
+                <div>
+                  Application started on:{" "}
+                  <span className="font-semibold">
+                    {format(
+                      new Date(currentSavedJob?.applied_date),
+                      "dd/MM/yyyy"
+                    )}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="p-6 bg-white border border-[#dbe9ff] w-full shadow-sm space-y-4">
             <Note />
             <Contact

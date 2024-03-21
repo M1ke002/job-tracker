@@ -36,6 +36,7 @@ import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import axios from "@/lib/axiosConfig";
 import ApplicationStage from "@/types/ApplicationStage";
+import { ApplicationStageNames } from "@/utils/constants";
 
 import { useSavedJobs } from "@/stores/useSavedJobs";
 import { useModal } from "@/stores/useModal";
@@ -128,8 +129,23 @@ const JobItem = ({
             </span>
           )}
           {type === "savedJob" && stage && (
-            <span className="ml-3 text-xs uppercase text-green-700 bg-green-100 p-1 px-2 rounded-md font-bold">
-              Applied
+            <span
+              className={cn(
+                "ml-3 text-xs uppercase text-green-700 bg-green-100 p-1 px-2 rounded-md font-bold",
+                stage.stage_name === ApplicationStageNames.APPLIED
+                  ? "bg-[#c3dafe] text-[#1e3a8a]"
+                  : stage.stage_name === ApplicationStageNames.OA
+                  ? "bg-[#a3e8f8] text-[#0d9db6]"
+                  : stage.stage_name === ApplicationStageNames.INTERVIEWING
+                  ? "bg-amber-100 text-amber-700"
+                  : stage.stage_name === ApplicationStageNames.OFFER
+                  ? "bg-green-100 text-green-700"
+                  : stage.stage_name === ApplicationStageNames.REJECTED
+                  ? "bg-rose-100 text-rose-700"
+                  : "bg-gray-100 text-gray-700"
+              )}
+            >
+              {stage.stage_name}
             </span>
           )}
         </div>

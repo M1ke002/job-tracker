@@ -34,7 +34,7 @@ const formSchema = z.object({
   companyName: z.string(),
   location: z.string().optional(),
   salary: z.string().optional(),
-  jobDescription: z.string().optional(),
+  additionalInfo: z.string().optional(),
   jobUrl: z.string(),
 });
 
@@ -52,7 +52,7 @@ const CreateJobModal = () => {
       companyName: "",
       location: "",
       salary: "",
-      jobDescription: "",
+      additionalInfo: "",
       jobUrl: "",
     },
   });
@@ -156,14 +156,12 @@ const CreateJobModal = () => {
               />
               <FormField
                 control={form.control}
-                name="jobDescription"
+                name="additionalInfo"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-semibold">
-                      Job Description
-                    </FormLabel>
+                    <FormLabel className="font-semibold">Job type</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Job Description" {...field} />
+                      <Input placeholder="Job type" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

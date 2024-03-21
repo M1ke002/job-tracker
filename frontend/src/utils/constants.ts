@@ -41,3 +41,11 @@ export const SEEK_ALERT_SETTING = {
     { name: "Part-time", value: "part time" },
   ],
 };
+
+export enum ApplicationStageNames {
+  APPLIED = "Applied",
+  OA = "O.A.",
+  INTERVIEWING = "Interviewing",
+  OFFER = "Offer",
+  REJECTED = "Rejected",
+}

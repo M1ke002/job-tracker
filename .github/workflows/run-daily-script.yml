@@ -8,7 +8,7 @@ name: daily report
 #Sydney time - 11 hours -> UTC time
 on:
   schedule:
-    - cron: "13 7,19 * * *"
+    - cron: "13 7 * * *" # "13 7,19 * * *"
   workflow_dispatch:
 
 jobs:

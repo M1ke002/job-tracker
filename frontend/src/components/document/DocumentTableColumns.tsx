@@ -139,11 +139,11 @@ export const columns: ColumnDef<Document>[] = [
     },
     cell: ({ row }) => {
       const { date_uploaded } = row.original;
-      return (
-        <div className="px-1">
-          {format(new Date(date_uploaded), "dd/MM/yyyy")}
-        </div>
-      );
+      console.log(date_uploaded, new Date(date_uploaded));
+      //must - 11 hours to get the correct date
+      const convertedDate = new Date(date_uploaded);
+      convertedDate.setHours(convertedDate.getHours() - 11);
+      return <div className="px-1">{format(convertedDate, "dd/MM/yyyy")}</div>;
     },
   },
   {

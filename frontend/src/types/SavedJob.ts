@@ -21,6 +21,7 @@ interface SavedJob {
   stage_id: number | null;
   stage: ApplicationStage | null;
   rejected_at_stage_id: number | null;
+  applied_date: string | null;
   is_favorite: boolean;
   created_at: string;
 }

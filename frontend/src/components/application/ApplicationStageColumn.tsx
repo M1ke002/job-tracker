@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import ApplicationStage from "@/types/ApplicationStage";
 import SavedJob from "@/types/SavedJob";
 import JobCard from "./JobCard";
+import { ApplicationStageNames } from "@/utils/constants";
 
 import { useModal } from "@/stores/useModal";
 
@@ -81,11 +82,12 @@ const ApplicationStageColumn = ({
       <div
         className={cn(
           "flex flex-col p-3 w-[340px] rounded-lg bg-[#fff] shadow-md border-[1px] border-[#c3dafe]",
-          stage_name === "Applied" && "border-[#c3dafe]",
-          stage_name === "O.A." && "border-[#a3e8f8]",
-          stage_name === "Interviewing" && "border-amber-200",
-          stage_name === "Offer" && "border-green-300",
-          stage_name === "Rejected" && "border-rose-300"
+          stage_name === ApplicationStageNames.APPLIED && "border-[#c3dafe]",
+          stage_name === ApplicationStageNames.OA && "border-[#a3e8f8]",
+          stage_name === ApplicationStageNames.INTERVIEWING &&
+            "border-amber-200",
+          stage_name === ApplicationStageNames.OFFER && "border-green-300",
+          stage_name === ApplicationStageNames.REJECTED && "border-rose-300"
         )}
       >
         <div

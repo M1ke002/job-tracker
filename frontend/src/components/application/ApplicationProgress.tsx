@@ -7,25 +7,26 @@ import SavedJob from "@/types/SavedJob";
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 import { useApplicationStages } from "@/stores/useApplicationStages";
 import ApplicationProgressItemSkeleton from "../skeleton/ApplicationProgressItemSkeleton";
+import { ApplicationStageNames } from "@/utils/constants";
 
 const sortApplicationStages = (applicationStages: ApplicationStage[]) => {
   //output: [Applied, O.A., Interview, Offer, Rejected]
   const orderedStages: ApplicationStage[] = [];
 
   const stageApplied = applicationStages.find(
-    (stage) => stage.stage_name === "Applied"
+    (stage) => stage.stage_name === ApplicationStageNames.APPLIED
   );
   const stageOA = applicationStages.find(
-    (stage) => stage.stage_name === "O.A."
+    (stage) => stage.stage_name === ApplicationStageNames.OA
   );
   const stageInterviewing = applicationStages.find(
-    (stage) => stage.stage_name === "Interviewing"
+    (stage) => stage.stage_name === ApplicationStageNames.INTERVIEWING
   );
   const stageOffer = applicationStages.find(
-    (stage) => stage.stage_name === "Offer"
+    (stage) => stage.stage_name === ApplicationStageNames.OFFER
   );
   const stageRejected = applicationStages.find(
-    (stage) => stage.stage_name === "Rejected"
+    (stage) => stage.stage_name === ApplicationStageNames.REJECTED
   );
 
   if (stageApplied) orderedStages.push(stageApplied);
@@ -54,7 +55,7 @@ const getApplicationProgressItems = (
   );
 
   //if current job stage is rejected, then set currentStageIndex to the rejected_at_stage_id
-  if (currentStage?.stage_name === "Rejected") {
+  if (currentStage?.stage_name === ApplicationStageNames.REJECTED) {
     currentStageIndex = orderedStages.findIndex(
       (stage) => stage.id === currentSavedJob.rejected_at_stage_id
     );
@@ -63,10 +64,11 @@ const getApplicationProgressItems = (
   let applicationProgressItems = [];
   for (let i = 0; i < orderedStages.length; i++) {
     const stage = orderedStages[i];
-    if (stage.stage_name === "Rejected") continue;
+    if (stage.stage_name === ApplicationStageNames.REJECTED) continue;
     const isPassed = i < currentStageIndex;
     const isCurrentStage = i === currentStageIndex;
-    const isRejected = currentStage?.stage_name === "Rejected";
+    const isRejected =
+      currentStage?.stage_name === ApplicationStageNames.REJECTED;
     applicationProgressItems.push({
       stageId: stage.id,
       stageName: stage.stage_name,

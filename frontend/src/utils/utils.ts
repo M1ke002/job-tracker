@@ -1,13 +1,17 @@
 import { format } from "date-fns";
 import ApplicationStageType from "@/types/ApplicationStage";
-import { GRAD_CONNECTION_URL, SEEK_URL } from "./constants";
+import {
+  ApplicationStageNames,
+  GRAD_CONNECTION_URL,
+  SEEK_URL,
+} from "./constants";
 
 export const getApplicationStatusCount = (
   applicationStages: ApplicationStageType[]
 ) => {
   const applicationStageMap: { [key: string]: number } = {
     Applied: 0,
-    "O.A.": 0,
+    OA: 0,
     Interview: 0,
     Offer: 0,
     Rejected: 0,
@@ -15,32 +19,32 @@ export const getApplicationStatusCount = (
   const applicationStatus: { name: string; count: number }[] = [];
   applicationStages.forEach((stage) => {
     switch (stage.stage_name) {
-      case "Applied":
-        applicationStageMap["Applied"] += stage.jobs.length;
+      case ApplicationStageNames.APPLIED:
+        applicationStageMap.Applied += stage.jobs.length;
         break;
-      case "O.A.":
-        applicationStageMap["O.A."] += stage.jobs.length;
+      case ApplicationStageNames.OA:
+        applicationStageMap.OA += stage.jobs.length;
         break;
-      case "Interviewing":
-        applicationStageMap["Interview"] += stage.jobs.length;
+      case ApplicationStageNames.INTERVIEWING:
+        applicationStageMap.Interview += stage.jobs.length;
         break;
-      case "Offer":
-        applicationStageMap["Offer"] += stage.jobs.length;
+      case ApplicationStageNames.OFFER:
+        applicationStageMap.Offer += stage.jobs.length;
         break;
-      case "Rejected":
-        applicationStageMap["Rejected"] += stage.jobs.length;
+      case ApplicationStageNames.REJECTED:
+        applicationStageMap.Rejected += stage.jobs.length;
         break;
     }
   });
 
   const rejectedJobStageMap: { [key: string]: number } = {
     Applied: 0,
-    "O.A.": 0,
+    OA: 0,
     Interview: 0,
     Offer: 0,
   };
   const stageRejected = applicationStages.find(
-    (stage) => stage.stage_name === "Rejected"
+    (stage) => stage.stage_name === ApplicationStageNames.REJECTED
   );
   if (stageRejected) {
     stageRejected.jobs.forEach((job) => {
@@ -50,17 +54,17 @@ export const getApplicationStatusCount = (
       )?.stage_name;
       // console.log(currentStageName);
       switch (currentStageName) {
-        case "O.A.":
-          rejectedJobStageMap["O.A."] += 1;
+        case ApplicationStageNames.OA:
+          rejectedJobStageMap.OA += 1;
           break;
-        case "Interviewing":
-          rejectedJobStageMap["O.A."] += 1;
-          rejectedJobStageMap["Interview"] += 1;
+        case ApplicationStageNames.INTERVIEWING:
+          rejectedJobStageMap.OA += 1;
+          rejectedJobStageMap.Interview += 1;
           break;
-        case "Offer":
-          rejectedJobStageMap["O.A."] += 1;
-          rejectedJobStageMap["Interview"] += 1;
-          rejectedJobStageMap["Offer"] += 1;
+        case ApplicationStageNames.OFFER:
+          rejectedJobStageMap.OA += 1;
+          rejectedJobStageMap.Interview += 1;
+          rejectedJobStageMap.Offer += 1;
           break;
         default:
           break;
@@ -71,46 +75,46 @@ export const getApplicationStatusCount = (
 
   applicationStages.forEach((stage) => {
     switch (stage.stage_name) {
-      case "Applied":
+      case ApplicationStageNames.APPLIED:
         applicationStatus.push({
-          name: "Applied",
+          name: "Applications",
           count:
-            applicationStageMap["Applied"] +
-            applicationStageMap["O.A."] +
-            applicationStageMap["Interview"] +
-            applicationStageMap["Offer"] +
-            applicationStageMap["Rejected"],
+            applicationStageMap.Applied +
+            applicationStageMap.OA +
+            applicationStageMap.Interview +
+            applicationStageMap.Offer +
+            applicationStageMap.Rejected,
         });
         break;
-      case "O.A.":
+      case ApplicationStageNames.OA:
         applicationStatus.push({
-          name: "O.A.",
+          name: "Online Assessments",
           count:
-            rejectedJobStageMap["O.A."] +
-            applicationStageMap["O.A."] +
-            applicationStageMap["Interview"] +
-            applicationStageMap["Offer"],
+            rejectedJobStageMap.OA +
+            applicationStageMap.OA +
+            applicationStageMap.Interview +
+            applicationStageMap.Offer,
         });
         break;
-      case "Interviewing":
+      case ApplicationStageNames.INTERVIEWING:
         applicationStatus.push({
           name: "Interviews",
           count:
-            rejectedJobStageMap["Interview"] +
-            applicationStageMap["Interview"] +
-            applicationStageMap["Offer"],
+            rejectedJobStageMap.Interview +
+            applicationStageMap.Interview +
+            applicationStageMap.Offer,
         });
         break;
-      case "Offer":
+      case ApplicationStageNames.OFFER:
         applicationStatus.push({
           name: "Offers",
-          count: rejectedJobStageMap["Offer"] + applicationStageMap["Offer"],
+          count: rejectedJobStageMap.Offer + applicationStageMap.Offer,
         });
         break;
-      case "Rejected":
+      case ApplicationStageNames.REJECTED:
         applicationStatus.push({
-          name: "Rejected",
-          count: applicationStageMap["Rejected"],
+          name: "Rejections",
+          count: applicationStageMap.Rejected,
         });
         break;
     }

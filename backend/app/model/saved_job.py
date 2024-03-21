@@ -15,6 +15,8 @@ class SavedJob(db.Model):
     # foreign key can be null
     stage_id: so.Mapped[Optional[int]] = so.mapped_column(sa.Integer, sa.ForeignKey("application_stages.id"))
     rejected_at_stage_id: so.Mapped[Optional[int]] = so.mapped_column(sa.Integer, sa.ForeignKey("application_stages.id"))
+    applied_date: so.Mapped[Optional[datetime]] = so.mapped_column(sa.DateTime(), nullable=True)
+    # the 3 attributes above are for the stage of the job, should be moved to a separate table (called Application)
     job_title: so.Mapped[str] = so.mapped_column(sa.String(150))
     company_name: so.Mapped[str] = so.mapped_column(sa.String(150))
     location: so.Mapped[Optional[str]] = so.mapped_column(sa.String(200))
@@ -45,6 +47,7 @@ class SavedJob(db.Model):
             "id": self.id,
             "stage_id": self.stage_id,
             "rejected_at_stage_id": self.rejected_at_stage_id,
+            "applied_date": self.applied_date,
             "job_title": self.job_title,
             "company_name": self.company_name,
             "location": self.location,
