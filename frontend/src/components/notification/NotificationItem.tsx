@@ -55,7 +55,8 @@ const NotificationItem = ({
       />
       <div className="space-y-1">
         <p className="text-sm font-medium leading-5">
-          {message.length > 50 ? message.slice(0, 50) + "..." : message}
+          {/* {message.length > 50 ? message.slice(0, 50) + "..." : message} */}
+          {message}
         </p>
         <p className="text-sm text-muted-foreground">
           {getTimeDifference(createdAt, new Date())}
