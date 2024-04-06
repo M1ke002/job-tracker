@@ -36,6 +36,8 @@ import {
 
 import { useSavedJobs } from "@/stores/useSavedJobs";
 import ApplicationStageColumnSkeleton from "@/components/skeleton/ApplicationStageColumnSkeleton";
+import { useSavedJobsQuery } from "@/hooks/queries/useSavedJobsQuery";
+import { useApplicationStagesQuery } from "@/hooks/queries/useApplicationStagesQuery";
 
 const sortStagesByPosition = (
   applicationStageColumns: ApplicationStageType[]
@@ -55,44 +57,9 @@ const ApplicationsPage = () => {
   const { savedJobs, setSavedJobs, isFetched } = useSavedJobs();
   const queryClient = useQueryClient();
 
-  const { data: savedJobsData, status: savedJobsStatus } = useQuery({
-    queryKey: ["saved-jobs"],
-    queryFn: async () => {
-      const res = await axios.get("/saved-jobs");
-      return res.data;
-    },
-    refetchOnMount: true,
-    retry: false,
-    retryOnMount: false,
-    refetchOnWindowFocus: false,
-  });
-
+  const { data: savedJobsData, status: savedJobsStatus } = useSavedJobsQuery();
   const { data: applicationStagesData, status: applicationStagesStatus } =
-    useQuery({
-      queryKey: ["application-stages"],
-      queryFn: async () => {
-        const res = await axios.get("/application-stages");
-        return res.data;
-      },
-      refetchOnMount: true,
-      retry: false,
-      retryOnMount: false,
-      refetchOnWindowFocus: false,
-    });
-
-  // useEffect(() => {
-  //   const fetchSavedJobs = async () => {
-  //     try {
-  //       // if (isFetched) return;
-  //       const res = await axios.get("/saved-jobs");
-  //       // console.log(res.data);
-  //       setSavedJobs(res.data);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetchSavedJobs();
-  // }, []);
+    useApplicationStagesQuery();
 
   useEffect(() => {
     if (savedJobsData) {

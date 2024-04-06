@@ -40,6 +40,8 @@ import { useModal } from "@/stores/useModal";
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 import { useApplicationStages } from "@/stores/useApplicationStages";
 import { ApplicationStageNames } from "@/utils/constants";
+import { useJobDetailsQuery } from "@/hooks/queries/useJobDetailsQuery";
+import { useApplicationStagesQuery } from "@/hooks/queries/useApplicationStagesQuery";
 
 const JobDetailsPage = () => {
   const { applicationStages, setApplicationStages } = useApplicationStages();
@@ -50,48 +52,10 @@ const JobDetailsPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const { data: jobDetailsData, status: jobDetailsStatus } = useQuery({
-    queryKey: ["job-details", id],
-    queryFn: async () => {
-      const res = await axios.get(`/saved-jobs/${id}`);
-      return res.data;
-    },
-    refetchOnMount: true,
-    retry: false,
-    retryOnMount: false,
-    refetchOnWindowFocus: false,
-  });
-
+  const { data: jobDetailsData, status: jobDetailsStatus } =
+    useJobDetailsQuery(id);
   const { data: applicationStagesData, status: applicationStagesStatus } =
-    useQuery({
-      queryKey: ["application-stages"],
-      queryFn: async () => {
-        const res = await axios.get("/application-stages");
-        return res.data;
-      },
-      refetchOnMount: true,
-      retry: false,
-      retryOnMount: false,
-      refetchOnWindowFocus: false,
-    });
-
-  // useEffect(() => {
-  //   const fetchJobDetails = async () => {
-  //     try {
-  //       const res = await axios.get(`/saved-jobs/${id}`);
-  //       setCurrentSavedJob(res.data);
-  //       console.log(res.data);
-  //       console.log(res.data.stage?.id);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetchJobDetails();
-
-  //   return () => {
-  //     setCurrentSavedJob(null);
-  //   };
-  // }, []);
+    useApplicationStagesQuery();
 
   useEffect(() => {
     if (jobDetailsData) {
@@ -102,19 +66,6 @@ const JobDetailsPage = () => {
       setCurrentSavedJob(null);
     };
   }, [jobDetailsData]);
-
-  // useEffect(() => {
-  //   try {
-  //     const fetchApplicationStages = async () => {
-  //       const res = await axios.get(`/application-stages`);
-  //       setApplicationStages(res.data);
-  //       console.log(res.data);
-  //     };
-  //     fetchApplicationStages();
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }, []);
 
   useEffect(() => {
     if (applicationStagesData) {

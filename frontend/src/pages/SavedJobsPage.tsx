@@ -13,36 +13,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useSavedJobs } from "@/stores/useSavedJobs";
 import { useModal } from "@/stores/useModal";
 import JobItemSkeleton from "@/components/skeleton/JobItemSkeleton";
+import { useSavedJobsQuery } from "@/hooks/queries/useSavedJobsQuery";
 
 const SavedJobsPage = () => {
   const { savedJobs, setSavedJobs, isFetched } = useSavedJobs();
   const { onOpen } = useModal();
 
-  const { data: savedJobsData, status: savedJobsStatus } = useQuery({
-    queryKey: ["saved-jobs"],
-    queryFn: async () => {
-      const res = await axios.get("/saved-jobs");
-      return res.data;
-    },
-    refetchOnMount: true,
-    retry: false,
-    retryOnMount: false,
-    refetchOnWindowFocus: false,
-  });
-
-  // useEffect(() => {
-  //   const fetchSavedJobs = async () => {
-  //     try {
-  //       // if (isFetched) return;
-  //       const res = await axios.get("/saved-jobs");
-  //       console.log(res.data);
-  //       setSavedJobs(res.data);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetchSavedJobs();
-  // }, []);
+  const { data: savedJobsData, status: savedJobsStatus } = useSavedJobsQuery();
 
   useEffect(() => {
     if (savedJobsData) {

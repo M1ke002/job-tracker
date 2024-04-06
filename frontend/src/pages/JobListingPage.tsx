@@ -43,6 +43,8 @@ import { useModal } from "@/stores/useModal";
 import { useScrapedSites } from "@/stores/useScrapedSites";
 import { useCurrentScrapedSiteId } from "@/stores/useCurrentScrapedSiteId";
 import { useSavedJobs } from "@/stores/useSavedJobs";
+import { useScrapedSitesQuery } from "@/hooks/queries/useScrapedSitesQuery";
+import { useSavedJobsQuery } from "@/hooks/queries/useSavedJobsQuery";
 
 const JobListingPage = () => {
   const { savedJobs, setSavedJobs } = useSavedJobs();
@@ -64,29 +66,9 @@ const JobListingPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { onOpen } = useModal();
 
-  const { data: scrapedSitesData, status: scrapedSitesStatus } = useQuery({
-    queryKey: ["scraped-sites"],
-    queryFn: async () => {
-      const res = await axios.get("/scraped-sites");
-      return res.data;
-    },
-    refetchOnMount: true,
-    retry: false,
-    retryOnMount: false,
-    refetchOnWindowFocus: false,
-  });
-
-  const { data: savedJobsData, status: savedJobsStatus } = useQuery({
-    queryKey: ["saved-jobs"],
-    queryFn: async () => {
-      const res = await axios.get("/saved-jobs");
-      return res.data;
-    },
-    refetchOnMount: true,
-    retry: false,
-    retryOnMount: false,
-    refetchOnWindowFocus: false,
-  });
+  const { data: scrapedSitesData, status: scrapedSitesStatus } =
+    useScrapedSitesQuery();
+  const { data: savedJobsData, status: savedJobsStatus } = useSavedJobsQuery();
 
   useEffect(() => {
     const currentScrapedSite = scrapedSites.find((site) => {
@@ -96,26 +78,6 @@ const JobListingPage = () => {
       setCurrentScrapedSite(currentScrapedSite);
     }
   }, [currentScrapedSiteId, scrapedSites]);
-
-  // useEffect(() => {
-  //   const fetchScrapedSites = async () => {
-  //     setIsLoading(true);
-  //     const res = await axios.get("/scraped-sites");
-  //     setIsLoading(false);
-  //     console.log(res.data);
-  //     setScrapedSites(res.data);
-
-  //     //set default currentScrapedSiteId to the first site
-  //     setCurrentScrapedSiteId(res.data[0].id.toString());
-
-  //     //set pageSiteMapping
-  //     const pageSiteMapping = res.data.map((site: ScrapedSite) => {
-  //       return { currentPage: 1, siteId: site.id };
-  //     });
-  //     setPageSiteMapping(pageSiteMapping);
-  //   };
-  //   fetchScrapedSites();
-  // }, []);
 
   useEffect(() => {
     if (scrapedSitesData) {
@@ -131,20 +93,6 @@ const JobListingPage = () => {
       setPageSiteMapping(pageSiteMapping);
     }
   }, [scrapedSitesData]);
-
-  // useEffect(() => {
-  //   const fetchSavedJobs = async () => {
-  //     try {
-  //       // if (isFetched) return;
-  //       const res = await axios.get("/saved-jobs");
-  //       console.log(res.data);
-  //       setSavedJobs(res.data);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetchSavedJobs();
-  // }, []);
 
   useEffect(() => {
     if (savedJobsData) {

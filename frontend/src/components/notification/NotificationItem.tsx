@@ -14,8 +14,9 @@ import { getTimeDifference } from "@/utils/utils";
 import axios from "@/lib/axiosConfig";
 import { cn } from "@/lib/utils";
 
-import { useNotifications } from "@/stores/useNotifications";
 import { useModal } from "@/stores/useModal";
+import { useQueryClient } from "@tanstack/react-query";
+import { deleteNotificationCache } from "@/hooks/queries/useNotificationsQuery";
 
 interface NotificationItemProps {
   id: number;
@@ -30,16 +31,14 @@ const NotificationItem = ({
   createdAt,
   isRead,
 }: NotificationItemProps) => {
-  const { notifications, setNotifications } = useNotifications();
   const { onOpen } = useModal();
+  const queryClient = useQueryClient();
 
   const handleDeleteNotification = async () => {
     try {
-      const res = await axios.delete(`/notifications/${id}`);
-      const updatedNotifications = notifications.filter(
-        (notification) => notification.id !== id
-      );
-      setNotifications(updatedNotifications);
+      await axios.delete(`/notifications/${id}`);
+      //delete the notification in cache
+      deleteNotificationCache(queryClient, id);
     } catch (error) {
       console.log(error);
     }

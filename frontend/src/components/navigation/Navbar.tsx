@@ -11,49 +11,48 @@ import {
 import { X, AlignJustify, Bell, CircleUserRound } from "lucide-react";
 
 import Notification from "../notification/Notification";
+import NotificationType from "@/types/Notification";
 import axios from "@/lib/axiosConfig";
 
-import { useNotifications } from "@/stores/useNotifications";
+import {
+  setNotificationToReadCache,
+  useGetNotifications,
+} from "@/hooks/queries/useNotificationsQuery";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isTop, setIsTop] = useState(false);
-  const { notifications, setNotifications } = useNotifications();
+  const queryClient = useQueryClient();
+
+  const { data: notificationsData } = useGetNotifications();
+
+  const notifications: NotificationType[] = useMemo(() => {
+    if (!notificationsData) return [];
+    return notificationsData.pages.reduce((prev, page) => {
+      if (page) {
+        return [...prev, ...page[0]];
+      } else {
+        return [...prev];
+      }
+    }, [] as NotificationType[]);
+  }, [notificationsData]);
 
   const newNotificationsCount = useMemo(
     () =>
       notifications.reduce(
-        (acc, notification) => acc + (notification.is_read ? 0 : 1),
+        (total, notification) => total + (notification.is_read ? 0 : 1),
         0
       ),
     [notifications]
   );
 
-  useEffect(() => {
-    try {
-      const fetchNotifications = async () => {
-        const res = await axios.get("/notifications?limit=15&page=1");
-        // console.log(res.data);
-        const notifications = res.data[0];
-        const hasNextPage = res.data[1];
-        console.log(notifications);
-        setNotifications(notifications);
-      };
-      fetchNotifications();
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
-
   const setNotificationToRead = async () => {
     try {
       const res = await axios.put("/notifications/read");
       console.log(res.data);
-      const updatedNotifications = notifications.map((notification) => ({
-        ...notification,
-        is_read: true,
-      }));
-      setNotifications(updatedNotifications);
+
+      setNotificationToReadCache(queryClient);
     } catch (error) {
       console.log(error);
     }
@@ -173,7 +172,7 @@ const Navbar = () => {
               className="p-0 m-0 rounded-md shadow-md w-[350px] mr-3"
               sideOffset={6}
             >
-              <Notification notifications={notifications} />
+              <Notification notifications={notifications.slice(0, 15)} />
             </PopoverContent>
           </Popover>
 
