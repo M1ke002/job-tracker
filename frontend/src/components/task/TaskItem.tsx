@@ -100,11 +100,18 @@ const TaskItem = ({ task }: TaskItemProps) => {
   return (
     <div
       className={cn(
-        "relative flex flex-col my-3 p-3 border rounded-sm shadow space-y-2 border-[#e4eefd]"
+        "relative flex flex-col my-3 p-3 border rounded-sm shadow space-y-2 border-[#e4eefd] bg-white"
       )}
     >
       <div className="flex items-center space-x-1">
-        <h3 className=" text-gray-700 font-semibold">{task.task_name}</h3>
+        <h3
+          className={cn(
+            "text-gray-700 font-semibold",
+            type === "completed" && "line-through text-gray-400"
+          )}
+        >
+          {task.task_name}
+        </h3>
         <span className="text-gray-500">-</span>
         <span
           className={cn("text-gray-500", type === "overdue" && "text-rose-500")}

@@ -103,12 +103,12 @@ const Note = () => {
           )}
 
           {value === "" && (
-            <div className="flex items-center justify-center h-16 text-gray-400">
-              No notes yet
+            <div className="flex items-center justify-center h-32 text-gray-400">
+              Add a note
             </div>
           )}
 
-          <div className="absolute top-3 right-3 flex items-center space-x-1 group-hover:opacity-100 opacity-0 transition-opacity duration-200">
+          <div className="absolute top-3 right-3 flex items-center group-hover:opacity-100 opacity-0 transition-opacity duration-200">
             <button
               className="border-none focus:outline-none text-blue-700 hover:text-blue-700/80"
               onClick={() => setIsEditMode(!isEditMode)}

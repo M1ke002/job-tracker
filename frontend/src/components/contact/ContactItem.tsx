@@ -34,7 +34,7 @@ const ContactItem = ({ contact }: ContactItemProps) => {
   };
 
   return (
-    <div className="group relative flex flex-col my-3 p-3 rounded-md border border-[#e4eefd] shadow">
+    <div className="group relative flex flex-col my-3 p-3 rounded-md border border-[#e4eefd] shadow bg-white">
       <div className="flex items-center space-x-1 mb-1">
         <h3 className="text-lg text-gray-700 font-semibold">
           {contact.person_name}

@@ -5,7 +5,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDownCircle, PlusCircle } from "lucide-react";
+import { ChevronDownCircle, PlusCircle, Search } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -39,7 +39,14 @@ const Contact = ({ contacts, jobId }: ContactProps) => {
       </div>
       <hr className="mt-2 mb-3 border-[#d6eaff]" />
       <CollapsibleContent>
-        <Input placeholder="Search contacts" className="w-full mb-2" />
+        <div className="relative flex items-center justify-between w-full mb-2">
+          <input
+            type="text"
+            placeholder="Search contacts"
+            className="text-sm rounded-sm border-[1px] pl-3 pr-9 py-2 w-full h-[40px]"
+          />
+          <Search size={20} className="mr-1 absolute right-2 text-[#3d3d3d]" />
+        </div>
         {contacts?.map((contact) => (
           <ContactItem key={contact.id} contact={contact} />
         ))}

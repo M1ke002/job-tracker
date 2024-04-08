@@ -5,9 +5,14 @@ import {
   ChevronDownCircle,
   CircleDollarSign,
   FileEdit,
+  FolderClosedIcon,
   Info,
+  InfoIcon,
+  ListChecksIcon,
   MapPin,
   Trash,
+  User,
+  WrenchIcon,
 } from "lucide-react";
 import {
   Select,
@@ -17,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import ApplicationProgress from "@/components/application/ApplicationProgress";
 import AttachedDocuments from "@/components/document/AttachedDocuments";
@@ -25,7 +31,6 @@ import Contact from "@/components/contact/Contact";
 import Task from "@/components/task/Task";
 import JobDescription from "@/components/jobs/JobDescription";
 import axios from "@/lib/axiosConfig";
-import { useParams, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 
@@ -36,12 +41,17 @@ import {
   refetchJobDetailsData,
 } from "@/utils/refetch";
 
+import { useParams, useNavigate } from "react-router-dom";
 import { useModal } from "@/stores/useModal";
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 import { useApplicationStages } from "@/stores/useApplicationStages";
 import { ApplicationStageNames } from "@/utils/constants";
 import { useJobDetailsQuery } from "@/hooks/queries/useJobDetailsQuery";
 import { useApplicationStagesQuery } from "@/hooks/queries/useApplicationStagesQuery";
+import OverviewTab from "@/components/tabs/OverviewTab";
+import TasksTab from "@/components/tabs/TasksTab";
+import ContactsTab from "@/components/tabs/ContactsTab";
+import DocumentsTab from "@/components/tabs/DocumentsTab";
 
 const JobDetailsPage = () => {
   const { applicationStages, setApplicationStages } = useApplicationStages();
@@ -273,47 +283,64 @@ const JobDetailsPage = () => {
         }
       />
 
-      {/* 2 main cols, left col - 2/3: for job description. Right  col-1/3: for notes, contacts, etcc*/}
-      <div className="lg:grid grid-cols-5 gap-4 w-full">
-        {/* left col */}
-        <div className="col-span-3 space-y-4 mb-4 lg:mb-0">
-          <JobDescription
-            jobDescription={currentSavedJob?.job_description || ""}
-            isLoading={jobDetailsStatus === "pending"}
-          />
-          <Task jobId={currentSavedJob?.id.toString() || ""} />
-        </div>
+      <Tabs defaultValue="overview" className="w-full space-y-4 pt-4">
+        <TabsList className="w-full h-full flex items-center justify-between bg-transparent space-x-3 rounded-none p-0 overflow-x-auto">
+          <TabsTrigger
+            className="space-x-1 p-3 rounded-none w-full bg-white border border-[#dbe9ff] shadow-sm data-[state=active]:border-blue-400 data-[state=active]:bg-[#e4eff8] hover:border-blue-400 hover:bg-[#e4eff8]"
+            value="overview"
+          >
+            <InfoIcon size={16} className="mr-1" />
+            Overview
+          </TabsTrigger>
+          <TabsTrigger
+            className="space-x-1 p-3 rounded-none w-full bg-white border border-[#dbe9ff] shadow-sm data-[state=active]:border-blue-400 data-[state=active]:bg-[#e4eff8] hover:border-blue-400 hover:bg-[#e4eff8]"
+            value="tasks"
+          >
+            <ListChecksIcon size={16} className="mr-1" />
+            Tasks
+          </TabsTrigger>
+          <TabsTrigger
+            className="space-x-1 p-3 rounded-none w-full bg-white border border-[#dbe9ff] shadow-sm data-[state=active]:border-blue-400 data-[state=active]:bg-[#e4eff8] hover:border-blue-400 hover:bg-[#e4eff8]"
+            value="contacts"
+          >
+            <User size={16} className="mr-1" />
+            Contacts
+          </TabsTrigger>
+          <TabsTrigger
+            className="space-x-1 p-3 rounded-none w-full bg-white border border-[#dbe9ff] shadow-sm data-[state=active]:border-blue-400 data-[state=active]:bg-[#e4eff8] hover:border-blue-400 hover:bg-[#e4eff8]"
+            value="documents"
+          >
+            <FolderClosedIcon size={16} className="mr-1" />
+            Documents
+          </TabsTrigger>
+          <TabsTrigger
+            className="space-x-1 p-3 rounded-none w-full bg-white border border-[#dbe9ff] shadow-sm data-[state=active]:border-blue-400 data-[state=active]:bg-[#e4eff8] hover:border-blue-400 hover:bg-[#e4eff8]"
+            value="tools"
+          >
+            <WrenchIcon size={16} className="mr-1" />
+            Tools
+          </TabsTrigger>
+        </TabsList>
 
-        {/* right col */}
-
-        <div className="col-span-2 space-y-4">
-          {currentSavedJob?.applied_date && (
-            <div className="p-6 bg-white border border-[#dbe9ff] w-full shadow-sm space-y-4">
-              <div className="flex items-center space-x-2">
-                <Info className="text-blue-700" size={23} />
-                <div>
-                  Application started on:{" "}
-                  <span className="font-semibold">
-                    {format(
-                      new Date(currentSavedJob?.applied_date),
-                      "dd/MM/yyyy"
-                    )}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="p-6 bg-white border border-[#dbe9ff] w-full shadow-sm space-y-4">
-            <Note />
-            <Contact
-              contacts={currentSavedJob?.contacts}
-              jobId={currentSavedJob?.id}
+        <div>
+          <TabsContent value="overview">
+            <OverviewTab
+              currentSavedJob={currentSavedJob}
+              jobDetailsStatus={jobDetailsStatus}
             />
-            <AttachedDocuments documents={currentSavedJob?.documents || []} />
-          </div>
+          </TabsContent>
+          <TabsContent value="tasks">
+            <TasksTab />
+          </TabsContent>
+          <TabsContent value="contacts">
+            <ContactsTab />
+          </TabsContent>
+          <TabsContent value="documents">
+            <DocumentsTab />
+          </TabsContent>
+          <TabsContent value="tools">Nothing yet.</TabsContent>
         </div>
-      </div>
+      </Tabs>
     </div>
   );
 };

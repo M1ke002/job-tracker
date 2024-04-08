@@ -56,7 +56,9 @@ const ApplicationStageBoxItem = ({
       )}
       onClick={() => navigate(`/saved-jobs/${job.id}`)}
     >
-      <p className="font-semibold">{job.job_title}</p>
+      <p className="font-semibold flex-nowrap overflow-y-hidden">
+        {job.job_title}
+      </p>
       <p className="text-sm">{job.company_name}</p>
       <p className="flex items-center mt-1 text-zinc-700">
         {job.contacts.length > 0 && <Contact size={13} className="mr-1" />}

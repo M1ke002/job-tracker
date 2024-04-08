@@ -49,8 +49,8 @@ const AttachedDocumentItem = ({
       </div>
       <div className="flex items-center space-x-3">
         <Button
-          size={"sm"}
-          className="flex items-center"
+          size="sm"
+          className="flex items-center text-sm"
           variant="outlinePrimary"
           onClick={() => window.open(documentUrl, "_blank")}
         >
