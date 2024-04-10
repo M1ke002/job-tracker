@@ -4,70 +4,24 @@ import { Link, PlusCircle, UserSearch } from "lucide-react";
 import Contact from "@/types/Contact";
 import ContactItem from "../contact/ContactItemNew";
 
-const contacts: Contact[] = [
-  {
-    id: 1,
-    job_id: 1,
-    person_name: "John Doe",
-    person_position: "CEO",
-    person_linkedin: "https://www.linkedin.com",
-    person_email: "johnDoe@gmail.com",
-    note: "John is a great person",
-  },
-  {
-    id: 2,
-    job_id: 1,
-    person_name: "Jane Doe",
-    person_position: "CFO",
-    person_linkedin: "https://www.linkedin.com",
-    person_email: "johnDoe@gmail.com",
-    note: "Jane is a great person",
-  },
-  {
-    id: 3,
-    job_id: 1,
-    person_name: "Jane Doe",
-    person_position: "CFO",
-    person_linkedin: "https://www.linkedin.com",
-    person_email: "johnDoe@gmail.com",
-    note: "Jane is a great person",
-  },
-  {
-    id: 4,
-    job_id: 1,
-    person_name: "Jane Doe",
-    person_position: "CFO",
-    person_linkedin: "https://www.linkedin.com",
-    person_email: "johnDoe@gmail.com",
-    note: "Jane is a great person",
-  },
-  {
-    id: 5,
-    job_id: 1,
-    person_name: "Jane Doe",
-    person_position: "CFO",
-    person_linkedin: "https://www.linkedin.com",
-    person_email: "johnDoe@gmail.com",
-    note: "Jane is a great person",
-  },
-  {
-    id: 6,
-    job_id: 1,
-    person_name: "Jane Doe",
-    person_position: "CFO",
-    person_linkedin: "https://www.linkedin.com",
-    person_email: "johnDoe@gmail.com",
-    note: "Jane is a great person",
-  },
-];
+import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
+import { useModal } from "@/stores/useModal";
 
 const ContactTab = () => {
+  const { onOpen } = useModal();
+  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
+  const contacts = currentSavedJob?.contacts || [];
+  const jobId = currentSavedJob?.id.toString();
+
   return (
     <div>
       <div className="font-semibold flex items-center justify-between">
-        <p className="text-lg">Contacts: 5</p>
+        <p className="text-lg">Contacts: {contacts.length}</p>
         <div className="space-x-3">
-          <Button variant="primary">
+          <Button
+            variant="primary"
+            onClick={() => onOpen("createContact", { jobId })}
+          >
             <PlusCircle size={20} className="mr-2" />
             Add contact
           </Button>

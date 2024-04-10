@@ -80,7 +80,11 @@ const ContactItem = ({ contact }: ContactItemProps) => {
         <span className="flex items-center space-x-2 px-3">
           <Linkedin size={15} />
           <a
-            href={contact.person_linkedin}
+            href={
+              contact.person_linkedin.includes("//")
+                ? contact.person_linkedin
+                : `//${contact.person_linkedin}`
+            }
             target="_blank"
             className="text-[#0077b5] hover:underline"
           >

@@ -10,8 +10,8 @@ const DocumentTypeTag = ({ documentType }: DocumentTypeTagProps) => {
     <div
       className={cn(
         "flex items-center justify-center text-sm py-1 px-2 border rounded-md font-semibold bg-[#e9fce6] text-[#29db0e] -tracking-[0.1px] leading-[1rem] capitalize",
-        documentType === "resume" && "bg-[#e5f0ff] text-[#0070fb]",
-        documentType === "cover letter" && "bg-[#fff4e5] text-[#ff8c00]"
+        documentType === "Resume" && "bg-[#e5f0ff] text-[#0070fb]",
+        documentType === "Cover Letter" && "bg-[#fff4e5] text-[#ff8c00]"
       )}
     >
       {documentType}

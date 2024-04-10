@@ -24,12 +24,14 @@ import axios from "@/lib/axiosConfig";
 import { useModal } from "@/stores/useModal";
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 import DocumentTypeTag from "./DocumentTypeTag";
+import { format } from "date-fns";
 
 interface AttachedDocumentItemProps {
   id: string;
   documentName: string;
   documentType: string;
   documentUrl: string;
+  dateUploaded: string;
 }
 
 const AttachedDocumentItemNew = ({
@@ -37,6 +39,7 @@ const AttachedDocumentItemNew = ({
   documentName,
   documentType,
   documentUrl,
+  dateUploaded,
 }: AttachedDocumentItemProps) => {
   const { onOpen } = useModal();
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
@@ -84,7 +87,8 @@ const AttachedDocumentItemNew = ({
       <hr className="border-[#d5e4fc] my-2" />
       <div className="flex items-center space-x-1 px-3 py-1">
         <p className="text-sm text-gray-500">
-          Uploaded on 04/08/2024. Attached to 3 job(s).
+          Uploaded on {format(dateUploaded, "dd/MM/yyyy")}. Attached to 3
+          job(s).
         </p>
       </div>
 
@@ -98,7 +102,15 @@ const AttachedDocumentItemNew = ({
           <DropdownMenuContent side="left">
             <DropdownMenuItem
               className="flex items-center cursor-pointer"
-              onClick={() => {}}
+              onClick={() => {
+                onOpen("removeDocument", {
+                  confirmModalTitle: "Remove document",
+                  confirmModalMessage:
+                    "Are you sure you want to remove this document from this job?",
+                  confirmModalConfirmButtonText: "Remove",
+                  confirmModalAction: () => removeDocumentFromJob(id),
+                });
+              }}
             >
               <Unlink size={18} className="mr-2 text-rose-500" />
               Unlink document

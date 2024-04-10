@@ -8,6 +8,7 @@ import AttachedDocuments from "../document/AttachedDocuments";
 import { Info } from "lucide-react";
 
 import SavedJob from "@/types/SavedJob";
+import Keywords from "../keywords/Keywords";
 
 interface OverviewTabProps {
   currentSavedJob: SavedJob | null;
@@ -24,14 +25,20 @@ const OverviewTab = ({
       <div className="col-span-3 space-y-4 mb-4 lg:mb-0">
         <JobDescription
           jobDescription={currentSavedJob?.job_description || ""}
-          isLoading={jobDetailsStatus === "pending"}
+          isLoading={!currentSavedJob}
         />
-        <Task jobId={currentSavedJob?.id.toString() || ""} />
+
+        {/* <Task jobId={currentSavedJob?.id.toString() || ""} /> */}
       </div>
 
       {/* right col */}
 
       <div className="col-span-2 space-y-4">
+        <Keywords jobId={currentSavedJob?.id.toString() || ""} />
+
+        <div className="p-6 bg-white border border-[#dbe9ff] w-full shadow-sm space-y-4">
+          <Note />
+        </div>
         {currentSavedJob?.applied_date && (
           <div className="p-6 bg-white border border-[#dbe9ff] w-full shadow-sm space-y-4">
             <div className="flex items-center space-x-2">
@@ -43,20 +50,16 @@ const OverviewTab = ({
                     new Date(currentSavedJob?.applied_date),
                     "dd/MM/yyyy"
                   )}
+                  .
+                </span>{" "}
+                <span className="text-blue-600 underline cursor-pointer">
+                  View timeline
                 </span>
+                .
               </div>
             </div>
           </div>
         )}
-
-        <div className="p-6 bg-white border border-[#dbe9ff] w-full shadow-sm space-y-4">
-          <Note />
-          <Contact
-            contacts={currentSavedJob?.contacts}
-            jobId={currentSavedJob?.id}
-          />
-          <AttachedDocuments documents={currentSavedJob?.documents || []} />
-        </div>
       </div>
     </div>
   );

@@ -97,7 +97,7 @@ const Note = () => {
         <div className="group relative p-3 rounded-md shadow-sm bg-[#f1f6fa] border border-[#c3dafe]">
           {value !== "" && (
             <div
-              className="max-h-[600px] overflow-y-auto"
+              className="min-h-32 max-h-[600px] overflow-y-auto"
               dangerouslySetInnerHTML={{ __html: value }}
             ></div>
           )}

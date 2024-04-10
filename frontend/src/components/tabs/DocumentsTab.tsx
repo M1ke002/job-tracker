@@ -3,31 +3,16 @@ import { Button } from "../ui/button";
 import { FolderClosedIcon, FolderSearch, Link, PlusCircle } from "lucide-react";
 import AttachedDocumentItemNew from "../document/AttachedDocumentItemNew";
 
-const documents: {
-  id: number;
-  documentName: string;
-  documentType: string;
-  documentUrl: string;
-}[] = [
-  {
-    id: 1,
-    documentName: "Mike_Resume_Dolby.pdf",
-    documentType: "resume",
-    documentUrl: "https://www.google.com",
-  },
-  {
-    id: 2,
-    documentName: "Mike_Cover_Letter_Dolby.docx",
-    documentType: "cover letter",
-    documentUrl: "https://www.google.com",
-  },
-];
+import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 
 const DocumentsTab = () => {
+  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
+  const documents = currentSavedJob?.documents || [];
+
   return (
     <div>
       <div className="font-semibold flex items-center justify-between">
-        <p className="text-lg">Documents: 2</p>
+        <p className="text-lg">Documents: {documents.length}</p>
         <div className="space-x-3">
           <Button variant="primary">
             <PlusCircle size={20} className="mr-2" />
@@ -57,9 +42,10 @@ const DocumentsTab = () => {
             <AttachedDocumentItemNew
               key={document.id}
               id={document.id.toString()}
-              documentName={document.documentName}
-              documentType={document.documentType}
-              documentUrl={document.documentUrl}
+              documentName={document.file_name}
+              documentType={document.document_type_name}
+              documentUrl={document.file_url}
+              dateUploaded={document.date_uploaded}
             />
           ))}
         </div>
