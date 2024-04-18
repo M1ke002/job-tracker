@@ -25,7 +25,7 @@ export const getApplicationStatusCount = (
       case ApplicationStageNames.OA:
         applicationStageMap.OA += stage.jobs.length;
         break;
-      case ApplicationStageNames.INTERVIEWING:
+      case ApplicationStageNames.INTERVIEW:
         applicationStageMap.Interview += stage.jobs.length;
         break;
       case ApplicationStageNames.OFFER:
@@ -57,7 +57,7 @@ export const getApplicationStatusCount = (
         case ApplicationStageNames.OA:
           rejectedJobStageMap.OA += 1;
           break;
-        case ApplicationStageNames.INTERVIEWING:
+        case ApplicationStageNames.INTERVIEW:
           rejectedJobStageMap.OA += 1;
           rejectedJobStageMap.Interview += 1;
           break;
@@ -96,7 +96,7 @@ export const getApplicationStatusCount = (
             applicationStageMap.Offer,
         });
         break;
-      case ApplicationStageNames.INTERVIEWING:
+      case ApplicationStageNames.INTERVIEW:
         applicationStatus.push({
           name: "Interviews",
           count:
@@ -124,17 +124,14 @@ export const getApplicationStatusCount = (
 
 //input: Sun, 14 Jan 2024 11:00:13 GMT.
 //calc difference between current time and end time
-export const getTimeDifference = (startTime: string, endTime: Date) => {
-  //startDate must minus 7 hours to get correct time
-  const startDate = new Date(startTime);
-  const realStartDate = new Date(startDate.getTime() - 7 * 60 * 60 * 1000);
-  const timeDifference = endTime.getTime() - realStartDate.getTime();
+export const getTimeDifference = (startDate: Date, endDate: Date) => {
+  const timeDifference = endDate.getTime() - startDate.getTime();
   const seconds = Math.floor(timeDifference / 1000);
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
   if (days > 6) {
-    return format(realStartDate, "dd/MM/yyyy");
+    return format(startDate, "dd/MM/yyyy");
   } else if (days > 0) {
     return `${days}d ago`;
   } else if (hours > 0) {
@@ -146,6 +143,11 @@ export const getTimeDifference = (startTime: string, endTime: Date) => {
   } else {
     return "just now";
   }
+};
+
+export const sydneyToUTCTime = (date: Date) => {
+  //minus 10 hours to get correct time
+  return new Date(date.getTime() - 10 * 60 * 60 * 1000);
 };
 
 export const ausgradUrlBuilder = (

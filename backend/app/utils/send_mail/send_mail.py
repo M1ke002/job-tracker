@@ -29,9 +29,9 @@ def create_subject_and_body(email_data):
     has_previous_data = False
 
     now = datetime.now()  # UTC time
-    vn_time = utc_to_sydney_time(now)
-    vn_time_dt_string = vn_time.strftime("%d/%m/%Y %H:%M:%S")
-    body += f"Scheduled job ran at {vn_time_dt_string}.\n\n"
+    local_time = utc_to_sydney_time(now)
+    local_time_dt_string = local_time.strftime("%d/%m/%Y %H:%M:%S")
+    body += f"Scheduled job ran at {local_time_dt_string}.\n\n"
 
     for key, value in email_data.items():
         if len(value) == 0:

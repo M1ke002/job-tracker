@@ -58,7 +58,7 @@ const NotificationItem = ({
           {message}
         </p>
         <p className="text-sm text-muted-foreground">
-          {getTimeDifference(createdAt, new Date())}
+          {getTimeDifference(new Date(createdAt), new Date())}
         </p>
       </div>
       <DropdownMenu>

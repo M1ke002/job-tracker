@@ -6,7 +6,7 @@ def utc_to_vietnam_time(utc_time: datetime):
 
 
 def utc_to_sydney_time(utc_time: datetime):
-    return utc_time.astimezone(timezone(timedelta(hours=11)))
+    return utc_time.astimezone(timezone(timedelta(hours=10)))
 
 
 # compare the newly scraped job listings with the existing job listings in the db

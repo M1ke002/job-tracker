@@ -15,14 +15,17 @@ const TaskTab = () => {
   const jobId = currentSavedJob?.id.toString();
 
   const dueTasks = useMemo(
-    () => tasks.filter((task) => !task.is_completed),
+    () =>
+      tasks.filter(
+        (task) => !task.is_completed && new Date(task.due_date) < new Date()
+      ),
     [tasks]
   );
 
   const onGoingTasks = useMemo(
     () =>
       tasks.filter(
-        (task) => !task.is_completed && new Date(task.due_date) > new Date()
+        (task) => !task.is_completed && new Date(task.due_date) >= new Date()
       ),
     [tasks]
   );

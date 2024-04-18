@@ -9,9 +9,7 @@ const getTodayAndEarlierNotifications = (notifications: Notification[]) => {
   const today = new Date();
   const todayNotifications = notifications.filter(
     (notification: Notification) => {
-      //createdAt must minus 7 hours to get the correct date
       const createdAt = new Date(notification.created_at);
-      createdAt.setHours(createdAt.getHours() - 7);
       return createdAt.getDate() === today.getDate();
     }
   );
@@ -19,7 +17,6 @@ const getTodayAndEarlierNotifications = (notifications: Notification[]) => {
   const earlierNotifications = notifications.filter(
     (notification: Notification) => {
       const createdAt = new Date(notification.created_at);
-      createdAt.setHours(createdAt.getHours() - 7);
       return createdAt.getDate() !== today.getDate();
     }
   );

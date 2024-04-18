@@ -34,9 +34,7 @@ const TaskItem = ({ task }: TaskItemProps) => {
   if (task.due_date) {
     const today = new Date();
     dueDate = new Date(task.due_date);
-    // must minus 7 hours to get the correct date
-    dueDate.setHours(dueDate.getHours() - 7);
-    if (dueDate.toDateString() >= today.toDateString()) {
+    if (dueDate < today) {
       type = "overdue";
     }
   }

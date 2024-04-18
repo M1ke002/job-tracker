@@ -6,6 +6,7 @@ import {
   MoreHorizontal,
   FileDown,
   FileEdit,
+  Lightbulb,
 } from "lucide-react";
 import { Button } from "../ui/button";
 import { format } from "date-fns";
@@ -15,6 +16,7 @@ import axios from "@/lib/axiosConfig";
 
 import { useModal } from "@/stores/useModal";
 import { useDocumentList } from "@/stores/useDocumentList";
+import { sydneyToUTCTime } from "@/utils/utils";
 
 const ActionCell = ({ row }: { row: Row<Document> }) => {
   const { documentLists, setDocumentLists } = useDocumentList();
@@ -42,7 +44,7 @@ const ActionCell = ({ row }: { row: Row<Document> }) => {
   };
 
   return (
-    <div className="flex items-center justify-center space-x-2">
+    <div className="flex items-center justify-center space-x-1">
       <button
         className="text-blue-500 focus:outline-none"
         onClick={() => {
@@ -62,6 +64,9 @@ const ActionCell = ({ row }: { row: Row<Document> }) => {
         }}
       >
         <FileEdit size={18} />
+      </button>
+      <button className="text-purple-600 focus:outline-none" onClick={() => {}}>
+        <Lightbulb size={18} />
       </button>
       <button
         className="text-rose-500 focus:outline-none"
@@ -139,10 +144,9 @@ export const columns: ColumnDef<Document>[] = [
     },
     cell: ({ row }) => {
       const { date_uploaded } = row.original;
-      console.log(date_uploaded, new Date(date_uploaded));
-      //must - 11 hours to get the correct date
-      const convertedDate = new Date(date_uploaded);
-      convertedDate.setHours(convertedDate.getHours() - 11);
+      //must - 10 hours to get the correct date
+      const convertedDate = sydneyToUTCTime(new Date(date_uploaded));
+      console.log(date_uploaded, convertedDate);
       return <div className="px-1">{format(convertedDate, "dd/MM/yyyy")}</div>;
     },
   },
