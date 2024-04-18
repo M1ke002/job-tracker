@@ -9,7 +9,7 @@ def setup_data(database):
     application_stages = [
         ApplicationStage(id=1, stage_name="Applied", position=0),
         ApplicationStage(id=2, stage_name="O.A.", position=1),
-        ApplicationStage(id=3, stage_name="Interviewing", position=2),
+        ApplicationStage(id=3, stage_name="Interview", position=2),
         ApplicationStage(id=4, stage_name="Offer", position=3),
         ApplicationStage(id=5, stage_name="Rejected", position=4),
     ]
@@ -26,7 +26,7 @@ def test_get_all_stages(client):
     assert res.json == [
         {"id": 1, "stage_name": "Applied", "position": 0, "jobs": []},
         {"id": 2, "stage_name": "O.A.", "position": 1, "jobs": []},
-        {"id": 3, "stage_name": "Interviewing", "position": 2, "jobs": []},
+        {"id": 3, "stage_name": "Interview", "position": 2, "jobs": []},
         {"id": 4, "stage_name": "Offer", "position": 3, "jobs": []},
         {"id": 5, "stage_name": "Rejected", "position": 4, "jobs": []},
     ]
@@ -47,7 +47,7 @@ def test_update_stage_order(client, setup_data):
     assert res.json == [
         {"id": 2, "stage_name": "O.A.", "position": 0, "jobs": []},
         {"id": 1, "stage_name": "Applied", "position": 1, "jobs": []},
-        {"id": 3, "stage_name": "Interviewing", "position": 2, "jobs": []},
+        {"id": 3, "stage_name": "Interview", "position": 2, "jobs": []},
         {"id": 4, "stage_name": "Offer", "position": 3, "jobs": []},
         {"id": 5, "stage_name": "Rejected", "position": 4, "jobs": []},
     ]

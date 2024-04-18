@@ -34,11 +34,6 @@ const OverviewTab = ({
       {/* right col */}
 
       <div className="col-span-2 space-y-4">
-        <Keywords jobId={currentSavedJob?.id.toString() || ""} />
-
-        <div className="p-6 bg-white border border-[#dbe9ff] w-full shadow-sm space-y-4">
-          <Note />
-        </div>
         {currentSavedJob?.applied_date && (
           <div className="p-6 bg-white border border-[#dbe9ff] w-full shadow-sm space-y-4">
             <div className="flex items-center space-x-2">
@@ -60,6 +55,11 @@ const OverviewTab = ({
             </div>
           </div>
         )}
+        <Keywords jobId={currentSavedJob?.id.toString() || ""} />
+
+        <div className="p-6 bg-white border border-[#dbe9ff] w-full shadow-sm space-y-4">
+          <Note />
+        </div>
       </div>
     </div>
   );

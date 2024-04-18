@@ -19,7 +19,7 @@ def handle_get_all_application_stages():
         application_stages = [
             {"stageName": "Applied", "position": 0},
             {"stageName": "O.A.", "position": 1},
-            {"stageName": "Interviewing", "position": 2},
+            {"stageName": "Interview", "position": 2},
             {"stageName": "Offer", "position": 3},
             {"stageName": "Rejected", "position": 4},
         ]

@@ -44,7 +44,7 @@ def setup_data(database):
     application_stages = [
         ApplicationStage(id=1, stage_name="Applied", position=0, jobs=[saved_jobs[0], saved_jobs[3]]),
         ApplicationStage(id=2, stage_name="O.A.", position=1, jobs=[]),
-        ApplicationStage(id=3, stage_name="Interviewing", position=2, jobs=[]),
+        ApplicationStage(id=3, stage_name="Interview", position=2, jobs=[]),
         ApplicationStage(id=4, stage_name="Offer", position=3, jobs=[]),
         ApplicationStage(id=5, stage_name="Rejected", position=4, jobs=[saved_jobs[2]]),
     ]

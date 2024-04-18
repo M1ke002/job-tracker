@@ -136,7 +136,7 @@ const JobItem = ({
                   ? "bg-[#c3dafe] text-[#1e3a8a]"
                   : stage.stage_name === ApplicationStageNames.OA
                   ? "bg-[#a3e8f8] text-[#0d9db6]"
-                  : stage.stage_name === ApplicationStageNames.INTERVIEWING
+                  : stage.stage_name === ApplicationStageNames.INTERVIEW
                   ? "bg-amber-100 text-amber-700"
                   : stage.stage_name === ApplicationStageNames.OFFER
                   ? "bg-green-100 text-green-700"

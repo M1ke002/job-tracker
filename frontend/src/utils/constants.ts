@@ -45,7 +45,7 @@ export const SEEK_ALERT_SETTING = {
 export enum ApplicationStageNames {
   APPLIED = "Applied",
   OA = "O.A.",
-  INTERVIEWING = "Interviewing",
+  INTERVIEW = "Interview",
   OFFER = "Offer",
   REJECTED = "Rejected",
 }

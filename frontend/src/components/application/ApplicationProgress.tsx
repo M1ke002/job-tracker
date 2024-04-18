@@ -19,8 +19,8 @@ const sortApplicationStages = (applicationStages: ApplicationStage[]) => {
   const stageOA = applicationStages.find(
     (stage) => stage.stage_name === ApplicationStageNames.OA
   );
-  const stageInterviewing = applicationStages.find(
-    (stage) => stage.stage_name === ApplicationStageNames.INTERVIEWING
+  const stageInterview = applicationStages.find(
+    (stage) => stage.stage_name === ApplicationStageNames.INTERVIEW
   );
   const stageOffer = applicationStages.find(
     (stage) => stage.stage_name === ApplicationStageNames.OFFER
@@ -31,7 +31,7 @@ const sortApplicationStages = (applicationStages: ApplicationStage[]) => {
 
   if (stageApplied) orderedStages.push(stageApplied);
   if (stageOA) orderedStages.push(stageOA);
-  if (stageInterviewing) orderedStages.push(stageInterviewing);
+  if (stageInterview) orderedStages.push(stageInterview);
   if (stageOffer) orderedStages.push(stageOffer);
   if (stageRejected) orderedStages.push(stageRejected);
 

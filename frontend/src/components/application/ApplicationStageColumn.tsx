@@ -84,8 +84,7 @@ const ApplicationStageColumn = ({
           "flex flex-col p-3 w-[340px] rounded-lg bg-[#fff] shadow-md border-[1px] border-[#c3dafe]",
           stage_name === ApplicationStageNames.APPLIED && "border-[#c3dafe]",
           stage_name === ApplicationStageNames.OA && "border-[#a3e8f8]",
-          stage_name === ApplicationStageNames.INTERVIEWING &&
-            "border-amber-200",
+          stage_name === ApplicationStageNames.INTERVIEW && "border-amber-200",
           stage_name === ApplicationStageNames.OFFER && "border-green-300",
           stage_name === ApplicationStageNames.REJECTED && "border-rose-300"
         )}
