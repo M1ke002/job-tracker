@@ -52,6 +52,7 @@ import OverviewTab from "@/components/tabs/OverviewTab";
 import TasksTab from "@/components/tabs/TasksTab";
 import ContactsTab from "@/components/tabs/ContactsTab";
 import DocumentsTab from "@/components/tabs/DocumentsTab";
+import ToolsTab from "@/components/tabs/ToolsTab";
 
 const JobDetailsPage = () => {
   const { applicationStages, setApplicationStages } = useApplicationStages();
@@ -161,7 +162,7 @@ const JobDetailsPage = () => {
                 currentSavedJob?.stage?.stage_name ===
                   ApplicationStageNames.OA && "border-[#a3e8f8]",
                 currentSavedJob?.stage?.stage_name ===
-                  ApplicationStageNames.INTERVIEWING && "border-amber-200",
+                  ApplicationStageNames.INTERVIEW && "border-amber-200",
                 currentSavedJob?.stage?.stage_name ===
                   ApplicationStageNames.OFFER && "border-green-300",
                 currentSavedJob?.stage?.stage_name ===
@@ -338,7 +339,9 @@ const JobDetailsPage = () => {
           <TabsContent value="documents">
             <DocumentsTab />
           </TabsContent>
-          <TabsContent value="tools">Nothing yet.</TabsContent>
+          <TabsContent value="tools">
+            <ToolsTab />
+          </TabsContent>
         </div>
       </Tabs>
     </div>
