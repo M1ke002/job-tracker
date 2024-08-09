@@ -34,7 +34,7 @@ const formSchema = z.object({
   name: z.string(),
   position: z.string(),
   linkedin: z.string(),
-  email: z.string().email(),
+  email: z.string(),
   note: z.string(),
 });
 

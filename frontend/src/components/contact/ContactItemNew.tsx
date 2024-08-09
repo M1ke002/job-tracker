@@ -96,7 +96,7 @@ const ContactItem = ({ contact }: ContactItemProps) => {
       {contact.note && (
         <div className="flex flex-col mt-1 px-3">
           <p className="font-semibold">Notes:</p>
-          <p className="text-gray-700 max-h-20 overflow-y-auto">
+          <p className="text-gray-700 max-h-20 overflow-y-auto text-sm">
             {contact.note}
           </p>
         </div>
