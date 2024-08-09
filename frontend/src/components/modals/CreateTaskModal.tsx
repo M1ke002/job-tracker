@@ -183,56 +183,58 @@ const CreateTaskModal = () => {
                 />
               </div>
 
-              <div className="flex flex-col space-y-2 w-full pt-2">
-                <Label>Notifications</Label>
-                <div className="flex items-center space-x-6 pt-1">
-                  <FormField
-                    control={form.control}
-                    name="isNotifyEmail"
-                    render={({ field }) => (
-                      <FormItem className="flex items-center justify-center">
-                        <FormControl>
-                          <Switch
-                            className="data-[state=checked]:bg-blue-500"
-                            id="notifyEmail"
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <Label
-                          htmlFor="notifyEmail"
-                          className="!my-0 ml-2 font-normal"
-                        >
-                          Email
-                        </Label>
-                      </FormItem>
-                    )}
-                  />
+              {form.watch("isReminderEnabled") && (
+                <div className="flex flex-col space-y-2 w-full pt-2">
+                  <Label>Notifications</Label>
+                  <div className="flex items-center space-x-6 pt-1">
+                    <FormField
+                      control={form.control}
+                      name="isNotifyEmail"
+                      render={({ field }) => (
+                        <FormItem className="flex items-center justify-center">
+                          <FormControl>
+                            <Switch
+                              className="data-[state=checked]:bg-blue-500"
+                              id="notifyEmail"
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <Label
+                            htmlFor="notifyEmail"
+                            className="!my-0 ml-2 font-normal"
+                          >
+                            Email
+                          </Label>
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="isNotifyOnWebsite"
-                    render={({ field }) => (
-                      <FormItem className="flex items-center justify-center">
-                        <FormControl>
-                          <Switch
-                            className="data-[state=checked]:bg-blue-500"
-                            id="notifyEmail"
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <Label
-                          htmlFor="notifyEmail"
-                          className="!my-0 ml-2 font-normal"
-                        >
-                          On Website
-                        </Label>
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={form.control}
+                      name="isNotifyOnWebsite"
+                      render={({ field }) => (
+                        <FormItem className="flex items-center justify-center">
+                          <FormControl>
+                            <Switch
+                              className="data-[state=checked]:bg-blue-500"
+                              id="notifyEmail"
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <Label
+                            htmlFor="notifyEmail"
+                            className="!my-0 ml-2 font-normal"
+                          >
+                            On Website
+                          </Label>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             <DialogFooter className="bg-gray-100 px-6 py-4">
