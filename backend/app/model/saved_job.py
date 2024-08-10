@@ -3,6 +3,7 @@ from typing import Optional, List
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from .db import db
+from .associations import job_document_association
 
 # if TYPE_CHECKING:
 #     from .application_stage import ApplicationStage
@@ -37,7 +38,10 @@ class SavedJob(db.Model):
     # delete all tasks and contacts associated with this job when job is deleted
     tasks: so.Mapped[List["Task"]] = so.relationship(cascade="all, delete-orphan", lazy=True)
     contacts: so.Mapped[List["Contact"]] = so.relationship(cascade="all, delete-orphan", lazy=True)
-    documents: so.Mapped[List["Document"]] = so.relationship("Document", back_populates="job", lazy=True)
+    # documents: so.Mapped[List["Document"]] = so.relationship("Document", back_populates="job", lazy=True)
+    documents: so.Mapped[List["Document"]] = so.relationship(
+        "Document", secondary=job_document_association, back_populates="jobs", lazy=True
+    )
 
     def __repr__(self) -> str:
         return f"<SavedJob {self.job_title} {self.company_name}>"

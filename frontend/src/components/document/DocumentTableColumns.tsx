@@ -21,7 +21,7 @@ import { sydneyToUTCTime } from "@/utils/utils";
 const ActionCell = ({ row }: { row: Row<Document> }) => {
   const { documentLists, setDocumentLists } = useDocumentList();
   const { onOpen } = useModal();
-  const { id, file_url, document_type_id, job_id } = row.original;
+  const { id, file_url, document_type_id } = row.original;
 
   const deleteDocument = async (id: number) => {
     try {
@@ -59,7 +59,7 @@ const ActionCell = ({ row }: { row: Row<Document> }) => {
           onOpen("editDocument", {
             documentId: id.toString(),
             documentType: document_type_id.toString(),
-            jobId: job_id ? job_id.toString() : "none",
+            jobId: "none",
           });
         }}
       >
@@ -116,16 +116,16 @@ export const columns: ColumnDef<Document>[] = [
     },
   },
   {
-    accessorKey: "job_title",
+    accessorKey: "linked_jobs",
     header: "Linked Jobs",
     cell: ({ row }) => {
-      const { job_title } = row.original;
-      const displayed_job_title = job_title
-        ? job_title.length > 40
-          ? job_title.substring(0, 40) + "..."
-          : job_title
-        : "– –";
-      return <div>{displayed_job_title}</div>;
+      const { jobs } = row.original;
+      // const displayed_job_title = job_title
+      //   ? job_title.length > 40
+      //     ? job_title.substring(0, 40) + "..."
+      //     : job_title
+      //   : "– –";
+      return <div>{jobs.length}</div>;
     },
   },
   {

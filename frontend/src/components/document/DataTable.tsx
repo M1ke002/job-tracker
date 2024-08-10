@@ -87,11 +87,11 @@ export function DataTable<TData, TValue>({
                   {row.getVisibleCells().map((cell) => {
                     let width = 0;
                     if (cell.column.id === "file_name") {
-                      width = 300;
+                      width = 450;
                     } else if (cell.column.id === "document_type_name") {
                       width = 140;
-                    } else if (cell.column.id === "job_title") {
-                      width = 300;
+                    } else if (cell.column.id === "linked_jobs") {
+                      width = 150;
                     } else if (cell.column.id === "date_uploaded") {
                       width = 100;
                     } else {
