@@ -20,7 +20,7 @@ const DocumentsTab = () => {
             variant="primary"
             onClick={() => {
               if (currentSavedJob) {
-                onOpen("uploadDocument", { job: currentSavedJob });
+                onOpen("uploadDocument");
               }
             }}
           >
@@ -32,7 +32,7 @@ const DocumentsTab = () => {
             className="text-[#3d3d3d] hover:text-[#3d3d3d] px-2 bg-white"
             onClick={() => {
               if (currentSavedJob) {
-                onOpen("linkDocument", { job: currentSavedJob });
+                onOpen("linkDocument");
               }
             }}
           >
@@ -55,11 +55,12 @@ const DocumentsTab = () => {
           {documents.map((document) => (
             <AttachedDocumentItemNew
               key={document.id}
-              id={document.id.toString()}
+              documentId={document.id.toString()}
               documentName={document.file_name}
               documentType={document.document_type_name}
               documentUrl={document.file_url}
               dateUploaded={document.date_uploaded}
+              attachedJobs={document.jobs}
             />
           ))}
         </div>

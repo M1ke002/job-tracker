@@ -17,7 +17,6 @@ class Document(db.Model):
 
     # relationship
     document_type: so.Mapped["DocumentType"] = so.relationship("DocumentType", back_populates="documents")
-    # job: so.Mapped[Optional["SavedJob"]] = so.relationship("SavedJob", back_populates="documents")
     jobs: so.Mapped[List["SavedJob"]] = so.relationship(
         "SavedJob", secondary=job_document_association, back_populates="documents", lazy=True
     )

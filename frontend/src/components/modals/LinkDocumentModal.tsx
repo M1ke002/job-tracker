@@ -23,6 +23,7 @@ import axios from "@/lib/axiosConfig";
 import DocumentType from "@/types/DocumentType";
 
 import { useModal } from "@/stores/useModal";
+import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 import { useDocumentList } from "@/stores/useDocumentList";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -38,18 +39,21 @@ const LinkDocumentModal = () => {
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(
     null
   );
-  const { type, isOpen, onClose, data } = useModal();
+  const { type, isOpen, onClose } = useModal();
   const isModalOpen = isOpen && type === "linkDocument";
-  const { job } = data;
+  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
 
   useEffect(() => {
-    if (documentLists.length > 0 && job) {
+    if (documentLists.length > 0 && currentSavedJob) {
       //filter out the documents that are already linked to this job
       const filtered = documentLists.map((documentList) => {
         const filteredDocumentList = { ...documentList };
 
         filteredDocumentList.documents = documentList.documents.filter(
-          (document) => document.job_id !== job.id
+          (document) =>
+            !document.jobs.some(
+              (attachedJob) => attachedJob.id === currentSavedJob.id
+            )
         );
         return filteredDocumentList;
       });
@@ -57,10 +61,56 @@ const LinkDocumentModal = () => {
     } else {
       setFilteredDocumentLists([]);
     }
-  }, [documentLists, job]);
+  }, [documentLists, currentSavedJob]);
 
-  const linkDocument = async (documentId: string) => {
+  const linkDocument = async () => {
     try {
+      if (currentSavedJob) {
+        const res = await axios.put(
+          `/saved-jobs/${currentSavedJob.id}/link-document`,
+          {
+            documentId: selectedDocumentId,
+          }
+        );
+
+        //update currentSavedJob
+        const updatedJob = { ...currentSavedJob };
+
+        const documents = documentLists.flatMap(
+          (documentList) => documentList.documents
+        );
+
+        // Find the linked document
+        const linkedDocument = documents.find(
+          (document) => document.id.toString() === selectedDocumentId
+        );
+
+        if (linkedDocument) {
+          const updatedDocuments = [...updatedJob.documents, linkedDocument];
+
+          // update job with the new documents list
+          setCurrentSavedJob({ ...updatedJob, documents: updatedDocuments });
+        }
+
+        // update documentLists with new linked job
+        const updatedDocumentLists = documentLists.map((documentList) => ({
+          ...documentList,
+          documents: documentList.documents.map((document) => {
+            if (document.id.toString() === selectedDocumentId) {
+              const updatedDocument = { ...document };
+              updatedDocument.jobs.push({
+                id: currentSavedJob.id,
+                job_title: currentSavedJob.job_title,
+              });
+              return updatedDocument;
+            } else {
+              return document;
+            }
+          }),
+        }));
+
+        setDocumentLists(updatedDocumentLists);
+      }
     } catch (error) {
       console.log(error);
     } finally {
@@ -118,11 +168,7 @@ const LinkDocumentModal = () => {
             <Button
               variant="primary"
               className="text-white bg-blue-500 hover:bg-blue-600"
-              onClick={() => {
-                if (selectedDocumentId) {
-                  linkDocument(selectedDocumentId);
-                }
-              }}
+              onClick={linkDocument}
             >
               Link
             </Button>

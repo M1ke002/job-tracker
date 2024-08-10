@@ -37,28 +37,25 @@ import UploadFileZone from "../UploadFileZone";
 
 import { useModal } from "@/stores/useModal";
 import { useDocumentList } from "@/stores/useDocumentList";
-import { useSavedJobs } from "@/stores/useSavedJobs";
+import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 
 const formSchema = z.object({
   documentType: z.string(),
-  job: z.string(),
 });
 
 const UploadDocumentModal = () => {
-  const { savedJobs } = useSavedJobs();
   const [isSaving, setIsSaving] = useState(false);
-  const { type, isOpen, onClose, data } = useModal();
+  const { type, isOpen, onClose } = useModal();
   const [file, setFile] = useState<File | null>(null);
 
   const isModalOpen = isOpen && type === "uploadDocument";
+  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
   const { documentLists, setDocumentLists } = useDocumentList();
-  const { job } = data;
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       documentType: "",
-      job: "none",
     },
   });
 
@@ -73,7 +70,9 @@ const UploadDocumentModal = () => {
       const formData = new FormData();
       formData.append("file", file as File);
       formData.append("documentTypeId", values.documentType);
-      formData.append("jobId", values.job === "none" ? "" : values.job);
+      if (currentSavedJob) {
+        formData.append("jobId", currentSavedJob.id.toString());
+      }
       const res = await axios.post("/documents", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -93,6 +92,15 @@ const UploadDocumentModal = () => {
         return documentList;
       });
       setDocumentLists(updatedDocumentLists);
+
+      //update currentSavedJob to include new linked document
+      //only update if we're in JobDetailsPage (currentSavedJob variable is defined)
+      if (currentSavedJob) {
+        setCurrentSavedJob({
+          ...currentSavedJob,
+          documents: [...currentSavedJob.documents, newDocument],
+        });
+      }
     } catch (error) {
       console.log(error);
     } finally {
@@ -118,10 +126,10 @@ const UploadDocumentModal = () => {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-2 px-8">
-              {job && (
+              {currentSavedJob && (
                 <FormItem className="w-full">
                   <FormLabel>Linked Job</FormLabel>
-                  <Input value={job.job_title} readOnly />
+                  <Input value={currentSavedJob.job_title} readOnly />
                 </FormItem>
               )}
 

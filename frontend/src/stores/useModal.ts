@@ -39,7 +39,6 @@ interface ModalData {
   confirmModalMessage?: string;
   confirmModalConfirmButtonText?: string;
   confirmModalAction?: () => void;
-  job?: SavedJob;
   jobId?: string;
   contact?: Contact;
   alertSetting?: ScrapedSiteSettings;

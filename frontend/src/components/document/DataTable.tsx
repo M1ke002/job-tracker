@@ -90,7 +90,7 @@ export function DataTable<TData, TValue>({
                       width = 450;
                     } else if (cell.column.id === "document_type_name") {
                       width = 140;
-                    } else if (cell.column.id === "linked_jobs") {
+                    } else if (cell.column.id === "jobs") {
                       width = 150;
                     } else if (cell.column.id === "date_uploaded") {
                       width = 100;

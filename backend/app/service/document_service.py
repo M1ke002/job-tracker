@@ -15,10 +15,9 @@ def is_document_exists_by_name(file_name):
 
 def create_and_upload_document(data, file):
     document_type_id = data.get("documentTypeId")
-    job_id = data.get("jobId")
     file_name = file.filename
 
-    print(document_type_id, job_id, file)
+    print(document_type_id, file)
 
     # upload file to firebase
     is_uploaded = upload_file(file, file_name)
@@ -31,7 +30,6 @@ def create_and_upload_document(data, file):
     # save document to database
     document = Document(
         document_type_id=document_type_id,
-        job_id=job_id if job_id != "" else None,
         file_name=file_name,
         file_url=url,
     )
@@ -44,27 +42,13 @@ def create_and_upload_document(data, file):
 
 def edit_document(document_id, data):
     document_type_id = data.get("documentTypeId")
-    job_id = data.get("jobId")
-
-    job_id = job_id if job_id != "" else None
 
     document = Document.query.get(document_id)
     if document is None:
         return None
 
     document.document_type_id = document_type_id
-    document.job_id = job_id
 
-    db.session.commit()
-    return document.to_dict()
-
-
-def unlink_job_from_document(document_id):
-    document = Document.query.get(document_id)
-    if document is None:
-        return None
-
-    document.job_id = None
     db.session.commit()
     return document.to_dict()
 

@@ -31,21 +31,18 @@ import { Button } from "../ui/button";
 
 import axios from "@/lib/axiosConfig";
 
-import { useSavedJobs } from "@/stores/useSavedJobs";
 import { useModal } from "@/stores/useModal";
 import { useDocumentList } from "@/stores/useDocumentList";
 
 const formSchema = z.object({
   documentType: z.string(),
-  job: z.string(),
 });
 
 const EditDocumentModal = () => {
-  const { savedJobs } = useSavedJobs();
   const [isSaving, setIsSaving] = useState(false);
   const { type, isOpen, onClose, data } = useModal();
 
-  const { documentId, documentType, jobId } = data;
+  const { documentId, documentType } = data;
 
   const isModalOpen = isOpen && type === "editDocument";
   const { documentLists, setDocumentLists } = useDocumentList();
@@ -54,7 +51,6 @@ const EditDocumentModal = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       documentType: "",
-      job: "none",
     },
   });
 
@@ -62,10 +58,7 @@ const EditDocumentModal = () => {
     if (documentType) {
       form.setValue("documentType", documentType);
     }
-    if (jobId) {
-      form.setValue("job", jobId);
-    }
-  }, [documentType, jobId]);
+  }, [documentType]);
 
   useEffect(() => {
     console.log(documentLists);
@@ -75,9 +68,6 @@ const EditDocumentModal = () => {
     if (documentType) {
       form.setValue("documentType", documentType);
     }
-    if (jobId) {
-      form.setValue("job", jobId);
-    }
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -86,7 +76,6 @@ const EditDocumentModal = () => {
       console.log(values);
       const res = await axios.put(`/documents/${documentId}`, {
         documentTypeId: values.documentType,
-        jobId: values.job === "none" ? "" : values.job,
       });
 
       //update the documents list to reflect the changes
@@ -179,7 +168,7 @@ const EditDocumentModal = () => {
                 )}
               />
 
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="job"
                 render={({ field }) => (
@@ -205,7 +194,7 @@ const EditDocumentModal = () => {
                     </Select>
                   </FormItem>
                 )}
-              />
+              /> */}
             </div>
 
             <DialogFooter className="bg-gray-100 px-6 py-4">

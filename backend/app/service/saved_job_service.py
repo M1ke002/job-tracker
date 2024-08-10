@@ -1,4 +1,4 @@
-from app.model import db, SavedJob, ApplicationStage
+from app.model import db, SavedJob, ApplicationStage, Document
 from datetime import datetime
 
 
@@ -188,3 +188,34 @@ def delete_saved_job(saved_job_id):
     db.session.delete(saved_job)
     db.session.commit()
     return "Deleted saved job successfully"
+
+
+def link_document(saved_job_id, document_id):
+    saved_job = SavedJob.query.get(saved_job_id)
+    document = Document.query.get(document_id)
+
+    if saved_job is None or document is None:
+        return None
+
+    # check if document already linked to curr job
+    for job in document.jobs:
+        if job.id == saved_job.id:
+            return None
+
+    saved_job.documents.append(document)
+    db.session.add(saved_job)
+    db.session.add(document)
+    db.session.commit()
+    return "Linked document successfully"
+
+
+def unlink_document(saved_job_id, document_id):
+    saved_job = SavedJob.query.get(saved_job_id)
+    document = Document.query.get(document_id)
+
+    if saved_job is None or document is None:
+        return None
+
+    saved_job.documents.remove(document)
+    db.session.commit()
+    return "Unlinked document successfully"

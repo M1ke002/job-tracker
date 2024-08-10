@@ -20,35 +20,53 @@ import {
 } from "lucide-react";
 
 import axios from "@/lib/axiosConfig";
+import { sydneyToUTCTime } from "@/utils/utils";
 
 import { useModal } from "@/stores/useModal";
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
+import { useDocumentList } from "@/stores/useDocumentList";
+
 import DocumentTypeTag from "./DocumentTypeTag";
 import { format } from "date-fns";
 
 interface AttachedDocumentItemProps {
-  id: string;
+  documentId: string;
   documentName: string;
   documentType: string;
   documentUrl: string;
   dateUploaded: string;
+  attachedJobs: {
+    id: number;
+    job_title: string;
+  }[];
 }
 
 const AttachedDocumentItemNew = ({
-  id,
+  documentId,
   documentName,
   documentType,
   documentUrl,
   dateUploaded,
+  attachedJobs,
 }: AttachedDocumentItemProps) => {
   const { onOpen } = useModal();
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
+  const { documentLists, setDocumentLists } = useDocumentList();
 
-  const removeDocumentFromJob = async (documentId: string) => {
+  //must - 10 hours to get the correct date
+  const convertedDate = sydneyToUTCTime(new Date(dateUploaded));
+
+  const unlinkDocument = async (documentId: string) => {
     try {
-      const res = await axios.put(`/documents/${documentId}/unlink-job`);
-
       if (currentSavedJob) {
+        const res = await axios.put(
+          `/saved-jobs/${currentSavedJob.id}/unlink-document`,
+          {
+            documentId,
+          }
+        );
+
+        //update currentSavedJob
         const updatedJob = {
           ...currentSavedJob,
           documents: currentSavedJob.documents.filter(
@@ -56,6 +74,25 @@ const AttachedDocumentItemNew = ({
           ),
         };
         setCurrentSavedJob(updatedJob);
+
+        //update documentLists
+        const updatedDocumentLists = documentLists.map((documentList) => ({
+          ...documentList,
+          documents: documentList.documents.map((document) => {
+            if (document.id.toString() === documentId) {
+              return {
+                ...document,
+                jobs: document.jobs.filter(
+                  (job) => job.id !== currentSavedJob.id
+                ),
+              };
+            } else {
+              return document;
+            }
+          }),
+        }));
+
+        setDocumentLists(updatedDocumentLists);
       }
     } catch (error) {
       console.log(error);
@@ -87,8 +124,8 @@ const AttachedDocumentItemNew = ({
       <hr className="border-[#d5e4fc] my-2" />
       <div className="flex items-center space-x-1 px-3 py-1">
         <p className="text-sm text-gray-500">
-          Uploaded on {format(dateUploaded, "dd/MM/yyyy")}. Attached to 3
-          job(s).
+          Uploaded on {format(convertedDate, "dd/MM/yyyy")}. Attached to{" "}
+          {attachedJobs.length} job(s).
         </p>
       </div>
 
@@ -108,7 +145,7 @@ const AttachedDocumentItemNew = ({
                   confirmModalMessage:
                     "Are you sure you want to remove this document from this job?",
                   confirmModalConfirmButtonText: "Remove",
-                  confirmModalAction: () => removeDocumentFromJob(id),
+                  confirmModalAction: () => unlinkDocument(documentId),
                 });
               }}
             >

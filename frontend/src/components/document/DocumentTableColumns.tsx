@@ -59,7 +59,6 @@ const ActionCell = ({ row }: { row: Row<Document> }) => {
           onOpen("editDocument", {
             documentId: id.toString(),
             documentType: document_type_id.toString(),
-            jobId: "none",
           });
         }}
       >
@@ -116,8 +115,19 @@ export const columns: ColumnDef<Document>[] = [
     },
   },
   {
-    accessorKey: "linked_jobs",
-    header: "Linked Jobs",
+    accessorKey: "jobs",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          className="flex items-center hover:bg-[#ebf4ff] px-1 font-semibold"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Linked Jobs
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
     cell: ({ row }) => {
       const { jobs } = row.original;
       // const displayed_job_title = job_title
@@ -146,7 +156,7 @@ export const columns: ColumnDef<Document>[] = [
       const { date_uploaded } = row.original;
       //must - 10 hours to get the correct date
       const convertedDate = sydneyToUTCTime(new Date(date_uploaded));
-      console.log(date_uploaded, convertedDate);
+      // console.log(date_uploaded, convertedDate);
       return <div className="px-1">{format(convertedDate, "dd/MM/yyyy")}</div>;
     },
   },

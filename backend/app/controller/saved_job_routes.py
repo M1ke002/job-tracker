@@ -11,6 +11,8 @@ from app.service.saved_job_service import remove_job_from_stage
 from app.service.saved_job_service import edit_saved_job_notes
 from app.service.saved_job_service import edit_saved_job_description
 from app.service.saved_job_service import is_similar_job_exists
+from app.service.saved_job_service import link_document
+from app.service.saved_job_service import unlink_document
 
 saved_job_routes = Blueprint("saved_job_routes", __name__)
 
@@ -178,4 +180,34 @@ def handle_delete_saved_job(saved_job_id):
     message = delete_saved_job(saved_job_id)
     if message is None:
         return jsonify({"error": "Cannot delete job"}), 400
+    return jsonify(message), 200
+
+
+# link a job to a document
+@saved_job_routes.route("/<int:saved_job_id>/link-document", methods=["PUT"])
+def handle_link_document(saved_job_id):
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    document_id = data.get("documentId")
+    message = link_document(saved_job_id, document_id)
+    if message is None:
+        return jsonify({"error": "Cannot link document to job"}), 400
+    return jsonify(message), 200
+
+
+# unlink a job from a document
+@saved_job_routes.route("/<int:saved_job_id>/unlink-document", methods=["PUT"])
+def handle_unlink_document(saved_job_id):
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    document_id = data.get("documentId")
+    message = unlink_document(saved_job_id, document_id)
+    if message is None:
+        return jsonify({"error": "Cannot unlink document from job"}), 400
     return jsonify(message), 200

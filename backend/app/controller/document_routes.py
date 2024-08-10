@@ -4,8 +4,9 @@ from app.service.document_service import get_all_documents
 from app.service.document_service import delete_document
 from app.service.document_service import create_and_upload_document
 from app.service.document_service import edit_document
-from app.service.document_service import unlink_job_from_document
 from app.service.document_service import is_document_exists_by_name
+
+from app.service.saved_job_service import link_document
 
 document_routes = Blueprint("document_routes", __name__)
 
@@ -35,15 +36,6 @@ def handle_edit_document(document_id):
     return jsonify(document), 200
 
 
-# remove linked job from a document
-@document_routes.route("/<int:document_id>/unlink-job", methods=["PUT"])
-def handle_unlink_job_from_document(document_id):
-    document = unlink_job_from_document(document_id)
-    if document is None:
-        return jsonify({"error": "Document not found"}), 404
-    return jsonify(document), 200
-
-
 # create a document
 @document_routes.route("", methods=["POST"])
 def handle_create_document():
@@ -67,6 +59,12 @@ def handle_create_document():
     document = create_and_upload_document(data, file)
     if document is None:
         return jsonify({"error": "Cannot create document"}), 400
+
+    # link document to a saved job if specified
+    job_id = data.get("jobId")
+    if job_id:
+        link_document(job_id, document["id"])
+
     return jsonify(document), 200
 
 
