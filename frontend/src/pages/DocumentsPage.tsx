@@ -68,12 +68,12 @@ const DocumentsPage = () => {
                 onClick={() => onOpen("uploadDocument")}
               >
                 <Plus size={18} className="mr-2 text-blue-500" />
-                Add type
+                Upload document
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="flex items-center">
                 <Settings size={18} className="mr-2 text-blue-700" />
-                Edit type
+                Edit document type
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

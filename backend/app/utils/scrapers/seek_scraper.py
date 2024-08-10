@@ -26,7 +26,12 @@ class SeekScraper(BaseScraper):
 
     async def parse_job_fields(self, soup: BeautifulSoup) -> list[ScrapeResult]:
         jobs_dict = {}
-        job_listings = soup.find_all("div", class_="y735df0 _1iz8dgs6m")
+        job_listings = []
+        parent_div = soup.find("div", {"data-automation": "searchResults"})
+
+        if parent_div:
+            # job_listings = soup.find_all("div", class_="_4603vi0 _9l8a1v6m")
+            job_listings = parent_div.find_all("article", {"data-automation": "normalJob"})
         print(f"Job Listings: {len(job_listings)}")
 
         for job in job_listings:
