@@ -8,6 +8,7 @@ import EditDocumentModal from "../modals/EditDocumentModal";
 import EditSavedJobModal from "../modals/EditSavedJobModal";
 import EditTaskModal from "../modals/EditTaskModal";
 import JobAlertSettingModal from "../modals/JobAlertSettingModal";
+import LinkDocumentModal from "../modals/LinkDocumentModal";
 import UploadDocumentModal from "../modals/UploadDocumentModal";
 
 //this component will be used to render all the modals
@@ -25,6 +26,7 @@ const ModalProvider = () => {
       <EditTaskModal />
       <UploadDocumentModal />
       <EditDocumentModal />
+      <LinkDocumentModal />
     </>
   );
 };

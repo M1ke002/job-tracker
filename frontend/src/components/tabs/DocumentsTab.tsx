@@ -4,8 +4,10 @@ import { FolderClosedIcon, FolderSearch, Link, PlusCircle } from "lucide-react";
 import AttachedDocumentItemNew from "../document/AttachedDocumentItemNew";
 
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
+import { useModal } from "@/stores/useModal";
 
 const DocumentsTab = () => {
+  const { onOpen } = useModal();
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
   const documents = currentSavedJob?.documents || [];
 
@@ -14,13 +16,25 @@ const DocumentsTab = () => {
       <div className="font-semibold flex items-center justify-between">
         <p className="text-lg">Documents: {documents.length}</p>
         <div className="space-x-3">
-          <Button variant="primary">
+          <Button
+            variant="primary"
+            onClick={() => {
+              if (currentSavedJob) {
+                onOpen("uploadDocument", { job: currentSavedJob });
+              }
+            }}
+          >
             <PlusCircle size={20} className="mr-2" />
             Add document
           </Button>
           <Button
             variant="outlinePrimary"
             className="text-[#3d3d3d] hover:text-[#3d3d3d] px-2 bg-white"
+            onClick={() => {
+              if (currentSavedJob) {
+                onOpen("linkDocument", { job: currentSavedJob });
+              }
+            }}
           >
             <Link size={20} className="mr-2" />
             Link document

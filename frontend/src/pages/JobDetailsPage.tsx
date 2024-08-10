@@ -48,6 +48,9 @@ import { useApplicationStages } from "@/stores/useApplicationStages";
 import { ApplicationStageNames } from "@/utils/constants";
 import { useJobDetailsQuery } from "@/hooks/queries/useJobDetailsQuery";
 import { useApplicationStagesQuery } from "@/hooks/queries/useApplicationStagesQuery";
+import { useDocumentsQuery } from "@/hooks/queries/useDocumentsQuery";
+import { useDocumentList } from "@/stores/useDocumentList";
+
 import OverviewTab from "@/components/tabs/OverviewTab";
 import TasksTab from "@/components/tabs/TasksTab";
 import ContactsTab from "@/components/tabs/ContactsTab";
@@ -57,6 +60,7 @@ import ToolsTab from "@/components/tabs/ToolsTab";
 const JobDetailsPage = () => {
   const { applicationStages, setApplicationStages } = useApplicationStages();
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
+  const { setDocumentLists } = useDocumentList();
   const [isLoading, setLoading] = useState(false);
   const { id } = useParams<{ id: string }>();
   const { onOpen } = useModal();
@@ -67,6 +71,8 @@ const JobDetailsPage = () => {
     useJobDetailsQuery(id);
   const { data: applicationStagesData, status: applicationStagesStatus } =
     useApplicationStagesQuery();
+  const { data: documentListsData, status: documentListsStatus } =
+    useDocumentsQuery();
 
   useEffect(() => {
     if (jobDetailsData) {
@@ -83,6 +89,12 @@ const JobDetailsPage = () => {
       setApplicationStages(applicationStagesData);
     }
   }, [applicationStagesData]);
+
+  useEffect(() => {
+    if (documentListsData) {
+      setDocumentLists(documentListsData);
+    }
+  }, [documentListsData]);
 
   const changeJobStage = async (stageId: string) => {
     try {

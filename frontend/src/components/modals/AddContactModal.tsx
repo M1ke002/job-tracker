@@ -102,7 +102,7 @@ const AddContactModal = () => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-semibold">Username</FormLabel>
+                    <FormLabel className="font-semibold">Name</FormLabel>
                     <FormControl>
                       <Input placeholder="Name" {...field} />
                     </FormControl>

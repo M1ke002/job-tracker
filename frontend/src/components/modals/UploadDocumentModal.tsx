@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
+import { Input } from "../ui/input";
 import { FileIcon, X } from "lucide-react";
 
 import axios from "@/lib/axiosConfig";
@@ -46,11 +47,12 @@ const formSchema = z.object({
 const UploadDocumentModal = () => {
   const { savedJobs } = useSavedJobs();
   const [isSaving, setIsSaving] = useState(false);
-  const { type, isOpen, onClose } = useModal();
+  const { type, isOpen, onClose, data } = useModal();
   const [file, setFile] = useState<File | null>(null);
 
   const isModalOpen = isOpen && type === "uploadDocument";
   const { documentLists, setDocumentLists } = useDocumentList();
+  const { job } = data;
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -116,6 +118,13 @@ const UploadDocumentModal = () => {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-2 px-8">
+              {job && (
+                <FormItem className="w-full">
+                  <FormLabel>Linked Job</FormLabel>
+                  <Input value={job.job_title} readOnly />
+                </FormItem>
+              )}
+
               <FormField
                 control={form.control}
                 name="documentType"
@@ -150,7 +159,7 @@ const UploadDocumentModal = () => {
                 )}
               />
 
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="job"
                 render={({ field }) => (
@@ -176,7 +185,7 @@ const UploadDocumentModal = () => {
                     </Select>
                   </FormItem>
                 )}
-              />
+              /> */}
 
               <Label className="block font-semibold !my-3">
                 Upload document *

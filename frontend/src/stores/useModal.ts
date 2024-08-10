@@ -1,6 +1,7 @@
 import ApplicationStage from "@/types/ApplicationStage";
 import Contact from "@/types/Contact";
 import DocumentType from "@/types/DocumentType";
+import SavedJob from "@/types/SavedJob";
 import ScrapedSiteSettings from "@/types/ScrapedSiteSettings";
 import Task from "@/types/Task";
 import { create } from "zustand";
@@ -30,13 +31,15 @@ export type ModalType =
   | "uploadDocument"
   | "deleteDocument"
   | "editDocument"
-  | "removeDocument";
+  | "removeDocument"
+  | "linkDocument";
 
 interface ModalData {
   confirmModalTitle?: string;
   confirmModalMessage?: string;
   confirmModalConfirmButtonText?: string;
   confirmModalAction?: () => void;
+  job?: SavedJob;
   jobId?: string;
   contact?: Contact;
   alertSetting?: ScrapedSiteSettings;

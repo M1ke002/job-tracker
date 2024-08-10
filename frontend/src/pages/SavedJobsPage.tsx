@@ -7,12 +7,12 @@ import { Plus, SlidersHorizontal } from "lucide-react";
 
 import axios from "@/lib/axiosConfig";
 import JobItem from "@/components/jobs/JobItem";
+import JobItemSkeleton from "@/components/skeleton/JobItemSkeleton";
 
 import { useQuery } from "@tanstack/react-query";
 
 import { useSavedJobs } from "@/stores/useSavedJobs";
 import { useModal } from "@/stores/useModal";
-import JobItemSkeleton from "@/components/skeleton/JobItemSkeleton";
 import { useSavedJobsQuery } from "@/hooks/queries/useSavedJobsQuery";
 
 const SavedJobsPage = () => {

@@ -117,7 +117,7 @@ export const columns: ColumnDef<Document>[] = [
   },
   {
     accessorKey: "job_title",
-    header: "Job",
+    header: "Linked Jobs",
     cell: ({ row }) => {
       const { job_title } = row.original;
       const displayed_job_title = job_title
