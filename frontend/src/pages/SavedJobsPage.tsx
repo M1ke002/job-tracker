@@ -5,6 +5,8 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Plus, SlidersHorizontal } from "lucide-react";
 
+import SavedJob from "@/types/SavedJob";
+
 import axios from "@/lib/axiosConfig";
 import JobItem from "@/components/jobs/JobItem";
 import JobItemSkeleton from "@/components/skeleton/JobItemSkeleton";
@@ -13,7 +15,6 @@ import PaginationBox from "@/components/pagination/PaginationBox";
 import { paginateJobs, searchJobs } from "@/utils/utils";
 
 import { useQuery } from "@tanstack/react-query";
-
 import { useSavedJobs } from "@/stores/useSavedJobs";
 import { useModal } from "@/stores/useModal";
 import { useSavedJobsQuery } from "@/hooks/queries/useSavedJobsQuery";
@@ -23,13 +24,11 @@ const PER_PAGE = 20;
 const SavedJobsPage = () => {
   const { savedJobs, setSavedJobs } = useSavedJobs();
   const { onOpen } = useModal();
-
   const { data: savedJobsData, status: savedJobsStatus } = useSavedJobsQuery();
 
   //for searching jobs
   const [searchText, setSearchText] = useState<string>("");
   const [isSearching, setIsSearching] = useState<boolean>(false);
-
   // Local state to display the filtered/paginated jobs
   const [displayedJobs, setDisplayedJobs] = useState(savedJobs);
 
@@ -40,68 +39,62 @@ const SavedJobsPage = () => {
     currentPage: 1,
   });
 
+  // Helper function to handle search, pagination, and state updates
+  const updateDisplayedJobs = (
+    jobs: SavedJob[],
+    page: number,
+    query: string,
+    hasSearch: boolean = true,
+    hasPagination: boolean = true
+  ) => {
+    let displayedJobs = jobs;
+
+    //if searching is applied
+    if (hasSearch) {
+      displayedJobs = searchJobs(jobs, query);
+    }
+
+    //if pagination is applied
+    if (hasPagination) {
+      const paginationResult = paginateJobs(displayedJobs, page, PER_PAGE);
+      setPages({
+        totalPages: paginationResult.totalPages,
+        totalJobCount: paginationResult.totalJobCount,
+        currentPage: page,
+      });
+      displayedJobs = paginationResult.paginatedJobs;
+    }
+
+    setDisplayedJobs(displayedJobs);
+  };
+
   //set savedJobsData and displayedJobs after fetching from api
   useEffect(() => {
     if (savedJobsData) {
       setSavedJobs(savedJobsData);
-      const paginationResult = paginateJobs(
+
+      updateDisplayedJobs(
         savedJobsData,
         pages.currentPage,
-        PER_PAGE,
-        searchText
+        searchText,
+        false,
+        true
       );
-      setPages((prev) => {
-        return {
-          ...prev,
-          totalPages: paginationResult.totalPages,
-          totalJobCount: paginationResult.totalJobCount,
-        };
-      });
-      setDisplayedJobs(paginationResult.paginatedJobs);
     }
   }, [savedJobsData]);
 
   //update displayedJobs when savedJobs state changes(eg new job added/job deleted)
   useEffect(() => {
-    const paginationResult = paginateJobs(
-      savedJobs,
-      pages.currentPage,
-      PER_PAGE,
-      searchText
-    );
-    setPages((prev) => {
-      return {
-        ...prev,
-        totalPages: paginationResult.totalPages,
-        totalJobCount: paginationResult.totalJobCount,
-      };
-    });
-    setDisplayedJobs(paginationResult.paginatedJobs);
+    updateDisplayedJobs(savedJobs, pages.currentPage, searchText, true, true);
   }, [savedJobs]);
 
   const handleSearchJobs = (query: string) => {
-    const searchResult = searchJobs(savedJobs, query, PER_PAGE);
-    setDisplayedJobs(searchResult.paginatedJobs);
-    setPages({
-      totalPages: searchResult.totalPages,
-      totalJobCount: searchResult.totalJobCount,
-      currentPage: 1,
-    });
+    //after every search reset page number back to 1 (first page)
+    updateDisplayedJobs(savedJobs, 1, query, true, true);
   };
 
   const fetchPage = (page: number) => {
-    const paginationResult = paginateJobs(
-      savedJobs,
-      page,
-      PER_PAGE,
-      searchText
-    );
-    setPages({
-      totalPages: paginationResult.totalPages,
-      totalJobCount: paginationResult.totalJobCount,
-      currentPage: page,
-    });
-    setDisplayedJobs(paginationResult.paginatedJobs);
+    updateDisplayedJobs(savedJobs, page, searchText, true, true);
   };
 
   return (
