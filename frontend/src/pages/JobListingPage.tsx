@@ -53,11 +53,11 @@ import { useSavedJobsQuery } from "@/hooks/queries/useSavedJobsQuery";
 import SearchBox from "@/components/search/SearchBox";
 
 const buildJobSearchQuery = (
+  initialQuery: string,
   searchText: string,
-  currentScrapedSiteId: string,
   page: number = 1
 ) => {
-  let query = `/job-listings/${currentScrapedSiteId}`;
+  let query = initialQuery;
   query += searchText ? `/search?query=${searchText}&` : "?";
   query += `page=${page}&per_page=30`;
   return query;
@@ -69,24 +69,26 @@ const JobListingPage = () => {
   const { currentScrapedSiteId, setCurrentScrapedSiteId } =
     useCurrentScrapedSiteId();
   const [currentScrapedSite, setCurrentScrapedSite] =
-    useState<ScrapedSite | null>(null);
+    useState<ScrapedSite | null>(scrapedSites[0]);
+  const { onOpen } = useModal();
 
   //for searching jobs
   const [searchText, setSearchText] = useState<string>("");
   const [isSearching, setIsSearching] = useState<boolean>(false);
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   //maps page number to site id
   const [pageSiteMapping, setPageSiteMapping] = useState<
     { currentPage: number; siteId: number }[]
   >([]);
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { onOpen } = useModal();
-
+  //fetch scraped sites data (containing job listings) and saved jobs data
   const { data: scrapedSitesData, status: scrapedSitesStatus } =
     useScrapedSitesQuery();
   const { data: savedJobsData, status: savedJobsStatus } = useSavedJobsQuery();
 
+  //set currentScrapedSite to match with currentScrapedSiteId
   useEffect(() => {
     const currentScrapedSite = scrapedSites.find((site) => {
       return site.id.toString() === currentScrapedSiteId;
@@ -98,10 +100,13 @@ const JobListingPage = () => {
 
   useEffect(() => {
     if (scrapedSitesData) {
+      //set scrapedSitesData after fetching from api
       setScrapedSites(scrapedSitesData);
 
       //set default currentScrapedSiteId to the first site
-      setCurrentScrapedSiteId(scrapedSitesData[0].id.toString());
+      const defaultScrapedSite = scrapedSitesData[0];
+      const defaultScrapedSiteId = defaultScrapedSite.id.toString();
+      setCurrentScrapedSiteId(defaultScrapedSiteId);
 
       //set pageSiteMapping
       const pageSiteMapping = scrapedSitesData.map((site: ScrapedSite) => {
@@ -111,6 +116,7 @@ const JobListingPage = () => {
     }
   }, [scrapedSitesData]);
 
+  //set savedJobsData after fetching from api
   useEffect(() => {
     if (savedJobsData) {
       setSavedJobs(savedJobsData);
@@ -131,7 +137,8 @@ const JobListingPage = () => {
         setIsSearching(true);
         console.log("searching jobs with text: ", searchText);
 
-        const query = buildJobSearchQuery(searchText, currentScrapedSiteId, 1);
+        const initialQuery = `/job-listings/${currentScrapedSiteId}`;
+        const query = buildJobSearchQuery(initialQuery, searchText, 1);
         const res = await axios.get(query);
 
         const jobListings: JobListing[] = res.data[0];
@@ -236,7 +243,8 @@ const JobListingPage = () => {
     try {
       if (!currentScrapedSiteId) return;
 
-      const query = buildJobSearchQuery(searchText, currentScrapedSiteId, page);
+      const initialQuery = `/job-listings/${currentScrapedSiteId}`;
+      const query = buildJobSearchQuery(initialQuery, searchText, page);
       const res = await axios.get(query);
       console.log("res", res.data);
 
@@ -296,12 +304,6 @@ const JobListingPage = () => {
             </Select>
           </div>
           <div className="flex items-center space-x-2">
-            {/* <Button
-              className="text-sm font-medium text-[#3d3d3d] hover:text-[#3d3d3d]"
-              variant="outlinePrimary"
-            >
-              Compare
-            </Button> */}
             <Button
               className="flex items-center"
               variant="primary"

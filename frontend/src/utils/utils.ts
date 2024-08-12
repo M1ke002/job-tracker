@@ -5,6 +5,7 @@ import {
   GRAD_CONNECTION_URL,
   SEEK_URL,
 } from "./constants";
+import SavedJob from "@/types/SavedJob";
 
 export const getApplicationStatusCount = (
   applicationStages: ApplicationStageType[]
@@ -226,4 +227,93 @@ export const isTextEmpty = (text: string) => {
 
   // If there are tags and they cover the entire input string, it contains only tags
   return tags && text.replace(htmlTagPattern, "").trim() === "";
+};
+
+//search fn for savedJobs
+export const searchJobs = (
+  savedJobs: SavedJob[],
+  query: string,
+  perPage: number = 30
+) => {
+  // Calculate start and end indices for slicing the array
+  const start = 0;
+  const end = start + perPage;
+
+  //reset to original list of saved jobs if empty query
+  if (query.trim() === "") {
+    const totalJobCount = savedJobs.length;
+    const totalPages = Math.ceil(totalJobCount / perPage);
+
+    // Get the jobs for the current page
+    const paginatedJobs = savedJobs.slice(start, end);
+
+    //paginatedJobs: list of jobs after filtering and pagination applied
+    //filteredJobs: full list of jobs after filtering, no pagination applied
+    return {
+      paginatedJobs,
+      totalPages,
+      totalJobCount,
+      filteredJobs: savedJobs,
+    };
+  }
+
+  const lowercasedQuery = query.toLowerCase();
+
+  //search in job_title, job_description, company_name
+  const filteredJobs = savedJobs
+    .filter((job) => {
+      const jobTitle = job.job_title?.toLowerCase() || "";
+      const jobDescription = job.job_description?.toLowerCase() || "";
+      const companyName = job.company_name?.toLowerCase() || "";
+
+      return (
+        jobTitle.includes(lowercasedQuery) ||
+        jobDescription.includes(lowercasedQuery) ||
+        companyName.includes(lowercasedQuery)
+      );
+    })
+    .sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+
+  const totalJobCount = filteredJobs.length;
+  const totalPages = Math.ceil(totalJobCount / perPage);
+  const paginatedJobs = filteredJobs.slice(start, end);
+
+  // return filteredJobs;
+  return {
+    paginatedJobs,
+    totalPages,
+    totalJobCount,
+    filteredJobs,
+  };
+};
+
+//pagination for saved jobs
+export const paginateJobs = (
+  savedJobs: SavedJob[],
+  page: number = 0,
+  perPage: number = 30,
+  query: string = ""
+) => {
+  //apply search query if there are
+  const searchResult = searchJobs(savedJobs, query, perPage);
+  const filteredJobs = searchResult.filteredJobs;
+
+  const totalJobCount = filteredJobs.length;
+  const totalPages = Math.ceil(totalJobCount / perPage);
+
+  // Calculate start and end indices for slicing the array
+  const start = (page - 1) * perPage;
+  const end = start + perPage;
+
+  // Get the jobs for the current page
+  const paginatedJobs = filteredJobs.slice(start, end);
+
+  return {
+    paginatedJobs,
+    totalPages,
+    totalJobCount,
+  };
 };

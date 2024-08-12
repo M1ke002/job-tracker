@@ -3,21 +3,25 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Plus, SlidersHorizontal, Search } from "lucide-react";
+import { Plus, SlidersHorizontal } from "lucide-react";
 
 import axios from "@/lib/axiosConfig";
 import JobItem from "@/components/jobs/JobItem";
 import JobItemSkeleton from "@/components/skeleton/JobItemSkeleton";
+import SearchBox from "@/components/search/SearchBox";
+import PaginationBox from "@/components/pagination/PaginationBox";
+import { paginateJobs, searchJobs } from "@/utils/utils";
 
 import { useQuery } from "@tanstack/react-query";
 
 import { useSavedJobs } from "@/stores/useSavedJobs";
 import { useModal } from "@/stores/useModal";
 import { useSavedJobsQuery } from "@/hooks/queries/useSavedJobsQuery";
-import SearchBox from "@/components/search/SearchBox";
+
+const PER_PAGE = 20;
 
 const SavedJobsPage = () => {
-  const { savedJobs, setSavedJobs, isFetched } = useSavedJobs();
+  const { savedJobs, setSavedJobs } = useSavedJobs();
   const { onOpen } = useModal();
 
   const { data: savedJobsData, status: savedJobsStatus } = useSavedJobsQuery();
@@ -26,14 +30,78 @@ const SavedJobsPage = () => {
   const [searchText, setSearchText] = useState<string>("");
   const [isSearching, setIsSearching] = useState<boolean>(false);
 
+  // Local state to display the filtered/paginated jobs
+  const [displayedJobs, setDisplayedJobs] = useState(savedJobs);
+
+  //pagination data
+  const [pages, setPages] = useState({
+    totalPages: 1,
+    totalJobCount: savedJobs.length,
+    currentPage: 1,
+  });
+
+  //set savedJobsData and displayedJobs after fetching from api
   useEffect(() => {
     if (savedJobsData) {
       setSavedJobs(savedJobsData);
+      const paginationResult = paginateJobs(
+        savedJobsData,
+        pages.currentPage,
+        PER_PAGE,
+        searchText
+      );
+      setPages((prev) => {
+        return {
+          ...prev,
+          totalPages: paginationResult.totalPages,
+          totalJobCount: paginationResult.totalJobCount,
+        };
+      });
+      setDisplayedJobs(paginationResult.paginatedJobs);
     }
   }, [savedJobsData]);
 
-  const handleSearchJobs = (value: string) => {
-    console.log(value);
+  //update displayedJobs when savedJobs state changes(eg new job added/job deleted)
+  useEffect(() => {
+    const paginationResult = paginateJobs(
+      savedJobs,
+      pages.currentPage,
+      PER_PAGE,
+      searchText
+    );
+    setPages((prev) => {
+      return {
+        ...prev,
+        totalPages: paginationResult.totalPages,
+        totalJobCount: paginationResult.totalJobCount,
+      };
+    });
+    setDisplayedJobs(paginationResult.paginatedJobs);
+  }, [savedJobs]);
+
+  const handleSearchJobs = (query: string) => {
+    const searchResult = searchJobs(savedJobs, query, PER_PAGE);
+    setDisplayedJobs(searchResult.paginatedJobs);
+    setPages({
+      totalPages: searchResult.totalPages,
+      totalJobCount: searchResult.totalJobCount,
+      currentPage: 1,
+    });
+  };
+
+  const fetchPage = (page: number) => {
+    const paginationResult = paginateJobs(
+      savedJobs,
+      page,
+      PER_PAGE,
+      searchText
+    );
+    setPages({
+      totalPages: paginationResult.totalPages,
+      totalJobCount: paginationResult.totalJobCount,
+      currentPage: page,
+    });
+    setDisplayedJobs(paginationResult.paginatedJobs);
   };
 
   return (
@@ -67,7 +135,9 @@ const SavedJobsPage = () => {
           {savedJobsStatus === "pending" ? (
             <Skeleton className="w-28 h-6 bg-zinc-200" />
           ) : (
-            <p className="text-sm font-medium">{savedJobs.length} saved jobs</p>
+            <p className="text-sm font-medium">
+              {pages.totalJobCount} saved jobs
+            </p>
           )}
           <SearchBox
             searchText={searchText}
@@ -87,7 +157,7 @@ const SavedJobsPage = () => {
               <JobItemSkeleton />
             </>
           ) : (
-            savedJobs.map((job) => (
+            displayedJobs.map((job) => (
               <JobItem
                 type="savedJob"
                 key={job.id}
@@ -105,18 +175,21 @@ const SavedJobsPage = () => {
             ))
           )}
         </div>
-        {/* <Button className="mx-auto mt-4 mb-3 px-7" variant="primary">
-        Load More
-      </Button> */}
 
-        {/* floating absolute add btn at bottom corner of screen */}
-        {/* <div className="fixed bottom-0 right-0 mb-5 mr-5">
-        <Button variant="primary" className="rounded-full flex items-center ">
-          <Plus size={20} className="mr-1" />
-          Add job
-        </Button>
-      </div> */}
+        {displayedJobs.length === 0 && savedJobsStatus !== "pending" && (
+          <div className="flex items-center justify-center w-full h-60">
+            <p className="text-lg font-medium text-gray-400">No jobs found</p>
+          </div>
+        )}
       </div>
+
+      {pages.totalPages > 1 && savedJobsStatus !== "pending" && (
+        <PaginationBox
+          totalPages={pages.totalPages || 1}
+          currentPage={pages.currentPage || 1}
+          fetchPage={fetchPage}
+        />
+      )}
     </div>
   );
 };

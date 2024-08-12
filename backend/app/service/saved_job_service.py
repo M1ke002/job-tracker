@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 def get_all_saved_jobs():
-    saved_jobs = SavedJob.query.all()
+    saved_jobs = SavedJob.query.order_by(SavedJob.created_at.desc())
     return [saved_job.to_dict() for saved_job in saved_jobs]
 
 
