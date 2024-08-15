@@ -6,6 +6,7 @@ import {
   SEEK_URL,
 } from "./constants";
 import SavedJob from "@/types/SavedJob";
+import { SAVED_STAGE } from "@/pages/SavedJobsPage";
 
 export const getApplicationStatusCount = (
   applicationStages: ApplicationStageType[]
@@ -255,6 +256,24 @@ export const searchJobs = (savedJobs: SavedJob[], query: string) => {
       (a, b) =>
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     );
+
+  return filteredJobs;
+};
+
+//filtering fn for saved jobs
+export const filterJobs = (savedJobs: SavedJob[], filteredStages: string[]) => {
+  if (filteredStages.length === 0) {
+    return savedJobs;
+  }
+
+  const filteredJobs = savedJobs.filter((job) => {
+    //if job doesn't belong to any stages yet, match it with 'saved' stage
+    if (job.stage === null) {
+      return filteredStages.includes(SAVED_STAGE);
+    }
+
+    return filteredStages.includes(job.stage.stage_name);
+  });
 
   return filteredJobs;
 };
