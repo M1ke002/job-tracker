@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 
-import { Button } from "../ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+
+import { Button } from "../ui/button";
+
 import { cn } from "@/lib/utils";
 
 interface PaginationBoxProps {

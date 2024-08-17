@@ -1,8 +1,7 @@
 import React from "react";
 
-import { format } from "date-fns";
-
 import { FileEdit, MoreVertical, Trash } from "lucide-react";
+
 import { Button } from "../ui/button";
 import { Switch } from "../ui/switch";
 import {
@@ -14,9 +13,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import Task from "@/types/Task";
 import axios from "@/lib/axiosConfig";
+import Task from "@/types/Task";
 
 import { useModal } from "@/stores/useModal";
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";

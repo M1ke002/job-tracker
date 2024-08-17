@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 
+import { X, AlignJustify, Bell, CircleUserRound } from "lucide-react";
+
 import { NavLink } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
@@ -8,7 +10,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { X, AlignJustify, Bell, CircleUserRound } from "lucide-react";
 
 import Notification from "../notification/Notification";
 import NotificationType from "@/types/Notification";

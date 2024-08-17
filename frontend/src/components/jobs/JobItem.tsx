@@ -1,6 +1,17 @@
 import React, { useState } from "react";
 
 import {
+  Bookmark,
+  MoreVertical,
+  ArrowRightCircle,
+  ArrowUpRightSquare,
+  Settings,
+  Trash,
+  FileEdit,
+  Check,
+} from "lucide-react";
+
+import {
   Card,
   CardContent,
   CardDescription,
@@ -18,26 +29,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import {
-  Bookmark,
-  MoreVertical,
-  ArrowRightCircle,
-  ArrowUpRightSquare,
-  Settings,
-  Trash,
-  FileEdit,
-  Check,
-} from "lucide-react";
 
-import { useQueryClient } from "@tanstack/react-query";
-import { refetchSavedJobsData } from "@/utils/refetch";
-
-import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import axios from "@/lib/axiosConfig";
-import ApplicationStage from "@/types/ApplicationStage";
 import { ApplicationStageNames } from "@/utils/constants";
 
+import ApplicationStage from "@/types/ApplicationStage";
+
+import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { useSavedJobs } from "@/stores/useSavedJobs";
 import { useModal } from "@/stores/useModal";
 

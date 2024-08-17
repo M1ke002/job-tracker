@@ -1,15 +1,6 @@
 import React from "react";
 
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-import {
   FileEdit,
   Linkedin,
   Mail,
@@ -18,6 +9,16 @@ import {
   Phone,
   MoreHorizontal,
 } from "lucide-react";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
 import axios from "@/lib/axiosConfig";
 
 import Contact from "@/types/Contact";

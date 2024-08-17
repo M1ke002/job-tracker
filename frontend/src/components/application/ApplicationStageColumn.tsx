@@ -1,5 +1,7 @@
 import React from "react";
 
+import { FileEdit, MoreHorizontal, Plus, Trash } from "lucide-react";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,7 +10,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { FileEdit, MoreHorizontal, Plus, Trash } from "lucide-react";
 
 import {
   SortableContext,
@@ -17,11 +18,13 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+
 import { cn } from "@/lib/utils";
+import { ApplicationStageNames } from "@/utils/constants";
+import JobCard from "./JobCard";
+
 import ApplicationStage from "@/types/ApplicationStage";
 import SavedJob from "@/types/SavedJob";
-import JobCard from "./JobCard";
-import { ApplicationStageNames } from "@/utils/constants";
 
 import { useModal } from "@/stores/useModal";
 

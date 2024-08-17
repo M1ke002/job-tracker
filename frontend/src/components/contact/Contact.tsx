@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 
+import { ChevronDownCircle, PlusCircle, Search } from "lucide-react";
+
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDownCircle, PlusCircle, Search } from "lucide-react";
-import { Input } from "../ui/input";
 import { Button } from "@/components/ui/button";
-
 import ContactItem from "@/components/contact/ContactItem";
+
 import ContactType from "@/types/Contact";
 
 import { useModal } from "@/stores/useModal";

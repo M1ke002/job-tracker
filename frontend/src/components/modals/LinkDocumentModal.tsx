@@ -26,6 +26,7 @@ import { useModal } from "@/stores/useModal";
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 import { useDocumentList } from "@/stores/useDocumentList";
 import { useQueryClient } from "@tanstack/react-query";
+
 import {
   refetchApplicationStagesData,
   refetchSavedJobsData,

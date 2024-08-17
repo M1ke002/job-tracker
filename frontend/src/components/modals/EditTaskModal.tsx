@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 
+import { CalendarIcon } from "lucide-react";
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -40,7 +42,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
 
 import axios from "@/lib/axiosConfig";
 import { cn } from "@/lib/utils";

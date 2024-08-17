@@ -24,13 +24,14 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 
 import axios from "@/lib/axiosConfig";
-import { useQueryClient } from "@tanstack/react-query";
+
 import {
   refetchApplicationStagesData,
   refetchSavedJobsData,
   refetchJobDetailsData,
 } from "@/utils/refetch";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 import { useModal } from "@/stores/useModal";
 

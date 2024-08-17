@@ -22,22 +22,23 @@ import {
 import ApplicationStageColumn from "@/components/application/ApplicationStageColumn";
 import ApplicationStage from "@/components/application/ApplicationStage";
 import JobCard from "@/components/application/JobCard";
+import ApplicationStageColumnSkeleton from "@/components/skeleton/ApplicationStageColumnSkeleton";
 import ApplicationStageType from "@/types/ApplicationStage";
-import axios from "@/lib/axiosConfig";
+
 import { getApplicationStatusCount } from "@/utils/utils";
 import SavedJob from "@/types/SavedJob";
+import axios from "@/lib/axiosConfig";
 
 import { useQuery } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
+import { useSavedJobs } from "@/stores/useSavedJobs";
+import { useSavedJobsQuery } from "@/hooks/queries/useSavedJobsQuery";
+import { useApplicationStagesQuery } from "@/hooks/queries/useApplicationStagesQuery";
+
 import {
   refetchApplicationStagesData,
   refetchSavedJobsData,
 } from "@/utils/refetch";
-
-import { useSavedJobs } from "@/stores/useSavedJobs";
-import ApplicationStageColumnSkeleton from "@/components/skeleton/ApplicationStageColumnSkeleton";
-import { useSavedJobsQuery } from "@/hooks/queries/useSavedJobsQuery";
-import { useApplicationStagesQuery } from "@/hooks/queries/useApplicationStagesQuery";
 
 const sortStagesByPosition = (
   applicationStageColumns: ApplicationStageType[]

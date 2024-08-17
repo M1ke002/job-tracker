@@ -22,8 +22,8 @@ import SavedJob from "@/types/SavedJob";
 
 import { useSavedJobs } from "@/stores/useSavedJobs";
 import { useModal } from "@/stores/useModal";
-
 import { useQueryClient } from "@tanstack/react-query";
+
 import {
   refetchApplicationStagesData,
   refetchSavedJobsData,

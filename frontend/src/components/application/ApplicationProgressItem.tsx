@@ -10,8 +10,8 @@ import {
   refetchSavedJobsData,
   refetchJobDetailsData,
 } from "@/utils/refetch";
-import { useQueryClient } from "@tanstack/react-query";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 
 interface ApplicationProgressItemProps {

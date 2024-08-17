@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 
+import { ChevronDownCircle, PlusCircle } from "lucide-react";
+
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
-import { ChevronDownCircle, PlusCircle } from "lucide-react";
 
 import TaskItem from "@/components/task/TaskItem";
 

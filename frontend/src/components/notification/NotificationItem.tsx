@@ -1,5 +1,7 @@
 import React from "react";
 
+import { MoreHorizontal, Trash } from "lucide-react";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,7 +10,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Trash } from "lucide-react";
 
 import { getTimeDifference } from "@/utils/utils";
 import axios from "@/lib/axiosConfig";

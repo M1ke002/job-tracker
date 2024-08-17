@@ -1,6 +1,7 @@
 import React from "react";
 
 import { FileEdit, Linkedin, Mail, Trash, StickyNote } from "lucide-react";
+
 import axios from "@/lib/axiosConfig";
 
 import Contact from "@/types/Contact";

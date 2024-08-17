@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 
+import { ChevronDownCircle, Sparkles } from "lucide-react";
+
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
-import { ChevronDownCircle, Sparkles } from "lucide-react";
 
 import { useModal } from "@/stores/useModal";
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";

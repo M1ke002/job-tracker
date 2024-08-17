@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 
+import { AlignJustify, Plus, Search, Settings } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,16 +11,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { AlignJustify, Plus, Search, Settings } from "lucide-react";
+
+import axios from "@/lib/axiosConfig";
 
 import DocumentType from "@/types/DocumentType";
-import axios from "@/lib/axiosConfig";
 import { DataTable } from "@/components/document/DataTable";
 import { columns } from "@/components/document/DocumentTableColumns";
 import DocumentListTitle from "@/components/document/DocumentListTitle";
 
 import { useQuery } from "@tanstack/react-query";
-
 import { useModal } from "@/stores/useModal";
 import { useSavedJobs } from "@/stores/useSavedJobs";
 import { useDocumentList } from "@/stores/useDocumentList";

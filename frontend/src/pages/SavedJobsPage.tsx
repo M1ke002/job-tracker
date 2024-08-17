@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 
+import { Plus, SlidersHorizontal } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -8,9 +10,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Plus, SlidersHorizontal } from "lucide-react";
-
-import SavedJob from "@/types/SavedJob";
 
 import { filterJobs, paginateJobs, searchJobs } from "@/utils/utils";
 import { ApplicationStageNames } from "@/utils/constants";
@@ -21,6 +20,7 @@ import JobItemSkeleton from "@/components/skeleton/JobItemSkeleton";
 import SearchBox from "@/components/search/SearchBox";
 import PaginationBox from "@/components/pagination/PaginationBox";
 import JobFilter from "@/components/filter/JobFilter";
+import SavedJob from "@/types/SavedJob";
 
 import { useQuery } from "@tanstack/react-query";
 import { useSavedJobs } from "@/stores/useSavedJobs";

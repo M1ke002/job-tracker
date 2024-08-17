@@ -1,13 +1,14 @@
 import { useMemo } from "react";
+
 import ApplicationProgressItem from "./ApplicationProgressItem";
+import ApplicationProgressItemSkeleton from "../skeleton/ApplicationProgressItemSkeleton";
+import { ApplicationStageNames } from "@/utils/constants";
 
 import ApplicationStage from "@/types/ApplicationStage";
 import SavedJob from "@/types/SavedJob";
 
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 import { useApplicationStages } from "@/stores/useApplicationStages";
-import ApplicationProgressItemSkeleton from "../skeleton/ApplicationProgressItemSkeleton";
-import { ApplicationStageNames } from "@/utils/constants";
 
 const sortApplicationStages = (applicationStages: ApplicationStage[]) => {
   //output: [Applied, O.A., Interview, Offer, Rejected]

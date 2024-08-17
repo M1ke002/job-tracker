@@ -1,6 +1,9 @@
 import React from "react";
-import { Button } from "../ui/button";
+
 import { Link, PlusCircle, UserSearch } from "lucide-react";
+
+import { Button } from "../ui/button";
+
 import Contact from "@/types/Contact";
 import ContactItem from "../contact/ContactItemNew";
 

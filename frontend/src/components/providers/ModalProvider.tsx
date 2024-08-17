@@ -1,6 +1,6 @@
 import AddContactModal from "../modals/AddContactModal";
 import AddJobToStageModal from "../modals/AddJobToStageModal";
-import CofirmationModal from "../modals/CofirmationModal";
+import ConfirmationModal from "../modals/ConfirmationModal";
 import CreateJobModal from "../modals/CreateJobModal";
 import CreateTaskModal from "../modals/CreateTaskModal";
 import EditContactModal from "../modals/EditContactModal";
@@ -15,7 +15,7 @@ import UploadDocumentModal from "../modals/UploadDocumentModal";
 const ModalProvider = () => {
   return (
     <>
-      <CofirmationModal />
+      <ConfirmationModal />
       <AddContactModal />
       <EditContactModal />
       <CreateJobModal />

@@ -6,16 +6,6 @@ import React, {
   useRef,
 } from "react";
 
-import { debounce } from "lodash";
-
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Settings,
   SlidersHorizontal,
@@ -25,13 +15,27 @@ import {
   Loader2,
   ChevronDown,
 } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import JobItem from "@/components/jobs/JobItem";
 import PaginationBox from "@/components/pagination/PaginationBox";
+import ScrollToTopBtn from "@/components/ScrollToTopBtn";
+import JobItemSkeleton from "@/components/skeleton/JobItemSkeleton";
+import SearchBox from "@/components/search/SearchBox";
 import ScrapedSite from "@/types/ScrapedSite";
 import JobListing from "@/types/JobListing";
+
+import { debounce } from "lodash";
 import axios from "@/lib/axiosConfig";
 import {
   SEEK,
@@ -39,18 +43,14 @@ import {
   GRAD_CONNECTION_URL,
   SEEK_URL,
 } from "@/utils/constants";
-import ScrollToTopBtn from "@/components/ScrollToTopBtn";
-import JobItemSkeleton from "@/components/skeleton/JobItemSkeleton";
 
 import { useQuery } from "@tanstack/react-query";
-
 import { useModal } from "@/stores/useModal";
 import { useScrapedSites } from "@/stores/useScrapedSites";
 import { useCurrentScrapedSiteId } from "@/stores/useCurrentScrapedSiteId";
 import { useSavedJobs } from "@/stores/useSavedJobs";
 import { useScrapedSitesQuery } from "@/hooks/queries/useScrapedSitesQuery";
 import { useSavedJobsQuery } from "@/hooks/queries/useSavedJobsQuery";
-import SearchBox from "@/components/search/SearchBox";
 
 const buildJobSearchQuery = (
   initialQuery: string,

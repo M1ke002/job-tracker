@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+import { FileIcon, X } from "lucide-react";
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -30,7 +32,6 @@ import {
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import { FileIcon, X } from "lucide-react";
 
 import axios from "@/lib/axiosConfig";
 import UploadFileZone from "../UploadFileZone";

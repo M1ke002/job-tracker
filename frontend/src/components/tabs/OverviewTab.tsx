@@ -1,14 +1,17 @@
 import React from "react";
-import JobDescription from "../jobs/JobDescription";
-import Task from "../task/Task";
-import { format } from "date-fns";
-import Note from "../note/Note";
-import Contact from "../contact/Contact";
-import AttachedDocuments from "../document/AttachedDocuments";
+
 import { Info } from "lucide-react";
 
-import SavedJob from "@/types/SavedJob";
+import JobDescription from "../jobs/JobDescription";
+import Note from "../note/Note";
+import Task from "../task/Task";
+import Contact from "../contact/Contact";
+import AttachedDocuments from "../document/AttachedDocuments";
 import Keywords from "../keywords/Keywords";
+
+import { format } from "date-fns";
+
+import SavedJob from "@/types/SavedJob";
 
 interface OverviewTabProps {
   currentSavedJob: SavedJob | null;

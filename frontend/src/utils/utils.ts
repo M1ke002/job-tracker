@@ -1,12 +1,14 @@
-import { format } from "date-fns";
 import ApplicationStageType from "@/types/ApplicationStage";
+import SavedJob from "@/types/SavedJob";
+
 import {
   ApplicationStageNames,
   GRAD_CONNECTION_URL,
   SEEK_URL,
 } from "./constants";
-import SavedJob from "@/types/SavedJob";
+
 import { SAVED_STAGE } from "@/pages/SavedJobsPage";
+import { format } from "date-fns";
 
 export const getApplicationStatusCount = (
   applicationStages: ApplicationStageType[]

@@ -12,7 +12,7 @@ import { Button } from "../ui/button";
 
 import { useModal } from "@/stores/useModal";
 
-const CofirmationModal = () => {
+const ConfirmationModal = () => {
   const { type, isOpen, onClose, data } = useModal();
   const {
     confirmModalTitle,
@@ -75,4 +75,4 @@ const CofirmationModal = () => {
   );
 };
 
-export default CofirmationModal;
+export default ConfirmationModal;

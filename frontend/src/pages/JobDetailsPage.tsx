@@ -14,6 +14,7 @@ import {
   User,
   WrenchIcon,
 } from "lucide-react";
+
 import {
   Select,
   SelectContent,
@@ -30,17 +31,18 @@ import Note from "@/components/note/Note";
 import Contact from "@/components/contact/Contact";
 import Task from "@/components/task/Task";
 import JobDescription from "@/components/jobs/JobDescription";
+
 import axios from "@/lib/axiosConfig";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  refetchApplicationStagesData,
-  refetchSavedJobsData,
-  refetchJobDetailsData,
-} from "@/utils/refetch";
+import OverviewTab from "@/components/tabs/OverviewTab";
+import TasksTab from "@/components/tabs/TasksTab";
+import ContactsTab from "@/components/tabs/ContactsTab";
+import DocumentsTab from "@/components/tabs/DocumentsTab";
+import ToolsTab from "@/components/tabs/ToolsTab";
 
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, useNavigate } from "react-router-dom";
 import { useModal } from "@/stores/useModal";
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
@@ -51,11 +53,11 @@ import { useApplicationStagesQuery } from "@/hooks/queries/useApplicationStagesQ
 import { useDocumentsQuery } from "@/hooks/queries/useDocumentsQuery";
 import { useDocumentList } from "@/stores/useDocumentList";
 
-import OverviewTab from "@/components/tabs/OverviewTab";
-import TasksTab from "@/components/tabs/TasksTab";
-import ContactsTab from "@/components/tabs/ContactsTab";
-import DocumentsTab from "@/components/tabs/DocumentsTab";
-import ToolsTab from "@/components/tabs/ToolsTab";
+import {
+  refetchApplicationStagesData,
+  refetchSavedJobsData,
+  refetchJobDetailsData,
+} from "@/utils/refetch";
 
 const JobDetailsPage = () => {
   const { applicationStages, setApplicationStages } = useApplicationStages();

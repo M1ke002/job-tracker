@@ -6,17 +6,18 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "../ui/button";
+
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { Button } from "../ui/button";
-import { cn } from "@/lib/utils";
 
+import { cn } from "@/lib/utils";
 import { isTextEmpty } from "@/utils/utils";
 import axios from "@/lib/axiosConfig";
 
-import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 import JobDescriptionSkeleton from "../skeleton/JobDescriptionSkeleton";
+
+import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 
 interface JobDescriptionProps {
   jobDescription: string;
