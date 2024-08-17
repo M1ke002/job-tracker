@@ -51,12 +51,12 @@ const sortJobsByPosition = (jobs: SavedJob[]) => {
 };
 
 const ApplicationsPage = () => {
+  const { savedJobs, setSavedJobs, isFetched } = useSavedJobs();
+  const queryClient = useQueryClient();
   const [applicationStageColumns, setApplicationStageColumns] = useState<
     ApplicationStageType[]
   >([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { savedJobs, setSavedJobs, isFetched } = useSavedJobs();
-  const queryClient = useQueryClient();
 
   const { data: savedJobsData, status: savedJobsStatus } = useSavedJobsQuery();
   const { data: applicationStagesData, status: applicationStagesStatus } =

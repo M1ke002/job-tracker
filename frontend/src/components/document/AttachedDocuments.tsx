@@ -16,8 +16,10 @@ interface AttachedDocumentsProps {
 
 const AttachedDocuments = ({ documents }: AttachedDocumentsProps) => {
   const [rotateChevron, setRotateChevron] = useState(false);
+
   const handleRotate = () => setRotateChevron(!rotateChevron);
   const rotate = rotateChevron ? "rotate(-180deg)" : "rotate(0)";
+
   return (
     <Collapsible defaultOpen={true}>
       <div className="flex items-center justify-between">

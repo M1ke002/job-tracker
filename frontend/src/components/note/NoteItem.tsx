@@ -14,10 +14,10 @@ import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 
 const Note = () => {
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
+  const { onOpen } = useModal();
   const [isEditMode, setIsEditMode] = useState(false);
   const [value, setValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { onOpen } = useModal();
 
   useEffect(() => {
     setValue(currentSavedJob?.notes || "");

@@ -20,8 +20,10 @@ const Keywords = ({ jobId }: TaskProps) => {
   // const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
   const { onOpen } = useModal();
   const [rotateChevron, setRotateChevron] = useState(false);
+
   const handleRotate = () => setRotateChevron(!rotateChevron);
   const rotate = rotateChevron ? "rotate(-180deg)" : "rotate(0)";
+
   return (
     <Collapsible defaultOpen={true}>
       <div className="p-6 bg-white border border-[#dbe9ff] w-full shadow-sm">

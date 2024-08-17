@@ -12,6 +12,7 @@ import { useModal } from "@/stores/useModal";
 const DocumentsTab = () => {
   const { onOpen } = useModal();
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
+
   const documents = currentSavedJob?.documents || [];
 
   return (

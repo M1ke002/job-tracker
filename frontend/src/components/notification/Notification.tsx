@@ -14,6 +14,7 @@ interface NotificationProps {
 
 const Notification = ({ notifications }: NotificationProps) => {
   const navigate = useNavigate();
+
   return (
     <div className="flex flex-col">
       <div className="flex items-center space-x-2 px-4 py-3 shadow-sm">

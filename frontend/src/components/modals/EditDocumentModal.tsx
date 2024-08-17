@@ -41,11 +41,10 @@ const formSchema = z.object({
 const EditDocumentModal = () => {
   const [isSaving, setIsSaving] = useState(false);
   const { type, isOpen, onClose, data } = useModal();
+  const { documentLists, setDocumentLists } = useDocumentList();
 
   const { documentId, documentType } = data;
-
   const isModalOpen = isOpen && type === "editDocument";
-  const { documentLists, setDocumentLists } = useDocumentList();
 
   const form = useForm({
     resolver: zodResolver(formSchema),

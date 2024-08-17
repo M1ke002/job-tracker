@@ -13,6 +13,7 @@ import { useModal } from "@/stores/useModal";
 const ContactTab = () => {
   const { onOpen } = useModal();
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
+
   const contacts = currentSavedJob?.contacts || [];
   const jobId = currentSavedJob?.id.toString();
 

@@ -68,16 +68,13 @@ const JobListingPage = () => {
   const { scrapedSites, setScrapedSites } = useScrapedSites();
   const { currentScrapedSiteId, setCurrentScrapedSiteId } =
     useCurrentScrapedSiteId();
+  const { onOpen } = useModal();
   const [currentScrapedSite, setCurrentScrapedSite] =
     useState<ScrapedSite | null>(scrapedSites[0]);
-  const { onOpen } = useModal();
-
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   //for searching jobs
   const [searchText, setSearchText] = useState<string>("");
   const [isSearching, setIsSearching] = useState<boolean>(false);
-
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
   //maps page number to site id
   const [pageSiteMapping, setPageSiteMapping] = useState<
     { currentPage: number; siteId: number }[]

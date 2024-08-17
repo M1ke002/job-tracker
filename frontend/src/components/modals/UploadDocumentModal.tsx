@@ -45,13 +45,13 @@ const formSchema = z.object({
 });
 
 const UploadDocumentModal = () => {
-  const [isSaving, setIsSaving] = useState(false);
+  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
+  const { documentLists, setDocumentLists } = useDocumentList();
   const { type, isOpen, onClose } = useModal();
+  const [isSaving, setIsSaving] = useState(false);
   const [file, setFile] = useState<File | null>(null);
 
   const isModalOpen = isOpen && type === "uploadDocument";
-  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
-  const { documentLists, setDocumentLists } = useDocumentList();
 
   const form = useForm({
     resolver: zodResolver(formSchema),

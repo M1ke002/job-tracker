@@ -55,7 +55,6 @@ const SavedJobsPage = () => {
     { stageName: ApplicationStageNames.OFFER, active: false, jobCount: 0 },
     { stageName: ApplicationStageNames.REJECTED, active: false, jobCount: 0 },
   ]);
-
   //pagination data
   const [pages, setPages] = useState({
     totalPages: 1,

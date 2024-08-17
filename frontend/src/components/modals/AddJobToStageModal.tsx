@@ -32,11 +32,12 @@ import {
 const AddJobToStageModal = () => {
   const { savedJobs, setSavedJobs } = useSavedJobs();
   const [filteredJobs, setFilteredJobs] = useState<SavedJob[]>([]);
-  const [selectedJobId, setSelectedJobId] = useState<string | null>(null); //
   const { type, isOpen, onClose, data } = useModal();
+  const queryClient = useQueryClient();
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+
   const { stageId, setApplicationStageColumns } = data;
   const isModalOpen = isOpen && type === "addJobToStage";
-  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (savedJobs.length > 0) {

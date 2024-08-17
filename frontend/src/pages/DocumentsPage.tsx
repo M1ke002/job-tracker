@@ -27,10 +27,9 @@ import { useSavedJobsQuery } from "@/hooks/queries/useSavedJobsQuery";
 import { useDocumentsQuery } from "@/hooks/queries/useDocumentsQuery";
 
 const DocumentsPage = () => {
-  // const [documentTypes, setDocumentTypes] = useState<DocumentType[]>([]);
   const { documentLists, setDocumentLists } = useDocumentList();
-  const { onOpen } = useModal();
   const { setSavedJobs, isFetched } = useSavedJobs();
+  const { onOpen } = useModal();
 
   const { data: savedJobsData, status: savedJobsStatus } = useSavedJobsQuery();
   const { data: documentListsData, status: documentListsStatus } =

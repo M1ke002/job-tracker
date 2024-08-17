@@ -22,11 +22,10 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 
 const Navbar = () => {
+  const { data: notificationsData } = useGetNotifications();
   const [isOpen, setIsOpen] = useState(false);
   const [isTop, setIsTop] = useState(false);
   const queryClient = useQueryClient();
-
-  const { data: notificationsData } = useGetNotifications();
 
   const notifications: NotificationType[] = useMemo(() => {
     if (!notificationsData) return [];

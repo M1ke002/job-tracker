@@ -61,9 +61,9 @@ const JobAlertSettingModal = () => {
   const { scrapedSites, setScrapedSites } = useScrapedSites();
   const { currentScrapedSiteId, setCurrentScrapedSiteId } =
     useCurrentScrapedSiteId();
-
-  const [formedUrl, setFormedUrl] = useState<string>("");
   const { type, isOpen, onOpen, onClose, data } = useModal();
+  const [formedUrl, setFormedUrl] = useState<string>("");
+
   const isModalOpen = isOpen && type === "editJobAlertSetting";
   const { alertSetting, websiteName } = data;
 

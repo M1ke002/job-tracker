@@ -12,6 +12,7 @@ import { useModal } from "@/stores/useModal";
 const TaskTab = () => {
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
   const { onOpen } = useModal();
+
   const tasks = currentSavedJob?.tasks || [];
   const jobId = currentSavedJob?.id.toString();
 

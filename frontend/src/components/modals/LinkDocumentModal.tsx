@@ -33,16 +33,17 @@ import {
 } from "@/utils/refetch";
 
 const LinkDocumentModal = () => {
+  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
   const { documentLists, setDocumentLists } = useDocumentList();
+  const { type, isOpen, onClose } = useModal();
   const [filteredDocumentLists, setFilteredDocumentLists] = useState<
     DocumentType[]
   >([]);
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(
     null
   );
-  const { type, isOpen, onClose } = useModal();
+
   const isModalOpen = isOpen && type === "linkDocument";
-  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
 
   useEffect(() => {
     if (documentLists.length > 0 && currentSavedJob) {
