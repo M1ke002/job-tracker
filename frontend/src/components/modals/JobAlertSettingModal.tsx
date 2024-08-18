@@ -38,7 +38,7 @@ import {
   GRAD_CONNECTION_ALERT_SETTING,
   GRAD_CONNECTION,
   SEEK,
-} from "@/utils/constants";
+} from "@/constant/scrapedSite";
 import { ausgradUrlBuilder, seekUrlBuilder } from "@/utils/utils";
 import axios from "@/lib/axiosConfig";
 

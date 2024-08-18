@@ -1,18 +1,10 @@
 import ApplicationStage from "./ApplicationStage";
 import Contact from "./Contact";
 import Document from "./Document";
+import Job from "./Job";
 import Task from "./Task";
 
-interface SavedJob {
-  id: number;
-  job_title: string;
-  company_name: string;
-  location: string;
-  job_description: string;
-  job_date: string;
-  job_url: string;
-  salary: string;
-  additional_info: string;
+interface SavedJob extends Job {
   notes: string;
   position: number;
   tasks: Task[];

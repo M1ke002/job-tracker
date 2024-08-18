@@ -20,7 +20,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 
 import { cn } from "@/lib/utils";
-import { ApplicationStageNames } from "@/utils/constants";
+import { applicationStageColors } from "@/constant/applicationStage";
 import JobCard from "./JobCard";
 
 import ApplicationStage from "@/types/ApplicationStage";
@@ -28,9 +28,11 @@ import SavedJob from "@/types/SavedJob";
 
 import { useModal } from "@/stores/useModal";
 
+type ApplicationStageName = keyof typeof applicationStageColors;
+
 interface ApplicationStageColumnProps {
   id: number;
-  stage_name: string;
+  stage_name: ApplicationStageName;
   jobs: SavedJob[];
   isLoading: boolean;
   removeJobFromStages: (jobId: number) => void;
@@ -85,11 +87,7 @@ const ApplicationStageColumn = ({
       <div
         className={cn(
           "flex flex-col p-3 w-[340px] rounded-lg bg-[#fff] shadow-md border-[1px] border-[#c3dafe]",
-          stage_name === ApplicationStageNames.APPLIED && "border-[#c3dafe]",
-          stage_name === ApplicationStageNames.OA && "border-[#a3e8f8]",
-          stage_name === ApplicationStageNames.INTERVIEW && "border-amber-200",
-          stage_name === ApplicationStageNames.OFFER && "border-green-300",
-          stage_name === ApplicationStageNames.REJECTED && "border-rose-300"
+          `border-${applicationStageColors[stage_name]}`
         )}
       >
         <div

@@ -2,7 +2,7 @@ import { useMemo } from "react";
 
 import ApplicationProgressItem from "./ApplicationProgressItem";
 import ApplicationProgressItemSkeleton from "../skeleton/ApplicationProgressItemSkeleton";
-import { ApplicationStageNames } from "@/utils/constants";
+import { ApplicationStageNames } from "@/constant/applicationStage";
 
 import ApplicationStage from "@/types/ApplicationStage";
 import SavedJob from "@/types/SavedJob";

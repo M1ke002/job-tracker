@@ -29,9 +29,9 @@ const ApplicationProgressItem = ({
   isCurrentStage,
   isRejected = false,
 }: ApplicationProgressItemProps) => {
-  const [loading, setLoading] = useState(false);
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
   const queryClient = useQueryClient();
+  const [loading, setLoading] = useState(false);
 
   const changeJobStage = async (stageId: string) => {
     try {

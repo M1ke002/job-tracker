@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/popover";
 
 import { filterJobs, paginateJobs, searchJobs } from "@/utils/utils";
-import { ApplicationStageNames } from "@/utils/constants";
+import { ApplicationStageNames } from "@/constant/applicationStage";
 import axios from "@/lib/axiosConfig";
 
 import JobItem from "@/components/jobs/JobItem";
@@ -39,8 +39,6 @@ export interface FilteringStage {
 const SavedJobsPage = () => {
   const { savedJobs, setSavedJobs } = useSavedJobs();
   const { onOpen } = useModal();
-  const { data: savedJobsData, status: savedJobsStatus } = useSavedJobsQuery();
-
   //for searching jobs
   const [searchText, setSearchText] = useState<string>("");
   const [isSearching, setIsSearching] = useState<boolean>(false);
@@ -61,6 +59,8 @@ const SavedJobsPage = () => {
     totalJobCount: savedJobs.length,
     currentPage: 1,
   });
+
+  const { data: savedJobsData, status: savedJobsStatus } = useSavedJobsQuery();
 
   // Helper function to handle search, filtering, pagination
   const getDisplayedJobs = (

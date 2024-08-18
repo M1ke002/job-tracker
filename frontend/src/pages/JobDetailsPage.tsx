@@ -35,6 +35,10 @@ import JobDescription from "@/components/jobs/JobDescription";
 import axios from "@/lib/axiosConfig";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import {
+  ApplicationStageNames,
+  applicationStageColors,
+} from "@/constant/applicationStage";
 
 import OverviewTab from "@/components/tabs/OverviewTab";
 import TasksTab from "@/components/tabs/TasksTab";
@@ -47,7 +51,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useModal } from "@/stores/useModal";
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 import { useApplicationStages } from "@/stores/useApplicationStages";
-import { ApplicationStageNames } from "@/utils/constants";
 import { useJobDetailsQuery } from "@/hooks/queries/useJobDetailsQuery";
 import { useApplicationStagesQuery } from "@/hooks/queries/useApplicationStagesQuery";
 import { useDocumentsQuery } from "@/hooks/queries/useDocumentsQuery";
@@ -58,6 +61,36 @@ import {
   refetchSavedJobsData,
   refetchJobDetailsData,
 } from "@/utils/refetch";
+
+const tabTriggers = [
+  {
+    value: "overview",
+    label: "Overview",
+    icon: <InfoIcon size={16} className="mr-1" />,
+  },
+  {
+    value: "tasks",
+    label: "Tasks",
+    icon: <ListChecksIcon size={16} className="mr-1" />,
+  },
+  {
+    value: "contacts",
+    label: "Contacts",
+    icon: <User size={16} className="mr-1" />,
+  },
+  {
+    value: "documents",
+    label: "Documents",
+    icon: <FolderClosedIcon size={16} className="mr-1" />,
+  },
+  {
+    value: "tools",
+    label: "Tools",
+    icon: <WrenchIcon size={16} className="mr-1" />,
+  },
+];
+
+type ApplicationStageName = keyof typeof applicationStageColors;
 
 const JobDetailsPage = () => {
   const { applicationStages, setApplicationStages } = useApplicationStages();
@@ -173,14 +206,12 @@ const JobDetailsPage = () => {
             <SelectTrigger
               className={cn(
                 "w-[150px] border-blue-200",
-                currentSavedJob?.stage?.stage_name ===
-                  ApplicationStageNames.OA && "border-[#a3e8f8]",
-                currentSavedJob?.stage?.stage_name ===
-                  ApplicationStageNames.INTERVIEW && "border-amber-200",
-                currentSavedJob?.stage?.stage_name ===
-                  ApplicationStageNames.OFFER && "border-green-300",
-                currentSavedJob?.stage?.stage_name ===
-                  ApplicationStageNames.REJECTED && "border-rose-300"
+                currentSavedJob?.stage?.stage_name &&
+                  `border-${
+                    applicationStageColors[
+                      currentSavedJob.stage.stage_name as ApplicationStageName
+                    ]
+                  }`
               )}
               disabled={isLoading}
             >
@@ -300,41 +331,15 @@ const JobDetailsPage = () => {
 
       <Tabs defaultValue="overview" className="w-full space-y-4 pt-4">
         <TabsList className="w-full h-full flex items-center justify-between bg-transparent space-x-3 rounded-none p-0 overflow-x-auto">
-          <TabsTrigger
-            className="space-x-1 p-3 rounded-none w-full bg-white border border-[#dbe9ff] shadow-sm data-[state=active]:border-blue-400 data-[state=active]:bg-[#e4eff8] hover:border-blue-400 hover:bg-[#e4eff8]"
-            value="overview"
-          >
-            <InfoIcon size={16} className="mr-1" />
-            Overview
-          </TabsTrigger>
-          <TabsTrigger
-            className="space-x-1 p-3 rounded-none w-full bg-white border border-[#dbe9ff] shadow-sm data-[state=active]:border-blue-400 data-[state=active]:bg-[#e4eff8] hover:border-blue-400 hover:bg-[#e4eff8]"
-            value="tasks"
-          >
-            <ListChecksIcon size={16} className="mr-1" />
-            Tasks
-          </TabsTrigger>
-          <TabsTrigger
-            className="space-x-1 p-3 rounded-none w-full bg-white border border-[#dbe9ff] shadow-sm data-[state=active]:border-blue-400 data-[state=active]:bg-[#e4eff8] hover:border-blue-400 hover:bg-[#e4eff8]"
-            value="contacts"
-          >
-            <User size={16} className="mr-1" />
-            Contacts
-          </TabsTrigger>
-          <TabsTrigger
-            className="space-x-1 p-3 rounded-none w-full bg-white border border-[#dbe9ff] shadow-sm data-[state=active]:border-blue-400 data-[state=active]:bg-[#e4eff8] hover:border-blue-400 hover:bg-[#e4eff8]"
-            value="documents"
-          >
-            <FolderClosedIcon size={16} className="mr-1" />
-            Documents
-          </TabsTrigger>
-          <TabsTrigger
-            className="space-x-1 p-3 rounded-none w-full bg-white border border-[#dbe9ff] shadow-sm data-[state=active]:border-blue-400 data-[state=active]:bg-[#e4eff8] hover:border-blue-400 hover:bg-[#e4eff8]"
-            value="tools"
-          >
-            <WrenchIcon size={16} className="mr-1" />
-            Tools
-          </TabsTrigger>
+          {tabTriggers.map((tabTrigger) => (
+            <TabsTrigger
+              className="space-x-1 p-3 rounded-none w-full bg-white border border-[#dbe9ff] shadow-sm data-[state=active]:border-blue-400 data-[state=active]:bg-[#e4eff8] hover:border-blue-400 hover:bg-[#e4eff8]"
+              value={tabTrigger.value}
+            >
+              {tabTrigger.icon}
+              {tabTrigger.label}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
         <div>

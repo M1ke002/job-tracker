@@ -57,25 +57,17 @@ const ApplicationsPage = () => {
     ApplicationStageType[]
   >([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const { data: savedJobsData, status: savedJobsStatus } = useSavedJobsQuery();
-  const { data: applicationStagesData, status: applicationStagesStatus } =
-    useApplicationStagesQuery();
-
-  useEffect(() => {
-    if (savedJobsData) {
-      setSavedJobs(savedJobsData);
-    }
-  }, [savedJobsData]);
-
   //the data of the item being dragged
   const [activeColumnData, setActiveColumnData] =
     useState<ApplicationStageType | null>(null);
   const [activeCardData, setActiveCardData] = useState<any>(null);
-
   //set the initial and target column id when dragging a job card
   const [initialJobColumnId, setInitialJobColumnId] = useState<string>("");
   const [targetJobColumnId, setTargetJobColumnId] = useState<string>("");
+
+  const { data: savedJobsData, status: savedJobsStatus } = useSavedJobsQuery();
+  const { data: applicationStagesData, status: applicationStagesStatus } =
+    useApplicationStagesQuery();
 
   const { setNodeRef } = useDroppable({
     id: `application-stages`,
@@ -97,6 +89,12 @@ const ApplicationsPage = () => {
   //   };
   //   fetchApplicationStages();
   // }, []);
+
+  useEffect(() => {
+    if (savedJobsData) {
+      setSavedJobs(savedJobsData);
+    }
+  }, [savedJobsData]);
 
   useEffect(() => {
     if (applicationStagesData) {

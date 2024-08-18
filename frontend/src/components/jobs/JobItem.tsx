@@ -32,7 +32,7 @@ import { Badge } from "@/components/ui/badge";
 
 import { cn } from "@/lib/utils";
 import axios from "@/lib/axiosConfig";
-import { ApplicationStageNames } from "@/utils/constants";
+import { ApplicationStageNames } from "@/constant/applicationStage";
 
 import ApplicationStage from "@/types/ApplicationStage";
 

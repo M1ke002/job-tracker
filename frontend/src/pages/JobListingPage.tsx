@@ -42,7 +42,7 @@ import {
   GRAD_CONNECTION,
   GRAD_CONNECTION_URL,
   SEEK_URL,
-} from "@/utils/constants";
+} from "@/constant/scrapedSite";
 
 import { useQuery } from "@tanstack/react-query";
 import { useModal } from "@/stores/useModal";

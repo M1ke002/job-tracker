@@ -1,11 +1,8 @@
 import ApplicationStageType from "@/types/ApplicationStage";
 import SavedJob from "@/types/SavedJob";
 
-import {
-  ApplicationStageNames,
-  GRAD_CONNECTION_URL,
-  SEEK_URL,
-} from "./constants";
+import { ApplicationStageNames } from "@/constant/applicationStage";
+import { GRAD_CONNECTION_URL, SEEK_URL } from "@/constant/scrapedSite";
 
 import { SAVED_STAGE } from "@/pages/SavedJobsPage";
 import { format } from "date-fns";
