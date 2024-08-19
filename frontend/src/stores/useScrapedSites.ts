@@ -6,6 +6,7 @@ interface ScrapedSitesStore {
   setScrapedSites: (scrapedSites: ScrapedSite[]) => void;
 }
 
+//removed
 export const useScrapedSites = create<ScrapedSitesStore>((set) => ({
   scrapedSites: [],
   setScrapedSites: (scrapedSites: ScrapedSite[]) => set({ scrapedSites }),

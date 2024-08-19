@@ -17,9 +17,10 @@ export const useJobListingsQuery = (
       return res.data;
     },
     enabled: !!siteId, //query runs only when siteId is defined,
-    refetchOnMount: true,
+    refetchOnMount: "always",
     retry: false,
     retryOnMount: false,
     refetchOnWindowFocus: false,
+    staleTime: Infinity,
   });
 };

@@ -134,9 +134,17 @@ const ApplicationsPage = () => {
         position: stage.position,
       }));
       console.log(stagePositions);
+
+      // Cancel any ongoing queries for "application-stages" and "saved-jobs"
+      await queryClient.cancelQueries({ queryKey: ["application-stages"] });
+      await queryClient.cancelQueries({ queryKey: ["saved-jobs"] });
+
       const res = await axios.put("/application-stages/reorder-stages", {
         stagePositions,
       });
+
+      //update application stages cache
+      queryClient.invalidateQueries({ queryKey: ["application-stages"] });
     } catch (error) {
       console.log(error);
     }
@@ -167,9 +175,21 @@ const ApplicationsPage = () => {
         });
       });
       console.log(jobPositions);
+
+      // Cancel any ongoing queries for "application-stages" and "saved-jobs"
+      await queryClient.cancelQueries({ queryKey: ["application-stages"] });
+      await queryClient.cancelQueries({ queryKey: ["saved-jobs"] });
+
       const res = await axios.put("/saved-jobs/reorder-jobs", {
         jobPositions,
       });
+
+      //update application stages cache
+      //TODO: should add await for the queryClient.invalidateQueries???
+      queryClient.invalidateQueries({ queryKey: ["application-stages"] });
+
+      //update the saved jobs
+      queryClient.invalidateQueries({ queryKey: ["saved-jobs"] });
     } catch (error) {
       console.log(error);
     }
@@ -206,29 +226,40 @@ const ApplicationsPage = () => {
           position: job.position,
         }));
 
+        // Cancel any ongoing queries for "application-stages" and "saved-jobs"
+        await queryClient.cancelQueries({ queryKey: ["application-stages"] });
+        await queryClient.cancelQueries({ queryKey: ["saved-jobs"] });
+
         const res = await axios.put(`/saved-jobs/${jobId}/remove-stage`, {
           jobPositions,
         });
         console.log(res.data);
 
-        //update the saved jobs
-        queryClient.setQueryData<SavedJob[] | undefined>(
-          ["saved-jobs"],
-          (oldData) => {
-            if (!oldData) return oldData;
+        //update application stages cache
+        queryClient.invalidateQueries({
+          queryKey: ["application-stages"],
+        });
 
-            return oldData.map((job) =>
-              job.id === jobId
-                ? {
-                    ...job,
-                    stage: null,
-                    stage_id: null,
-                    rejected_at_stage_id: null,
-                  }
-                : job
-            );
-          }
-        );
+        //update the saved jobs
+        queryClient.invalidateQueries({ queryKey: ["saved-jobs"] });
+
+        // queryClient.setQueryData<SavedJob[] | undefined>(
+        //   ["saved-jobs"],
+        //   (oldData) => {
+        //     if (!oldData) return oldData;
+
+        //     return oldData.map((job) =>
+        //       job.id === jobId
+        //         ? {
+        //             ...job,
+        //             stage: null,
+        //             stage_id: null,
+        //             rejected_at_stage_id: null,
+        //           }
+        //         : job
+        //     );
+        //   }
+        // );
       } catch (error) {
         console.log(error);
       }

@@ -9,9 +9,10 @@ export const useScrapedSitesQuery = () => {
       const res = await axios.get<ScrapedSite[]>("/scraped-sites");
       return res.data;
     },
-    refetchOnMount: true,
+    refetchOnMount: "always",
     retry: false,
     retryOnMount: false,
     refetchOnWindowFocus: false,
+    staleTime: Infinity,
   });
 };

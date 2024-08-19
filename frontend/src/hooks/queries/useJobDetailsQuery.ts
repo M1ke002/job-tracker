@@ -9,9 +9,10 @@ export const useJobDetailsQuery = (id: string | undefined) => {
       const res = await axios.get<SavedJob>(`/saved-jobs/${id}`);
       return res.data;
     },
-    refetchOnMount: true,
+    refetchOnMount: "always",
     retry: false,
     retryOnMount: false,
     refetchOnWindowFocus: false,
+    staleTime: Infinity,
   });
 };

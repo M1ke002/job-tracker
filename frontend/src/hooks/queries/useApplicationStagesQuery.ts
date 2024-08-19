@@ -9,9 +9,10 @@ export const useApplicationStagesQuery = () => {
       const res = await axios.get<ApplicationStage[]>("/application-stages");
       return res.data;
     },
-    refetchOnMount: true,
+    refetchOnMount: "always",
     retry: false,
     retryOnMount: false,
     refetchOnWindowFocus: false,
+    staleTime: Infinity,
   });
 };

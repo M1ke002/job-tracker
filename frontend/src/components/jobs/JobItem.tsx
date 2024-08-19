@@ -81,6 +81,7 @@ const JobItem = ({
 
   const onSave = async () => {
     try {
+      setIsLoading(true);
       const res = await axios.post("/saved-jobs", {
         jobTitle,
         companyName,
@@ -93,6 +94,8 @@ const JobItem = ({
       });
 
       //update cache
+      // await queryClient.invalidateQueries({ queryKey: ["saved-jobs"] });
+
       queryClient.setQueryData(
         ["saved-jobs"],
         (oldData: SavedJob[] | undefined) => {
@@ -102,12 +105,17 @@ const JobItem = ({
       );
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleDeleteJob = async () => {
     try {
+      setIsLoading(true);
       const res = await axios.delete(`/saved-jobs/${id}`);
+
+      // await queryClient.invalidateQueries({ queryKey: ["saved-jobs"] });
 
       queryClient.setQueryData<SavedJob[] | undefined>(
         ["saved-jobs"],
@@ -118,6 +126,8 @@ const JobItem = ({
       );
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -125,6 +135,7 @@ const JobItem = ({
     <Card
       className={cn(
         "relative max-w-[680px] my-2 border-[#c3dafe] w-full",
+        isLoading && type === "savedJob" ? "opacity-50 cursor-not-allowed" : "",
         isNewJob ? "border-[#f1969b]" : "border-[#c3dafe]"
       )}
     >
@@ -186,6 +197,7 @@ const JobItem = ({
               <Button
                 variant="primary"
                 className="mr-2 flex items-center justify-center"
+                disabled={isLoading}
                 onClick={() => {
                   if (type === "savedJob") {
                     navigate(`/saved-jobs/${id}`);
@@ -239,7 +251,10 @@ const JobItem = ({
               {type === "savedJob" && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="p-2 rounded-md border-none focus:outline-none hover:text-zinc-600">
+                    <button
+                      className="p-2 rounded-md border-none focus:outline-none hover:text-zinc-600"
+                      disabled={isLoading}
+                    >
                       <MoreVertical size={20} />
                     </button>
                   </DropdownMenuTrigger>

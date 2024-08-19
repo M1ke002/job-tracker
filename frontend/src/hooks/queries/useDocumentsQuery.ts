@@ -9,9 +9,10 @@ export const useDocumentsQuery = () => {
       const res = await axios.get<DocumentType[]>("/document-types");
       return res.data;
     },
-    refetchOnMount: true,
+    refetchOnMount: "always",
     retry: false,
     retryOnMount: false,
     refetchOnWindowFocus: false,
+    staleTime: Infinity,
   });
 };

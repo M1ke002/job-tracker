@@ -66,6 +66,8 @@ const CreateJobModal = () => {
       const res = await axios.post("/saved-jobs", values);
 
       //update cache
+      // await queryClient.invalidateQueries({ queryKey: ["saved-jobs"] });
+
       queryClient.setQueryData(
         ["saved-jobs"],
         (oldData: SavedJob[] | undefined) => {
