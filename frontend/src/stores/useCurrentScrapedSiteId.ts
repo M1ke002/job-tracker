@@ -6,6 +6,7 @@ interface CurrentScrapedSiteIdStore {
   setCurrentScrapedSiteId: (scrapedSiteId: string) => void;
 }
 
+//removed
 export const useCurrentScrapedSiteId = create<CurrentScrapedSiteIdStore>(
   (set) => ({
     currentScrapedSiteId: null,

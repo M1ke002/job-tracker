@@ -20,7 +20,7 @@ import { Button } from "../ui/button";
 import axios from "@/lib/axiosConfig";
 import SavedJob from "@/types/SavedJob";
 
-import { useSavedJobs } from "@/stores/useSavedJobs";
+import { useSavedJobsQuery } from "@/hooks/queries/useSavedJobsQuery";
 import { useModal } from "@/stores/useModal";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -30,7 +30,7 @@ import {
 } from "@/utils/refetch";
 
 const AddJobToStageModal = () => {
-  const { savedJobs, setSavedJobs } = useSavedJobs();
+  const { data: savedJobs, status: savedJobsStatus } = useSavedJobsQuery();
   const [filteredJobs, setFilteredJobs] = useState<SavedJob[]>([]);
   const { type, isOpen, onClose, data } = useModal();
   const queryClient = useQueryClient();
@@ -40,7 +40,7 @@ const AddJobToStageModal = () => {
   const isModalOpen = isOpen && type === "addJobToStage";
 
   useEffect(() => {
-    if (savedJobs.length > 0) {
+    if (savedJobs && savedJobs.length > 0) {
       const filtered = savedJobs.filter((job) => !job.stage);
       setFilteredJobs(filtered);
     } else {
@@ -69,16 +69,15 @@ const AddJobToStageModal = () => {
       }
 
       //update saved jobs
-      const updatedSavedJobs = savedJobs.map((job) => {
-        if (job.id === updatedJob.id) {
-          return updatedJob;
+      queryClient.setQueryData(
+        ["saved-jobs"],
+        (oldData: SavedJob[] | undefined) => {
+          if (!oldData) return oldData;
+          return oldData.map((job) =>
+            job.id === updatedJob.id ? updatedJob : job
+          );
         }
-        return job;
-      });
-      setSavedJobs(updatedSavedJobs);
-
-      // await refetchApplicationStagesData(queryClient);
-      // await refetchSavedJobsData(queryClient);
+      );
     } catch (error) {
       console.log(error);
     } finally {

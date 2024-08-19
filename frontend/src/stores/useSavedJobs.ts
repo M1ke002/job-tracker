@@ -7,6 +7,7 @@ interface SavedJobsStore {
   setSavedJobs: (savedJobs: SavedJob[]) => void;
 }
 
+//removed
 export const useSavedJobs = create<SavedJobsStore>((set) => ({
   savedJobs: [],
   isFetched: false,

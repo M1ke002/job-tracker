@@ -29,9 +29,7 @@ import { getApplicationStatusCount } from "@/utils/utils";
 import SavedJob from "@/types/SavedJob";
 import axios from "@/lib/axiosConfig";
 
-import { useQuery } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
-import { useSavedJobs } from "@/stores/useSavedJobs";
 import { useSavedJobsQuery } from "@/hooks/queries/useSavedJobsQuery";
 import { useApplicationStagesQuery } from "@/hooks/queries/useApplicationStagesQuery";
 
@@ -51,7 +49,6 @@ const sortJobsByPosition = (jobs: SavedJob[]) => {
 };
 
 const ApplicationsPage = () => {
-  const { savedJobs, setSavedJobs, isFetched } = useSavedJobs();
   const queryClient = useQueryClient();
   const [applicationStageColumns, setApplicationStageColumns] = useState<
     ApplicationStageType[]
@@ -65,8 +62,8 @@ const ApplicationsPage = () => {
   const [initialJobColumnId, setInitialJobColumnId] = useState<string>("");
   const [targetJobColumnId, setTargetJobColumnId] = useState<string>("");
 
-  const { data: savedJobsData, status: savedJobsStatus } = useSavedJobsQuery();
-  const { data: applicationStagesData, status: applicationStagesStatus } =
+  const { data: savedJobs, status: savedJobsStatus } = useSavedJobsQuery();
+  const { data: applicationStages, status: applicationStagesStatus } =
     useApplicationStagesQuery();
 
   const { setNodeRef } = useDroppable({
@@ -90,22 +87,22 @@ const ApplicationsPage = () => {
   //   fetchApplicationStages();
   // }, []);
 
-  useEffect(() => {
-    if (savedJobsData) {
-      setSavedJobs(savedJobsData);
-    }
-  }, [savedJobsData]);
+  // useEffect(() => {
+  //   if (savedJobsData) {
+  //     setSavedJobs(savedJobsData);
+  //   }
+  // }, [savedJobsData]);
 
   useEffect(() => {
-    if (applicationStagesData) {
-      const orderedStages = sortStagesByPosition(applicationStagesData);
+    if (applicationStages) {
+      const orderedStages = sortStagesByPosition(applicationStages);
       //sort jobs by position
       orderedStages.forEach((stage) => {
         stage.jobs = sortJobsByPosition(stage.jobs);
       });
       setApplicationStageColumns(orderedStages);
     }
-  }, [applicationStagesData]);
+  }, [applicationStages]);
 
   const pointerSensor = useSensor(PointerSensor, {
     // Require the mouse to move by 10 pixels before activating
@@ -128,21 +125,8 @@ const ApplicationsPage = () => {
   });
   const sensors = useSensors(mouseSensor, touchSensor);
 
-  // const refetchApplicationStagesData = async () => {
-  //   await queryClient.refetchQueries({
-  //     queryKey: ["application-stages"],
-  //     type: "active",
-  //   });
-  // };
-
-  // const refetchSavedJobsData = async () => {
-  //   await queryClient.refetchQueries({
-  //     queryKey: ["saved-jobs"],
-  //     type: "active",
-  //   });
-  // };
-
   const updateStageOrder = async (newStageColumns: ApplicationStageType[]) => {
+    //TODO: update tanstack query cache after calling api. do same for other functions as well
     try {
       //send an array of [{id: 1, position: 0}, {id: 2, position: 1}, ...]
       const stagePositions = newStageColumns.map((stage) => ({
@@ -153,9 +137,6 @@ const ApplicationsPage = () => {
       const res = await axios.put("/application-stages/reorder-stages", {
         stagePositions,
       });
-      // await refetchApplicationStagesData(queryClient);
-      // refetchApplicationStages();
-      // console.log(res.data);
     } catch (error) {
       console.log(error);
     }
@@ -189,8 +170,6 @@ const ApplicationsPage = () => {
       const res = await axios.put("/saved-jobs/reorder-jobs", {
         jobPositions,
       });
-      // await refetchApplicationStagesData(queryClient);
-      // refetchApplicationStages();
     } catch (error) {
       console.log(error);
     }
@@ -199,6 +178,8 @@ const ApplicationsPage = () => {
   const removeJobFromStages = useCallback(
     async (jobId: number) => {
       try {
+        if (!savedJobs) return;
+
         //find the column that contains the job
         const column = findColumnByJobId(jobId);
         if (!column) return;
@@ -231,28 +212,30 @@ const ApplicationsPage = () => {
         console.log(res.data);
 
         //update the saved jobs
-        const updatedSavedJobs = savedJobs.map((job) => {
-          if (job.id === jobId) {
-            return {
-              ...job,
-              stage: null,
-              stage_id: null,
-              rejected_at_stage_id: null,
-            };
+        queryClient.setQueryData<SavedJob[] | undefined>(
+          ["saved-jobs"],
+          (oldData) => {
+            if (!oldData) return oldData;
+
+            return oldData.map((job) =>
+              job.id === jobId
+                ? {
+                    ...job,
+                    stage: null,
+                    stage_id: null,
+                    rejected_at_stage_id: null,
+                  }
+                : job
+            );
           }
-          return job;
-        });
-        setSavedJobs(updatedSavedJobs);
-        // await refetchApplicationStagesData(queryClient);
-        // await refetchSavedJobsData(queryClient);
-        // refetchApplicationStages();
+        );
       } catch (error) {
         console.log(error);
       }
     },
     [
       savedJobs,
-      setSavedJobs,
+      queryClient,
       applicationStageColumns,
       setApplicationStageColumns,
     ]

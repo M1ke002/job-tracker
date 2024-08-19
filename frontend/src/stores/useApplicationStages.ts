@@ -6,6 +6,7 @@ interface ApplicationStagesStore {
   setApplicationStages: (applicationStages: ApplicationStage[]) => void;
 }
 
+//removed (??)
 export const useApplicationStages = create<ApplicationStagesStore>((set) => ({
   applicationStages: [],
   setApplicationStages: (applicationStages) =>

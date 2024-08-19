@@ -24,7 +24,7 @@ import DocumentType from "@/types/DocumentType";
 
 import { useModal } from "@/stores/useModal";
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
-import { useDocumentList } from "@/stores/useDocumentList";
+import { useDocumentsQuery } from "@/hooks/queries/useDocumentsQuery";
 import { useQueryClient } from "@tanstack/react-query";
 
 import {
@@ -34,8 +34,10 @@ import {
 
 const LinkDocumentModal = () => {
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
-  const { documentLists, setDocumentLists } = useDocumentList();
+  const { data: documentLists, status: documentListsStatus } =
+    useDocumentsQuery();
   const { type, isOpen, onClose } = useModal();
+  const queryClient = useQueryClient();
   const [filteredDocumentLists, setFilteredDocumentLists] = useState<
     DocumentType[]
   >([]);
@@ -46,7 +48,7 @@ const LinkDocumentModal = () => {
   const isModalOpen = isOpen && type === "linkDocument";
 
   useEffect(() => {
-    if (documentLists.length > 0 && currentSavedJob) {
+    if (documentLists && documentLists.length > 0 && currentSavedJob) {
       //filter out the documents that are already linked to this job
       const filtered = documentLists.map((documentList) => {
         const filteredDocumentList = { ...documentList };
@@ -67,7 +69,7 @@ const LinkDocumentModal = () => {
 
   const linkDocument = async () => {
     try {
-      if (currentSavedJob) {
+      if (currentSavedJob && documentLists) {
         const res = await axios.put(
           `/saved-jobs/${currentSavedJob.id}/link-document`,
           {
@@ -94,24 +96,28 @@ const LinkDocumentModal = () => {
           setCurrentSavedJob({ ...updatedJob, documents: updatedDocuments });
         }
 
-        // update documentLists with new linked job
-        const updatedDocumentLists = documentLists.map((documentList) => ({
-          ...documentList,
-          documents: documentList.documents.map((document) => {
-            if (document.id.toString() === selectedDocumentId) {
-              const updatedDocument = { ...document };
-              updatedDocument.jobs.push({
-                id: currentSavedJob.id,
-                job_title: currentSavedJob.job_title,
-              });
-              return updatedDocument;
-            } else {
-              return document;
-            }
-          }),
-        }));
+        // update documentLists cache with new linked job
+        queryClient.setQueryData<DocumentType[] | undefined>(
+          ["document-lists"],
+          (oldData) => {
+            if (!oldData) return oldData;
 
-        setDocumentLists(updatedDocumentLists);
+            return oldData.map((documentList) => ({
+              ...documentList,
+              documents: documentList.documents.map((document) => {
+                if (document.id.toString() === selectedDocumentId) {
+                  const updatedDocument = { ...document };
+                  updatedDocument.jobs.push({
+                    id: currentSavedJob.id,
+                    job_title: currentSavedJob.job_title,
+                  });
+                  return updatedDocument;
+                }
+                return document;
+              }),
+            }));
+          }
+        );
       }
     } catch (error) {
       console.log(error);

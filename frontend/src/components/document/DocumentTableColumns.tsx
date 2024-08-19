@@ -8,19 +8,25 @@ import {
   FileEdit,
   Lightbulb,
 } from "lucide-react";
-import { Button } from "../ui/button";
-import { format } from "date-fns";
 
-import Document from "@/types/Document";
+import { Button } from "../ui/button";
+
+import { format } from "date-fns";
+import { sydneyToUTCTime } from "@/utils/utils";
 import axios from "@/lib/axiosConfig";
 
+import Document from "@/types/Document";
+import DocumentType from "@/types/DocumentType";
+
 import { useModal } from "@/stores/useModal";
-import { useDocumentList } from "@/stores/useDocumentList";
-import { sydneyToUTCTime } from "@/utils/utils";
+import { useDocumentsQuery } from "@/hooks/queries/useDocumentsQuery";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ActionCell = ({ row }: { row: Row<Document> }) => {
-  const { documentLists, setDocumentLists } = useDocumentList();
+  // const { data: documentLists, status: documentListsStatus } =
+  //   useDocumentsQuery();
   const { onOpen } = useModal();
+  const queryClient = useQueryClient();
   const { id, file_url, document_type_id } = row.original;
 
   const deleteDocument = async (id: number) => {
@@ -29,15 +35,19 @@ const ActionCell = ({ row }: { row: Row<Document> }) => {
       const res = await axios.delete(`/documents/${id}`);
 
       //update the documents list to remove the deleted document
-      const updatedDocumentLists = documentLists.map((documentList) => {
-        return {
-          ...documentList,
-          documents: documentList.documents.filter(
-            (document) => document.id !== id
-          ),
-        };
-      });
-      setDocumentLists(updatedDocumentLists);
+      queryClient.setQueryData<DocumentType[] | undefined>(
+        ["document-lists"],
+        (oldData) => {
+          if (!oldData) return oldData;
+
+          return oldData.map((documentList) => ({
+            ...documentList,
+            documents: documentList.documents.filter(
+              (document) => document.id !== id
+            ),
+          }));
+        }
+      );
     } catch (error) {
       console.log(error);
     }

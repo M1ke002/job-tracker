@@ -21,13 +21,16 @@ import {
 
 import axios from "@/lib/axiosConfig";
 import { sydneyToUTCTime } from "@/utils/utils";
+import { format } from "date-fns";
+
+import DocumentTypeTag from "./DocumentTypeTag";
+
+import DocumentType from "@/types/DocumentType";
 
 import { useModal } from "@/stores/useModal";
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
-import { useDocumentList } from "@/stores/useDocumentList";
-
-import DocumentTypeTag from "./DocumentTypeTag";
-import { format } from "date-fns";
+import { useDocumentsQuery } from "@/hooks/queries/useDocumentsQuery";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface AttachedDocumentItemProps {
   documentId: string;
@@ -51,7 +54,9 @@ const AttachedDocumentItemNew = ({
 }: AttachedDocumentItemProps) => {
   const { onOpen } = useModal();
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
-  const { documentLists, setDocumentLists } = useDocumentList();
+  // const { data: documentLists, status: documentListsStatus } =
+  //   useDocumentsQuery();
+  const queryClient = useQueryClient();
 
   //must - 10 hours to get the correct date
   const convertedDate = sydneyToUTCTime(new Date(dateUploaded));
@@ -75,24 +80,29 @@ const AttachedDocumentItemNew = ({
         };
         setCurrentSavedJob(updatedJob);
 
-        //update documentLists
-        const updatedDocumentLists = documentLists.map((documentList) => ({
-          ...documentList,
-          documents: documentList.documents.map((document) => {
-            if (document.id.toString() === documentId) {
-              return {
-                ...document,
-                jobs: document.jobs.filter(
-                  (job) => job.id !== currentSavedJob.id
-                ),
-              };
-            } else {
-              return document;
-            }
-          }),
-        }));
+        //update documentLists in cache
+        queryClient.setQueryData<DocumentType[] | undefined>(
+          ["document-lists"],
+          (oldData) => {
+            if (!oldData) return oldData;
 
-        setDocumentLists(updatedDocumentLists);
+            return oldData.map((documentList) => ({
+              ...documentList,
+              documents: documentList.documents.map((document) => {
+                if (document.id.toString() === documentId) {
+                  return {
+                    ...document,
+                    jobs: document.jobs.filter(
+                      (job) => job.id !== currentSavedJob.id
+                    ),
+                  };
+                } else {
+                  return document;
+                }
+              }),
+            }));
+          }
+        );
       }
     } catch (error) {
       console.log(error);

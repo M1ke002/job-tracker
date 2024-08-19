@@ -42,9 +42,12 @@ import {
 import { ausgradUrlBuilder, seekUrlBuilder } from "@/utils/utils";
 import axios from "@/lib/axiosConfig";
 
+import ScrapedSite from "@/types/ScrapedSite";
+
 import { useModal } from "@/stores/useModal";
-import { useScrapedSites } from "@/stores/useScrapedSites";
-import { useCurrentScrapedSiteId } from "@/stores/useCurrentScrapedSiteId";
+// import { useScrapedSites } from "@/stores/useScrapedSites";
+import { useScrapedSitesQuery } from "@/hooks/queries/useScrapedSitesQuery";
+import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   keywords: z.string().optional(),
@@ -58,14 +61,16 @@ const formSchema = z.object({
 });
 
 const JobAlertSettingModal = () => {
-  const { scrapedSites, setScrapedSites } = useScrapedSites();
-  const { currentScrapedSiteId, setCurrentScrapedSiteId } =
-    useCurrentScrapedSiteId();
+  // const { scrapedSites, setScrapedSites } = useScrapedSites();
+  const { data: scrapedSites, status: scrapedSitesStatus } =
+    useScrapedSitesQuery();
   const { type, isOpen, onOpen, onClose, data } = useModal();
+  const queryClient = useQueryClient();
+
   const [formedUrl, setFormedUrl] = useState<string>("");
 
   const isModalOpen = isOpen && type === "editJobAlertSetting";
-  const { alertSetting, websiteName } = data;
+  const { alertSetting, websiteName, currentScrapedSiteId } = data;
 
   useEffect(() => {
     console.log(alertSetting);
@@ -144,16 +149,32 @@ const JobAlertSettingModal = () => {
       );
       const updatedSettings = res.data;
 
-      if (currentScrapedSiteId) {
+      if (currentScrapedSiteId && scrapedSites) {
         //update scrapedSites
-        const updatedScrapedSites = scrapedSites.map((site) => {
-          if (site.id.toString() === currentScrapedSiteId) {
-            site.scraped_site_settings = updatedSettings;
-            return site;
+
+        queryClient.setQueryData(
+          ["scraped-sites"],
+          (oldData: ScrapedSite[] | undefined) => {
+            if (!oldData) return oldData;
+
+            return oldData.map((site) => {
+              if (site.id.toString() === currentScrapedSiteId) {
+                site.scraped_site_settings = updatedSettings;
+                return site;
+              }
+              return site;
+            });
           }
-          return site;
-        });
-        setScrapedSites(updatedScrapedSites);
+        );
+
+        // const updatedScrapedSites = scrapedSites.map((site) => {
+        //   if (site.id.toString() === currentScrapedSiteId) {
+        //     site.scraped_site_settings = updatedSettings;
+        //     return site;
+        //   }
+        //   return site;
+        // });
+        // setScrapedSites(updatedScrapedSites);
       }
 
       //update modal with new data

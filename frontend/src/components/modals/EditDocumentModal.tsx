@@ -31,8 +31,11 @@ import { Button } from "../ui/button";
 
 import axios from "@/lib/axiosConfig";
 
+import DocumentType from "@/types/DocumentType";
+
 import { useModal } from "@/stores/useModal";
-import { useDocumentList } from "@/stores/useDocumentList";
+import { useDocumentsQuery } from "@/hooks/queries/useDocumentsQuery";
+import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   documentType: z.string(),
@@ -41,7 +44,9 @@ const formSchema = z.object({
 const EditDocumentModal = () => {
   const [isSaving, setIsSaving] = useState(false);
   const { type, isOpen, onClose, data } = useModal();
-  const { documentLists, setDocumentLists } = useDocumentList();
+  const { data: documentLists, status: documentListsStatus } =
+    useDocumentsQuery();
+  const queryClient = useQueryClient();
 
   const { documentId, documentType } = data;
   const isModalOpen = isOpen && type === "editDocument";
@@ -79,37 +84,47 @@ const EditDocumentModal = () => {
 
       //update the documents list to reflect the changes
       const updatedDocument = res.data;
-      const updatedDocumentLists = documentLists.map((documentList) => {
-        if (documentList.id === updatedDocument.document_type_id) {
-          const oldDocument = documentList.documents.find(
-            (document) => document.id === updatedDocument.id
-          );
 
-          //if found, replace the old document with the updated document
-          if (oldDocument) {
-            return {
-              ...documentList,
-              documents: documentList.documents.map((document) =>
-                document.id === updatedDocument.id ? updatedDocument : document
-              ),
-            };
-          } else {
-            //if not found, add the updated document to the list
-            return {
-              ...documentList,
-              documents: [...documentList.documents, updatedDocument],
-            };
-          }
-        } else {
-          return {
-            ...documentList,
-            documents: documentList.documents.filter(
-              (document) => document.id !== updatedDocument.id
-            ),
-          };
+      queryClient.setQueryData<DocumentType[] | undefined>(
+        ["document-lists"],
+        (oldData) => {
+          if (!oldData) return oldData;
+
+          return oldData.map((documentList) => {
+            if (documentList.id === updatedDocument.document_type_id) {
+              const oldDocument = documentList.documents.find(
+                (document) => document.id === updatedDocument.id
+              );
+
+              if (oldDocument) {
+                // Replace the old document with the updated document
+                return {
+                  ...documentList,
+                  documents: documentList.documents.map((document) =>
+                    document.id === updatedDocument.id
+                      ? updatedDocument
+                      : document
+                  ),
+                };
+              } else {
+                // Add the updated document to the list if not found
+                return {
+                  ...documentList,
+                  documents: [...documentList.documents, updatedDocument],
+                };
+              }
+            } else {
+              // Filter out the document if its type does not match
+              return {
+                ...documentList,
+                documents: documentList.documents.filter(
+                  (document) => document.id !== updatedDocument.id
+                ),
+              };
+            }
+          });
         }
-      });
-      setDocumentLists(updatedDocumentLists);
+      );
     } catch (error) {
       console.log(error);
     } finally {

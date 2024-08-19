@@ -35,10 +35,11 @@ import axios from "@/lib/axiosConfig";
 import { ApplicationStageNames } from "@/constant/applicationStage";
 
 import ApplicationStage from "@/types/ApplicationStage";
+import SavedJob from "@/types/SavedJob";
 
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { useSavedJobs } from "@/stores/useSavedJobs";
+import { useSavedJobsQuery } from "@/hooks/queries/useSavedJobsQuery";
 import { useModal } from "@/stores/useModal";
 
 interface JobItemProps {
@@ -72,7 +73,7 @@ const JobItem = ({
   stage,
   isSaved,
 }: JobItemProps) => {
-  const { savedJobs, setSavedJobs } = useSavedJobs();
+  // const { data: savedJobs, status: savedJobsStatus } = useSavedJobsQuery();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const { onOpen } = useModal();
@@ -90,8 +91,15 @@ const JobItem = ({
         jobUrl,
         jobDate,
       });
-      setSavedJobs([...savedJobs, res.data]);
-      // await refetchSavedJobsData(queryClient);
+
+      //update cache
+      queryClient.setQueryData(
+        ["saved-jobs"],
+        (oldData: SavedJob[] | undefined) => {
+          if (!oldData) return oldData;
+          return [...oldData, res.data];
+        }
+      );
     } catch (error) {
       console.log(error);
     }
@@ -100,8 +108,14 @@ const JobItem = ({
   const handleDeleteJob = async () => {
     try {
       const res = await axios.delete(`/saved-jobs/${id}`);
-      setSavedJobs(savedJobs.filter((job) => job.id !== id));
-      // await refetchSavedJobsData(queryClient);
+
+      queryClient.setQueryData<SavedJob[] | undefined>(
+        ["saved-jobs"],
+        (oldData) => {
+          if (!oldData) return oldData;
+          return oldData.filter((job) => job.id !== id); // Filter out the deleted job
+        }
+      );
     } catch (error) {
       console.log(error);
     }

@@ -22,8 +22,6 @@ import PaginationBox from "@/components/pagination/PaginationBox";
 import JobFilter from "@/components/filter/JobFilter";
 import SavedJob from "@/types/SavedJob";
 
-import { useQuery } from "@tanstack/react-query";
-import { useSavedJobs } from "@/stores/useSavedJobs";
 import { useModal } from "@/stores/useModal";
 import { useSavedJobsQuery } from "@/hooks/queries/useSavedJobsQuery";
 
@@ -37,7 +35,7 @@ export interface FilteringStage {
 }
 
 const SavedJobsPage = () => {
-  const { savedJobs, setSavedJobs } = useSavedJobs();
+  const { data: savedJobs, status: savedJobsStatus } = useSavedJobsQuery();
   const { onOpen } = useModal();
   //for searching jobs
   const [searchText, setSearchText] = useState<string>("");
@@ -56,11 +54,9 @@ const SavedJobsPage = () => {
   //pagination data
   const [pages, setPages] = useState({
     totalPages: 1,
-    totalJobCount: savedJobs.length,
+    totalJobCount: savedJobs?.length || 0,
     currentPage: 1,
   });
-
-  const { data: savedJobsData, status: savedJobsStatus } = useSavedJobsQuery();
 
   // Helper function to handle search, filtering, pagination
   const getDisplayedJobs = (
@@ -98,28 +94,13 @@ const SavedJobsPage = () => {
     return displayedJobs;
   };
 
-  //set savedJobsData and displayedJobs after fetching from api
-  useEffect(() => {
-    if (savedJobsData) {
-      setSavedJobs(savedJobsData);
-
-      //TODO: check if calling getDisplayedJobs() here is necessary, since it is also called in savedJobs useeffect below
-      // const displayedJobs = getDisplayedJobs(
-      //   savedJobsData,
-      //   pages.currentPage,
-      //   searchText,
-      //   [],
-      //   false,
-      //   false,
-      //   true
-      // );
-      // setDisplayedJobs(displayedJobs);
-    }
-  }, [savedJobsData]);
-
   //update displayedJobs when savedJobs state changes(eg new job added/job deleted)
   //update filteringStages stages
   useEffect(() => {
+    if (!savedJobs) return;
+
+    console.log("rerun", savedJobs);
+
     const filteredStages = filteringStages
       .filter((stage) => stage.active)
       .map((stage) => stage.stageName);
@@ -156,6 +137,8 @@ const SavedJobsPage = () => {
   }, [savedJobs]);
 
   const handleSearchJobs = (query: string) => {
+    if (!savedJobs) return;
+
     //after every search reset page number back to 1 (first page)
     const filteredStages = filteringStages
       .filter((stage) => stage.active)
@@ -174,6 +157,8 @@ const SavedJobsPage = () => {
   };
 
   const fetchPage = (page: number) => {
+    if (!savedJobs) return;
+
     const filteredStages = filteringStages
       .filter((stage) => stage.active)
       .map((stage) => stage.stageName);
@@ -191,6 +176,8 @@ const SavedJobsPage = () => {
   };
 
   const handleFilterJobs = (modifiedStage: FilteringStage, active: boolean) => {
+    if (!savedJobs) return;
+
     //1. update stage active to true/false
     const updatedFilteringStages = filteringStages.map((stage) => {
       if (stage.stageName === modifiedStage.stageName) {
@@ -278,14 +265,17 @@ const SavedJobsPage = () => {
         </div>
         <Separator className="my-3" />
         <div className="grid md:grid-cols-2 gap-2 grid-cols-1 justify-items-center">
-          {savedJobsStatus === "pending" ? (
+          {savedJobsStatus === "pending" && (
             <>
               <JobItemSkeleton />
               <JobItemSkeleton />
               <JobItemSkeleton />
               <JobItemSkeleton />
             </>
-          ) : (
+          )}
+          {savedJobsStatus === "error" && ""}
+          {savedJobsStatus === "success" &&
+            displayedJobs &&
             displayedJobs.map((job) => (
               <JobItem
                 type="savedJob"
@@ -301,15 +291,16 @@ const SavedJobsPage = () => {
                 additionalInfo={job.additional_info}
                 stage={job.stage || undefined}
               />
-            ))
-          )}
+            ))}
         </div>
 
-        {displayedJobs.length === 0 && savedJobsStatus !== "pending" && (
-          <div className="flex items-center justify-center w-full h-60">
-            <p className="text-lg font-medium text-gray-400">No jobs found</p>
-          </div>
-        )}
+        {displayedJobs &&
+          displayedJobs.length === 0 &&
+          savedJobsStatus !== "pending" && (
+            <div className="flex items-center justify-center w-full h-60">
+              <p className="text-lg font-medium text-gray-400">No jobs found</p>
+            </div>
+          )}
       </div>
 
       {pages.totalPages > 1 && savedJobsStatus !== "pending" && (

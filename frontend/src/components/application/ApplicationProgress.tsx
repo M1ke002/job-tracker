@@ -8,7 +8,6 @@ import ApplicationStage from "@/types/ApplicationStage";
 import SavedJob from "@/types/SavedJob";
 
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
-import { useApplicationStages } from "@/stores/useApplicationStages";
 
 const sortApplicationStages = (applicationStages: ApplicationStage[]) => {
   //output: [Applied, O.A., Interview, Offer, Rejected]
@@ -84,11 +83,14 @@ const getApplicationProgressItems = (
 
 interface ApplicationProgressProps {
   isLoading: boolean;
+  applicationStages: ApplicationStage[];
 }
 
-const ApplicationProgress = ({ isLoading }: ApplicationProgressProps) => {
+const ApplicationProgress = ({
+  isLoading,
+  applicationStages,
+}: ApplicationProgressProps) => {
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
-  const { applicationStages, setApplicationStages } = useApplicationStages();
 
   //useMemo to memoize the result of getApplicationProgressItems
   const applicationProgressItems = useMemo(

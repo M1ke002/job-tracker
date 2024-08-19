@@ -6,6 +6,7 @@ interface DocumentListStore {
   setDocumentLists: (documentLists: DocumentType[]) => void;
 }
 
+//removed
 export const useDocumentList = create<DocumentListStore>((set) => ({
   documentLists: [],
   setDocumentLists: (documentLists: DocumentType[]) => set({ documentLists }),

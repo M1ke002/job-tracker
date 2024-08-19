@@ -44,13 +44,11 @@ import {
   SEEK_URL,
 } from "@/constant/scrapedSite";
 
-import { useQuery } from "@tanstack/react-query";
 import { useModal } from "@/stores/useModal";
-import { useScrapedSites } from "@/stores/useScrapedSites";
-import { useCurrentScrapedSiteId } from "@/stores/useCurrentScrapedSiteId";
-import { useSavedJobs } from "@/stores/useSavedJobs";
+// import { useScrapedSites } from "@/stores/useScrapedSites";
 import { useScrapedSitesQuery } from "@/hooks/queries/useScrapedSitesQuery";
 import { useSavedJobsQuery } from "@/hooks/queries/useSavedJobsQuery";
+import { useQueryClient } from "@tanstack/react-query";
 
 const buildJobSearchQuery = (
   initialQuery: string,
@@ -64,13 +62,15 @@ const buildJobSearchQuery = (
 };
 
 const JobListingPage = () => {
-  const { savedJobs, setSavedJobs } = useSavedJobs();
-  const { scrapedSites, setScrapedSites } = useScrapedSites();
-  const { currentScrapedSiteId, setCurrentScrapedSiteId } =
-    useCurrentScrapedSiteId();
+  //fetch scraped sites data (containing job listings) and saved jobs data
+  const { data: scrapedSites, status: scrapedSitesStatus } =
+    useScrapedSitesQuery();
+  const { data: savedJobs, status: savedJobsStatus } = useSavedJobsQuery();
+  const queryClient = useQueryClient();
+  // const { scrapedSites, setScrapedSites } = useScrapedSites();
   const { onOpen } = useModal();
   const [currentScrapedSite, setCurrentScrapedSite] =
-    useState<ScrapedSite | null>(scrapedSites[0]);
+    useState<ScrapedSite | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   //for searching jobs
   const [searchText, setSearchText] = useState<string>("");
@@ -80,45 +80,40 @@ const JobListingPage = () => {
     { currentPage: number; siteId: number }[]
   >([]);
 
-  //fetch scraped sites data (containing job listings) and saved jobs data
-  const { data: scrapedSitesData, status: scrapedSitesStatus } =
-    useScrapedSitesQuery();
-  const { data: savedJobsData, status: savedJobsStatus } = useSavedJobsQuery();
-
-  //set currentScrapedSite to match with currentScrapedSiteId
   useEffect(() => {
-    const currentScrapedSite = scrapedSites.find((site) => {
-      return site.id.toString() === currentScrapedSiteId;
+    //only run once when currentScrapedSite is not set yet (== null)
+    if (!scrapedSites || currentScrapedSite) return;
+
+    //set default currentScrapedSiteId to the first site
+    const defaultScrapedSite = scrapedSites[0];
+    setCurrentScrapedSite(defaultScrapedSite);
+
+    //set pageSiteMapping
+    const pageSiteMapping = scrapedSites.map((site: ScrapedSite) => {
+      return { currentPage: 1, siteId: site.id };
     });
-    if (currentScrapedSite) {
-      setCurrentScrapedSite(currentScrapedSite);
-    }
-  }, [currentScrapedSiteId, scrapedSites]);
+    setPageSiteMapping(pageSiteMapping);
+  }, [scrapedSites, currentScrapedSite]);
 
   useEffect(() => {
-    if (scrapedSitesData) {
-      //set scrapedSitesData after fetching from api
-      setScrapedSites(scrapedSitesData);
+    if (!scrapedSites || !currentScrapedSite) return;
 
-      //set default currentScrapedSiteId to the first site
-      const defaultScrapedSite = scrapedSitesData[0];
-      const defaultScrapedSiteId = defaultScrapedSite.id.toString();
-      setCurrentScrapedSiteId(defaultScrapedSiteId);
+    const currScrapedSite = scrapedSites.find(
+      (site: ScrapedSite) => site.id === currentScrapedSite.id
+    );
 
-      //set pageSiteMapping
-      const pageSiteMapping = scrapedSitesData.map((site: ScrapedSite) => {
-        return { currentPage: 1, siteId: site.id };
-      });
-      setPageSiteMapping(pageSiteMapping);
+    //update currentScrapedSite to reflect changes from scrapedSites
+    if (currScrapedSite) {
+      setCurrentScrapedSite(currScrapedSite);
     }
-  }, [scrapedSitesData]);
+  }, [scrapedSites]);
 
   //set savedJobsData after fetching from api
-  useEffect(() => {
-    if (savedJobsData) {
-      setSavedJobs(savedJobsData);
-    }
-  }, [savedJobsData]);
+  // useEffect(() => {
+  //   if (savedJobsData) {
+  //     setSavedJobs(savedJobsData);
+  //   }
+  // }, [savedJobsData]);
 
   useEffect(() => {
     //scroll to top of page when currentScrapedSite changes
@@ -129,12 +124,12 @@ const JobListingPage = () => {
   const searchJobs = useCallback(
     async (searchText: string) => {
       try {
-        if (!currentScrapedSiteId) return;
+        if (!currentScrapedSite) return;
 
         setIsSearching(true);
         console.log("searching jobs with text: ", searchText);
 
-        const initialQuery = `/job-listings/${currentScrapedSiteId}`;
+        const initialQuery = `/job-listings/${currentScrapedSite.id}`;
         const query = buildJobSearchQuery(initialQuery, searchText, 1);
         const res = await axios.get(query);
 
@@ -143,23 +138,41 @@ const JobListingPage = () => {
         const totalJobCount: number = res.data[2];
 
         //update scrapedSites with new data
-        const updatedScrapedSites = scrapedSites.map((site) => {
-          if (site.id.toString() === currentScrapedSiteId) {
-            return {
-              ...site,
-              job_listings: jobListings,
-              total_pages: totalPages,
-              total_job_count: totalJobCount,
-            };
+        queryClient.setQueryData(
+          ["scraped-sites"],
+          (oldData: ScrapedSite[] | undefined) => {
+            if (!oldData) return oldData;
+
+            return oldData.map((site) =>
+              site.id === currentScrapedSite.id
+                ? {
+                    ...site,
+                    job_listings: jobListings,
+                    total_pages: totalPages,
+                    total_job_count: totalJobCount,
+                  }
+                : site
+            );
           }
-          return site;
-        });
-        setScrapedSites(updatedScrapedSites);
+        );
+
+        // const updatedScrapedSites = scrapedSites.map((site) => {
+        //   if (site.id.toString() === currentScrapedSiteId) {
+        //     return {
+        //       ...site,
+        //       job_listings: jobListings,
+        //       total_pages: totalPages,
+        //       total_job_count: totalJobCount,
+        //     };
+        //   }
+        //   return site;
+        // });
+        // setScrapedSites(updatedScrapedSites);
 
         //update pageSiteMapping to reset currentPage to 1
         setPageSiteMapping((prev) => {
           const updatedPageSiteMapping = prev.map((mapping) =>
-            mapping.siteId.toString() === currentScrapedSiteId
+            mapping.siteId === currentScrapedSite.id
               ? { ...mapping, currentPage: 1 }
               : mapping
           );
@@ -171,7 +184,7 @@ const JobListingPage = () => {
         setIsSearching(false);
       }
     },
-    [currentScrapedSiteId, scrapedSites, setScrapedSites, setPageSiteMapping]
+    [currentScrapedSite, scrapedSites, queryClient, setPageSiteMapping]
   );
 
   const debouncedSearchJobs = useMemo(
@@ -180,18 +193,20 @@ const JobListingPage = () => {
   );
 
   const handleSearchJobs = (value: string) => {
-    if (currentScrapedSiteId) {
+    if (currentScrapedSite) {
       debouncedSearchJobs(value);
     }
   };
 
   const handleSelectScrapedSite = (value: string) => {
+    if (!scrapedSites) return;
+
     console.log(value);
     const selectedScrapedSite = scrapedSites.find(
       (site) => site.website_name === value
     );
     if (selectedScrapedSite) {
-      setCurrentScrapedSiteId(selectedScrapedSite.id.toString());
+      setCurrentScrapedSite(selectedScrapedSite);
     }
 
     //reset searchText to empty
@@ -203,6 +218,8 @@ const JobListingPage = () => {
 
   const scrapeSite = async () => {
     try {
+      if (!scrapedSites) return;
+
       setIsLoading(true);
       const res = await axios.get(
         `/scraped-sites/${currentScrapedSite?.id}/scrape`
@@ -212,13 +229,24 @@ const JobListingPage = () => {
       console.log(updatedScrapedSite);
 
       //update scrapedSites
-      const updatedScrapedSites = scrapedSites.map((site) => {
-        if (site.id === updatedScrapedSite.id) {
-          return updatedScrapedSite;
+      queryClient.setQueryData(
+        ["scraped-sites"],
+        (oldData: ScrapedSite[] | undefined) => {
+          if (!oldData) return oldData;
+
+          return oldData.map((site) =>
+            site.id === updatedScrapedSite.id ? updatedScrapedSite : site
+          );
         }
-        return site;
-      });
-      setScrapedSites(updatedScrapedSites);
+      );
+
+      // const updatedScrapedSites = scrapedSites.map((site) => {
+      //   if (site.id === updatedScrapedSite.id) {
+      //     return updatedScrapedSite;
+      //   }
+      //   return site;
+      // });
+      // setScrapedSites(updatedScrapedSites);
 
       //reset currentPage back to 1 for the updated site
       const updatedPageSiteMapping = pageSiteMapping.map((mapping) => {
@@ -238,9 +266,9 @@ const JobListingPage = () => {
 
   const fetchPage = async (page: number) => {
     try {
-      if (!currentScrapedSiteId) return;
+      if (!currentScrapedSite) return;
 
-      const initialQuery = `/job-listings/${currentScrapedSiteId}`;
+      const initialQuery = `/job-listings/${currentScrapedSite.id}`;
       const query = buildJobSearchQuery(initialQuery, searchText, page);
       const res = await axios.get(query);
       console.log("res", res.data);
@@ -250,23 +278,42 @@ const JobListingPage = () => {
       const totalJobCount: number = res.data[2];
 
       //update scrapedSites with new data
-      const updatedScrapedSites = scrapedSites.map((site) => {
-        if (site.id.toString() === currentScrapedSiteId) {
-          return {
-            ...site,
-            job_listings: jobListings,
-            total_pages: totalPages,
-            total_job_count: totalJobCount,
-          };
+      queryClient.setQueryData(
+        ["scraped-sites"],
+        (oldData: ScrapedSite[] | undefined) => {
+          if (!oldData) return oldData;
+
+          return oldData.map((site) => {
+            if (site.id === currentScrapedSite.id) {
+              return {
+                ...site,
+                job_listings: jobListings,
+                total_pages: totalPages,
+                total_job_count: totalJobCount,
+              };
+            }
+            return site;
+          });
         }
-        return site;
-      });
-      setScrapedSites(updatedScrapedSites);
+      );
+
+      // const updatedScrapedSites = scrapedSites.map((site) => {
+      //   if (site.id.toString() === currentScrapedSiteId) {
+      //     return {
+      //       ...site,
+      //       job_listings: jobListings,
+      //       total_pages: totalPages,
+      //       total_job_count: totalJobCount,
+      //     };
+      //   }
+      //   return site;
+      // });
+      // setScrapedSites(updatedScrapedSites);
 
       //update pageSiteMapping with new currentPage
       setPageSiteMapping((prev) => {
         const updatedPageSiteMapping = prev.map((mapping) =>
-          mapping.siteId.toString() === currentScrapedSiteId
+          mapping.siteId === currentScrapedSite.id
             ? { ...mapping, currentPage: page }
             : mapping
         );
@@ -277,26 +324,39 @@ const JobListingPage = () => {
     }
   };
 
+  const handleOpenJobAlertSettingModal = () => {
+    if (!currentScrapedSite) return;
+
+    onOpen("editJobAlertSetting", {
+      alertSetting: currentScrapedSite?.scraped_site_settings,
+      websiteName: currentScrapedSite?.website_name,
+      currentScrapedSiteId: currentScrapedSite.id.toString(),
+    });
+  };
+
   return (
     <div className="h-full">
       <div className="border-[#dce6f8] border-b-[1px] bg-white h-[64px]">
         <div className="flex items-center justify-between max-w-[1450px] w-full px-4 mx-auto py-3">
           <div className="flex items-center space-x-3">
             <Select
-              disabled={isLoading || isSearching}
+              disabled={
+                isLoading || isSearching || scrapedSitesStatus === "pending"
+              }
               onValueChange={handleSelectScrapedSite}
             >
               <SelectTrigger className="w-[150px] border-blue-200">
                 <SelectValue placeholder={currentScrapedSite?.website_name} />
               </SelectTrigger>
               <SelectContent>
-                {scrapedSites.map((site, index) => {
-                  return (
-                    <SelectItem key={index} value={site.website_name}>
-                      {site.website_name}
-                    </SelectItem>
-                  );
-                })}
+                {scrapedSites &&
+                  scrapedSites.map((site, index) => {
+                    return (
+                      <SelectItem key={index} value={site.website_name}>
+                        {site.website_name}
+                      </SelectItem>
+                    );
+                  })}
               </SelectContent>
             </Select>
           </div>
@@ -304,12 +364,7 @@ const JobListingPage = () => {
             <Button
               className="flex items-center"
               variant="primary"
-              onClick={() =>
-                onOpen("editJobAlertSetting", {
-                  alertSetting: currentScrapedSite?.scraped_site_settings,
-                  websiteName: currentScrapedSite?.website_name,
-                })
-              }
+              onClick={handleOpenJobAlertSettingModal}
             >
               <BellRing size={18} className="mr-2" />
               <span className="pb-[1px]">Alert</span>
@@ -391,7 +446,7 @@ const JobListingPage = () => {
                   jobDate={job.job_date}
                   salary={job.salary}
                   isNewJob={job.is_new}
-                  isSaved={savedJobs.some(
+                  isSaved={savedJobs?.some(
                     (savedJob) =>
                       savedJob.job_url === job.job_url &&
                       savedJob.company_name === job.company_name &&

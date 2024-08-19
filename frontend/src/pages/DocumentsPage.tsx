@@ -15,37 +15,32 @@ import {
 import axios from "@/lib/axiosConfig";
 
 import DocumentType from "@/types/DocumentType";
+
 import { DataTable } from "@/components/document/DataTable";
 import { columns } from "@/components/document/DocumentTableColumns";
 import DocumentListTitle from "@/components/document/DocumentListTitle";
 
-import { useQuery } from "@tanstack/react-query";
 import { useModal } from "@/stores/useModal";
-import { useSavedJobs } from "@/stores/useSavedJobs";
-import { useDocumentList } from "@/stores/useDocumentList";
 import { useSavedJobsQuery } from "@/hooks/queries/useSavedJobsQuery";
 import { useDocumentsQuery } from "@/hooks/queries/useDocumentsQuery";
 
 const DocumentsPage = () => {
-  const { documentLists, setDocumentLists } = useDocumentList();
-  const { setSavedJobs, isFetched } = useSavedJobs();
   const { onOpen } = useModal();
-
-  const { data: savedJobsData, status: savedJobsStatus } = useSavedJobsQuery();
-  const { data: documentListsData, status: documentListsStatus } =
+  // const { data: savedJobs, status: savedJobsStatus } = useSavedJobsQuery();
+  const { data: documentLists, status: documentListsStatus } =
     useDocumentsQuery();
 
-  useEffect(() => {
-    if (savedJobsData) {
-      setSavedJobs(savedJobsData);
-    }
-  }, [savedJobsData]);
+  // useEffect(() => {
+  //   if (savedJobsData) {
+  //     setSavedJobs(savedJobsData);
+  //   }
+  // }, [savedJobsData]);
 
-  useEffect(() => {
-    if (documentListsData) {
-      setDocumentLists(documentListsData);
-    }
-  }, [documentListsData]);
+  // useEffect(() => {
+  //   if (documentListsData) {
+  //     setDocumentLists(documentListsData);
+  //   }
+  // }, [documentListsData]);
 
   return (
     <div className="mx-auto px-4 flex flex-col items-center max-w-[1450px]">
@@ -89,13 +84,18 @@ const DocumentsPage = () => {
       </div>
 
       <div className="mt-3 w-full mb-2 space-y-2">
-        {documentLists.map((documentList) => (
-          <div key={documentList.id}>
-            <DocumentListTitle title={documentList.type_name} />
-            <hr className="mt-1 mb-3 border-[#d6eaff]" />
-            <DataTable columns={columns} data={documentList.documents} />
-          </div>
-        ))}
+        {(documentListsStatus === "pending" ||
+          documentListsStatus === "error") &&
+          ""}
+        {documentListsStatus === "success" &&
+          documentLists.length > 0 &&
+          documentLists.map((documentList) => (
+            <div key={documentList.id}>
+              <DocumentListTitle title={documentList.type_name} />
+              <hr className="mt-1 mb-3 border-[#d6eaff]" />
+              <DataTable columns={columns} data={documentList.documents} />
+            </div>
+          ))}
         {/* <div>
           <DocumentListTitle title="Resume" />
           <Separator className="mt-1 mb-3 bg-[#d6eaff]" />

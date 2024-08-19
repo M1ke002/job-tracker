@@ -46,15 +46,13 @@ import ContactsTab from "@/components/tabs/ContactsTab";
 import DocumentsTab from "@/components/tabs/DocumentsTab";
 import ToolsTab from "@/components/tabs/ToolsTab";
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useParams, useNavigate } from "react-router-dom";
 import { useModal } from "@/stores/useModal";
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
-import { useApplicationStages } from "@/stores/useApplicationStages";
+// import { useApplicationStages } from "@/stores/useApplicationStages";
 import { useJobDetailsQuery } from "@/hooks/queries/useJobDetailsQuery";
 import { useApplicationStagesQuery } from "@/hooks/queries/useApplicationStagesQuery";
-import { useDocumentsQuery } from "@/hooks/queries/useDocumentsQuery";
-import { useDocumentList } from "@/stores/useDocumentList";
 
 import {
   refetchApplicationStagesData,
@@ -93,9 +91,8 @@ const tabTriggers = [
 type ApplicationStageName = keyof typeof applicationStageColors;
 
 const JobDetailsPage = () => {
-  const { applicationStages, setApplicationStages } = useApplicationStages();
+  // const { applicationStages, setApplicationStages } = useApplicationStages();
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
-  const { setDocumentLists } = useDocumentList();
   const [isLoading, setLoading] = useState(false);
   const { id } = useParams<{ id: string }>();
   const { onOpen } = useModal();
@@ -104,10 +101,8 @@ const JobDetailsPage = () => {
 
   const { data: jobDetailsData, status: jobDetailsStatus } =
     useJobDetailsQuery(id);
-  const { data: applicationStagesData, status: applicationStagesStatus } =
+  const { data: applicationStages, status: applicationStagesStatus } =
     useApplicationStagesQuery();
-  const { data: documentListsData, status: documentListsStatus } =
-    useDocumentsQuery();
 
   useEffect(() => {
     if (jobDetailsData) {
@@ -119,17 +114,17 @@ const JobDetailsPage = () => {
     };
   }, [jobDetailsData]);
 
-  useEffect(() => {
-    if (applicationStagesData) {
-      setApplicationStages(applicationStagesData);
-    }
-  }, [applicationStagesData]);
+  // useEffect(() => {
+  //   if (applicationStagesData) {
+  //     setApplicationStages(applicationStagesData);
+  //   }
+  // }, [applicationStagesData]);
 
-  useEffect(() => {
-    if (documentListsData) {
-      setDocumentLists(documentListsData);
-    }
-  }, [documentListsData]);
+  // useEffect(() => {
+  //   if (documentListsData) {
+  //     setDocumentLists(documentListsData);
+  //   }
+  // }, [documentListsData]);
 
   const changeJobStage = async (stageId: string) => {
     try {
@@ -202,16 +197,26 @@ const JobDetailsPage = () => {
           <Select
             onValueChange={(value) => changeJobStage(value)}
             defaultValue={currentSavedJob?.stage?.id.toString()}
+            disabled={applicationStagesStatus === "pending"}
           >
             <SelectTrigger
               className={cn(
                 "w-[150px] border-blue-200",
                 currentSavedJob?.stage?.stage_name &&
-                  `border-${
-                    applicationStageColors[
-                      currentSavedJob.stage.stage_name as ApplicationStageName
-                    ]
-                  }`
+                  currentSavedJob?.stage?.stage_name ===
+                    ApplicationStageNames.OA &&
+                  "border-[#a3e8f8]",
+                currentSavedJob?.stage?.stage_name ===
+                  ApplicationStageNames.INTERVIEW && "border-amber-200",
+                currentSavedJob?.stage?.stage_name ===
+                  ApplicationStageNames.OFFER && "border-green-300",
+                currentSavedJob?.stage?.stage_name ===
+                  ApplicationStageNames.REJECTED && "border-rose-300"
+                // `border-${
+                //   applicationStageColors[
+                //     currentSavedJob.stage.stage_name as ApplicationStageName
+                //   ]
+                // }`
               )}
               disabled={isLoading}
             >
@@ -223,7 +228,7 @@ const JobDetailsPage = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="None">Not set</SelectItem>
-              {applicationStages.map((stage) => (
+              {applicationStages?.map((stage) => (
                 <SelectItem key={stage.id} value={stage.id.toString()}>
                   {stage.stage_name}
                 </SelectItem>
@@ -327,6 +332,7 @@ const JobDetailsPage = () => {
           applicationStagesStatus === "pending" ||
           jobDetailsStatus === "pending"
         }
+        applicationStages={applicationStages || []}
       />
 
       <Tabs defaultValue="overview" className="w-full space-y-4 pt-4">
@@ -335,6 +341,7 @@ const JobDetailsPage = () => {
             <TabsTrigger
               className="space-x-1 p-3 rounded-none w-full bg-white border border-[#dbe9ff] shadow-sm data-[state=active]:border-blue-400 data-[state=active]:bg-[#e4eff8] hover:border-blue-400 hover:bg-[#e4eff8]"
               value={tabTrigger.value}
+              key={tabTrigger.value}
             >
               {tabTrigger.icon}
               {tabTrigger.label}

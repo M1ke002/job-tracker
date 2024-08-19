@@ -36,9 +36,12 @@ import { Input } from "../ui/input";
 import axios from "@/lib/axiosConfig";
 import UploadFileZone from "../UploadFileZone";
 
+import DocumentType from "@/types/DocumentType";
+
 import { useModal } from "@/stores/useModal";
-import { useDocumentList } from "@/stores/useDocumentList";
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
+import { useDocumentsQuery } from "@/hooks/queries/useDocumentsQuery";
+import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   documentType: z.string(),
@@ -46,7 +49,9 @@ const formSchema = z.object({
 
 const UploadDocumentModal = () => {
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
-  const { documentLists, setDocumentLists } = useDocumentList();
+  const queryClient = useQueryClient();
+  const { data: documentLists, status: documentListsStatus } =
+    useDocumentsQuery();
   const { type, isOpen, onClose } = useModal();
   const [isSaving, setIsSaving] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -83,16 +88,24 @@ const UploadDocumentModal = () => {
 
       //update the documents list to add the new document
       const newDocument = res.data;
-      const updatedDocumentLists = documentLists.map((documentList) => {
-        if (documentList.id === newDocument.document_type_id) {
-          return {
-            ...documentList,
-            documents: [...documentList.documents, newDocument],
-          };
+
+      //update cache with new data
+      queryClient.setQueryData(
+        ["document-lists"],
+        (oldData: DocumentType[] | undefined) => {
+          if (!oldData) return oldData;
+
+          return oldData.map((documentList) => {
+            if (documentList.id === newDocument.document_type_id) {
+              return {
+                ...documentList,
+                documents: [...documentList.documents, newDocument],
+              };
+            }
+            return documentList;
+          });
         }
-        return documentList;
-      });
-      setDocumentLists(updatedDocumentLists);
+      );
 
       //update currentSavedJob to include new linked document
       //only update if we're in JobDetailsPage (currentSavedJob variable is defined)

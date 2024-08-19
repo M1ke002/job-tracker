@@ -40,6 +40,7 @@ interface ModalData {
   confirmModalConfirmButtonText?: string;
   confirmModalAction?: () => void;
   jobId?: string;
+  currentScrapedSiteId?: string;
   contact?: Contact;
   alertSetting?: ScrapedSiteSettings;
   websiteName?: string;

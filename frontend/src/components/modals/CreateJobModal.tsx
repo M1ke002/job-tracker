@@ -26,8 +26,11 @@ import { Textarea } from "../ui/textarea";
 
 import axios from "@/lib/axiosConfig";
 
-import { useSavedJobs } from "@/stores/useSavedJobs";
+import SavedJob from "@/types/SavedJob";
+
 import { useModal } from "@/stores/useModal";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSavedJobsQuery } from "@/hooks/queries/useSavedJobsQuery";
 
 const formSchema = z.object({
   jobTitle: z.string(),
@@ -40,7 +43,7 @@ const formSchema = z.object({
 
 const CreateJobModal = () => {
   const [isSaving, setIsSaving] = useState(false);
-  const { savedJobs, setSavedJobs } = useSavedJobs();
+  const queryClient = useQueryClient();
   const { type, isOpen, onClose } = useModal();
 
   const isModalOpen = isOpen && type === "createJob";
@@ -61,7 +64,15 @@ const CreateJobModal = () => {
     try {
       setIsSaving(true);
       const res = await axios.post("/saved-jobs", values);
-      setSavedJobs([...savedJobs, res.data]);
+
+      //update cache
+      queryClient.setQueryData(
+        ["saved-jobs"],
+        (oldData: SavedJob[] | undefined) => {
+          if (!oldData) return oldData;
+          return [...oldData, res.data];
+        }
+      );
     } catch (error) {
       console.log(error);
     } finally {

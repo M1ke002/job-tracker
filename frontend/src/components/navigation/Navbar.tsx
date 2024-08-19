@@ -108,7 +108,7 @@ const Navbar = () => {
             }
           >
             <p className="text-[16px] font-semibold md:p-2 transition duration-200 ease-in-out rounded-md">
-              Job Listing
+              Job Listings
             </p>
           </NavLink>
           <NavLink
