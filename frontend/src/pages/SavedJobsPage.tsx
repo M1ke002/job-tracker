@@ -261,6 +261,7 @@ const SavedJobsPage = () => {
             </p>
           )}
           <SearchBox
+            searchText={searchText}
             isSearching={isSearching}
             handleSearchTextChange={handleSearchTextChange}
             placeholder="Search jobs"

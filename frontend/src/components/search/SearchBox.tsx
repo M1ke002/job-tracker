@@ -3,12 +3,14 @@ import React from "react";
 import { Search, Loader2 } from "lucide-react";
 
 interface SearchBoxProps {
+  searchText: string;
   isSearching: boolean;
   handleSearchTextChange: (value: string) => void;
   placeholder?: string;
 }
 
 const SearchBox = ({
+  searchText,
   isSearching,
   handleSearchTextChange,
   placeholder = "Search...",
@@ -19,6 +21,7 @@ const SearchBox = ({
         type="text"
         placeholder={placeholder}
         className="text-sm rounded-sm border-blue-300 border-[1px] pl-3 pr-9 py-2 w-[230px] h-[40px]"
+        value={searchText}
         onChange={(e) => handleSearchTextChange(e.target.value)}
       />
       {isSearching ? (

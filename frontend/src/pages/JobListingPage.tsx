@@ -59,6 +59,7 @@ const JobListingPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   //for searching jobs
   const [searchText, setSearchText] = useState<string>("");
+  const [debouncedSearchText, setDebouncedSearchText] = useState<string>("");
   const [isSearching, setIsSearching] = useState<boolean>(false);
 
   //fetch scraped sites data (containing job listings) and saved jobs data
@@ -66,7 +67,7 @@ const JobListingPage = () => {
     useScrapedSitesQuery();
   // Fetch job listings for the selected site
   const { data: jobListingsData, status: jobListingsStatus } =
-    useJobListingsQuery(selectedSiteId, pageNum, searchText);
+    useJobListingsQuery(selectedSiteId, pageNum, debouncedSearchText);
   const { data: savedJobs, status: savedJobsStatus } = useSavedJobsQuery();
 
   // Find the selected site’s details
@@ -89,13 +90,16 @@ const JobListingPage = () => {
   // Debounce search function
   const debouncedSearchJobs = useCallback(
     debounce((value: string) => {
-      setSearchText(value);
+      setDebouncedSearchText(value);
       setPageNum(1);
     }, 1000), // 1000ms debounce delay
     []
   );
 
   const handleSearchTextChange = (value: string) => {
+    //show text in input field (2 way bindings)
+    setSearchText(value);
+
     if (currentScrapedSite) {
       debouncedSearchJobs(value);
     }
@@ -112,6 +116,7 @@ const JobListingPage = () => {
     //reset searchText to empty
     if (searchText !== "") {
       setSearchText("");
+      setDebouncedSearchText("");
     }
   };
 
@@ -144,6 +149,7 @@ const JobListingPage = () => {
 
       //reset searchText
       setSearchText("");
+      setDebouncedSearchText("");
 
       // remove old cached job listings
       queryClient.removeQueries({
@@ -253,6 +259,7 @@ const JobListingPage = () => {
             </Button>
 
             <SearchBox
+              searchText={searchText}
               isSearching={isSearching}
               handleSearchTextChange={handleSearchTextChange}
               placeholder="Search jobs"
