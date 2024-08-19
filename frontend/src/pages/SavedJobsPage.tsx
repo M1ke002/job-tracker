@@ -136,6 +136,11 @@ const SavedJobsPage = () => {
     setFilteringStages(updatedStages);
   }, [savedJobs]);
 
+  const handleSearchTextChange = (searchText: string) => {
+    setSearchText(searchText);
+    handleSearchJobs(searchText);
+  };
+
   const handleSearchJobs = (query: string) => {
     if (!savedJobs) return;
 
@@ -256,10 +261,8 @@ const SavedJobsPage = () => {
             </p>
           )}
           <SearchBox
-            searchText={searchText}
-            setSearchText={setSearchText}
             isSearching={isSearching}
-            onSearch={handleSearchJobs}
+            handleSearchTextChange={handleSearchTextChange}
             placeholder="Search jobs"
           />
         </div>

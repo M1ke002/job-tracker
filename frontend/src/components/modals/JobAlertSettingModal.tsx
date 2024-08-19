@@ -166,15 +166,6 @@ const JobAlertSettingModal = () => {
             });
           }
         );
-
-        // const updatedScrapedSites = scrapedSites.map((site) => {
-        //   if (site.id.toString() === currentScrapedSiteId) {
-        //     site.scraped_site_settings = updatedSettings;
-        //     return site;
-        //   }
-        //   return site;
-        // });
-        // setScrapedSites(updatedScrapedSites);
       }
 
       //update modal with new data
