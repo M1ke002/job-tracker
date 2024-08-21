@@ -10,10 +10,10 @@ export const useSavedJobsQuery = () => {
       const res = await axios.get<SavedJob[]>("/saved-jobs");
       return res.data;
     },
-    refetchOnMount: "always",
+    refetchOnMount: true,
     retry: false,
     retryOnMount: false,
     refetchOnWindowFocus: false,
-    staleTime: Infinity,
+    staleTime: 60 * 1000,
   });
 };

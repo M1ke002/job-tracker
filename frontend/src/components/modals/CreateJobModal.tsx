@@ -30,7 +30,6 @@ import SavedJob from "@/types/SavedJob";
 
 import { useModal } from "@/stores/useModal";
 import { useQueryClient } from "@tanstack/react-query";
-import { useSavedJobsQuery } from "@/hooks/queries/useSavedJobsQuery";
 
 const formSchema = z.object({
   jobTitle: z.string(),

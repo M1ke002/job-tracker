@@ -4,9 +4,6 @@ import { Info } from "lucide-react";
 
 import JobDescription from "../jobs/JobDescription";
 import Note from "../note/Note";
-import Task from "../task/Task";
-import Contact from "../contact/Contact";
-import AttachedDocuments from "../document/AttachedDocuments";
 import Keywords from "../keywords/Keywords";
 
 import { format } from "date-fns";
@@ -28,7 +25,7 @@ const OverviewTab = ({
       <div className="col-span-3 space-y-4 mb-4 lg:mb-0">
         <JobDescription
           jobDescription={currentSavedJob?.job_description || ""}
-          isLoading={!currentSavedJob}
+          isLoading={jobDetailsStatus === "pending"}
         />
 
         {/* <Task jobId={currentSavedJob?.id.toString() || ""} /> */}

@@ -29,6 +29,7 @@ import JobCard from "./JobCard";
 import ApplicationStage from "@/types/ApplicationStage";
 import SavedJob from "@/types/SavedJob";
 
+import { useSavedJobsQuery } from "@/hooks/queries/useSavedJobsQuery";
 import { useModal } from "@/stores/useModal";
 
 type ApplicationStageName = keyof typeof applicationStageColors;
@@ -71,6 +72,7 @@ const ApplicationStageColumn = ({
     disabled: isLoading,
   });
 
+  const { data: savedJobs, status: savedJobsStatus } = useSavedJobsQuery();
   const { onOpen } = useModal();
 
   const style = {
@@ -177,6 +179,7 @@ const ApplicationStageColumn = ({
             onOpen("addJobToStage", {
               stageId: id.toString(),
               setApplicationStageColumns: setApplicationStageColumns,
+              savedJobs,
             });
           }}
         >

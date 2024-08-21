@@ -76,6 +76,7 @@ const AddContactModal = () => {
           contacts: [...currentSavedJob.contacts, contact],
         };
         setCurrentSavedJob(updatedJob);
+        //TODO: refetch data?
       }
     } catch (error) {
     } finally {

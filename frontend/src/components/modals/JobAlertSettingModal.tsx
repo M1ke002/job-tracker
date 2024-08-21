@@ -45,8 +45,6 @@ import axios from "@/lib/axiosConfig";
 import ScrapedSite from "@/types/ScrapedSite";
 
 import { useModal } from "@/stores/useModal";
-// import { useScrapedSites } from "@/stores/useScrapedSites";
-import { useScrapedSitesQuery } from "@/hooks/queries/useScrapedSitesQuery";
 import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
@@ -62,15 +60,15 @@ const formSchema = z.object({
 
 const JobAlertSettingModal = () => {
   // const { scrapedSites, setScrapedSites } = useScrapedSites();
-  const { data: scrapedSites, status: scrapedSitesStatus } =
-    useScrapedSitesQuery();
   const { type, isOpen, onOpen, onClose, data } = useModal();
   const queryClient = useQueryClient();
 
   const [formedUrl, setFormedUrl] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const isModalOpen = isOpen && type === "editJobAlertSetting";
-  const { alertSetting, websiteName, currentScrapedSiteId } = data;
+  const { alertSetting, websiteName, currentScrapedSiteId, scrapedSites } =
+    data;
 
   useEffect(() => {
     console.log(alertSetting);
@@ -134,6 +132,7 @@ const JobAlertSettingModal = () => {
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       console.log(data);
+      setIsLoading(true);
       const res = await axios.put(
         `/scraped-site-settings/${alertSetting?.id}`,
         {
@@ -151,7 +150,6 @@ const JobAlertSettingModal = () => {
 
       if (currentScrapedSiteId && scrapedSites) {
         //update scrapedSites
-
         queryClient.setQueryData(
           ["scraped-sites"],
           (oldData: ScrapedSite[] | undefined) => {
@@ -172,13 +170,13 @@ const JobAlertSettingModal = () => {
       onOpen("editJobAlertSetting", {
         alertSetting: updatedSettings,
         websiteName,
+        scrapedSites,
       });
-
-      //update scrapedSites
     } catch (error) {
       console.log(error);
     } finally {
       onClose();
+      setIsLoading(false);
     }
   };
 
@@ -508,6 +506,7 @@ const JobAlertSettingModal = () => {
                   variant="ghost"
                   className="mr-2 hover:text-zinc-500"
                   onClick={handleCloseModal}
+                  disabled={isLoading}
                   type="button"
                 >
                   Cancel
@@ -515,6 +514,7 @@ const JobAlertSettingModal = () => {
                 <Button
                   variant="primary"
                   className="text-white bg-blue-500 hover:bg-blue-600"
+                  disabled={isLoading}
                 >
                   Save changes
                 </Button>

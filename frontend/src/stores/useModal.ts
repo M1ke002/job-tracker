@@ -2,6 +2,7 @@ import ApplicationStage from "@/types/ApplicationStage";
 import Contact from "@/types/Contact";
 import DocumentType from "@/types/DocumentType";
 import SavedJob from "@/types/SavedJob";
+import ScrapedSite from "@/types/ScrapedSite";
 import ScrapedSiteSettings from "@/types/ScrapedSiteSettings";
 import Task from "@/types/Task";
 import { create } from "zustand";
@@ -51,6 +52,9 @@ interface ModalData {
   >;
   documentType?: string;
   documentId?: string;
+  savedJobs?: SavedJob[];
+  documentLists?: DocumentType[];
+  scrapedSites?: ScrapedSite[];
 }
 
 interface ModalStore {

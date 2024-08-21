@@ -4,14 +4,17 @@ import { FolderClosedIcon, FolderSearch, Link, PlusCircle } from "lucide-react";
 
 import { Button } from "../ui/button";
 
-import AttachedDocumentItemNew from "../document/AttachedDocumentItemNew";
+import AttachedDocumentItem from "../document/AttachedDocumentItem";
 
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
+import { useDocumentsQuery } from "@/hooks/queries/useDocumentsQuery";
 import { useModal } from "@/stores/useModal";
 
 const DocumentsTab = () => {
   const { onOpen } = useModal();
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
+  const { data: documentLists, status: documentListsStatus } =
+    useDocumentsQuery();
 
   const documents = currentSavedJob?.documents || [];
 
@@ -24,7 +27,7 @@ const DocumentsTab = () => {
             variant="primary"
             onClick={() => {
               if (currentSavedJob) {
-                onOpen("uploadDocument");
+                onOpen("uploadDocument", { documentLists });
               }
             }}
           >
@@ -36,7 +39,7 @@ const DocumentsTab = () => {
             className="text-[#3d3d3d] hover:text-[#3d3d3d] px-2 bg-white"
             onClick={() => {
               if (currentSavedJob) {
-                onOpen("linkDocument");
+                onOpen("linkDocument", { documentLists });
               }
             }}
           >
@@ -57,7 +60,7 @@ const DocumentsTab = () => {
       {documents.length > 0 && (
         <div className="grid grid-cols-1 gap-1 lg:grid-cols-2 xl:grid-cols-3 sm:gap-4 w-full">
           {documents.map((document) => (
-            <AttachedDocumentItemNew
+            <AttachedDocumentItem
               key={document.id}
               documentId={document.id.toString()}
               documentName={document.file_name}

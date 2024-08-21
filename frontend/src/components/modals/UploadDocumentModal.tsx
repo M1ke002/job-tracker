@@ -40,7 +40,6 @@ import DocumentType from "@/types/DocumentType";
 
 import { useModal } from "@/stores/useModal";
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
-import { useDocumentsQuery } from "@/hooks/queries/useDocumentsQuery";
 import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
@@ -50,13 +49,12 @@ const formSchema = z.object({
 const UploadDocumentModal = () => {
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
   const queryClient = useQueryClient();
-  const { data: documentLists, status: documentListsStatus } =
-    useDocumentsQuery();
-  const { type, isOpen, onClose } = useModal();
+  const { type, isOpen, onClose, data } = useModal();
   const [isSaving, setIsSaving] = useState(false);
   const [file, setFile] = useState<File | null>(null);
 
   const isModalOpen = isOpen && type === "uploadDocument";
+  const { documentLists } = data;
 
   const form = useForm({
     resolver: zodResolver(formSchema),

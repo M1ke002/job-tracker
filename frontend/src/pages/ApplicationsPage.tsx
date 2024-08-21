@@ -33,11 +33,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useSavedJobsQuery } from "@/hooks/queries/useSavedJobsQuery";
 import { useApplicationStagesQuery } from "@/hooks/queries/useApplicationStagesQuery";
 
-import {
-  refetchApplicationStagesData,
-  refetchSavedJobsData,
-} from "@/utils/refetch";
-
 const sortStagesByPosition = (
   applicationStageColumns: ApplicationStageType[]
 ) => {
@@ -69,29 +64,6 @@ const ApplicationsPage = () => {
   const { setNodeRef } = useDroppable({
     id: `application-stages`,
   });
-
-  // useEffect(() => {
-  //   const fetchApplicationStages = async () => {
-  //     try {
-  //       const res = await axios.get("/application-stages");
-  //       const orderedStages = sortStagesByPosition(res.data);
-  //       //sort jobs by position
-  //       orderedStages.forEach((stage) => {
-  //         stage.jobs = sortJobsByPosition(stage.jobs);
-  //       });
-  //       setApplicationStageColumns(orderedStages);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetchApplicationStages();
-  // }, []);
-
-  // useEffect(() => {
-  //   if (savedJobsData) {
-  //     setSavedJobs(savedJobsData);
-  //   }
-  // }, [savedJobsData]);
 
   useEffect(() => {
     if (applicationStages) {

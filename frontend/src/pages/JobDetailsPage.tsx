@@ -26,11 +26,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import ApplicationProgress from "@/components/application/ApplicationProgress";
-import AttachedDocuments from "@/components/document/AttachedDocuments";
-import Note from "@/components/note/Note";
-import Contact from "@/components/contact/Contact";
-import Task from "@/components/task/Task";
-import JobDescription from "@/components/jobs/JobDescription";
 
 import axios from "@/lib/axiosConfig";
 import { cn } from "@/lib/utils";
@@ -50,15 +45,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useParams, useNavigate } from "react-router-dom";
 import { useModal } from "@/stores/useModal";
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
-// import { useApplicationStages } from "@/stores/useApplicationStages";
 import { useJobDetailsQuery } from "@/hooks/queries/useJobDetailsQuery";
 import { useApplicationStagesQuery } from "@/hooks/queries/useApplicationStagesQuery";
-
-import {
-  refetchApplicationStagesData,
-  refetchSavedJobsData,
-  refetchJobDetailsData,
-} from "@/utils/refetch";
 
 const tabTriggers = [
   {
@@ -91,7 +79,6 @@ const tabTriggers = [
 type ApplicationStageName = keyof typeof applicationStageColors;
 
 const JobDetailsPage = () => {
-  // const { applicationStages, setApplicationStages } = useApplicationStages();
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
   const [isLoading, setLoading] = useState(false);
   const { id } = useParams<{ id: string }>();
@@ -114,18 +101,6 @@ const JobDetailsPage = () => {
     };
   }, [jobDetailsData]);
 
-  // useEffect(() => {
-  //   if (applicationStagesData) {
-  //     setApplicationStages(applicationStagesData);
-  //   }
-  // }, [applicationStagesData]);
-
-  // useEffect(() => {
-  //   if (documentListsData) {
-  //     setDocumentLists(documentListsData);
-  //   }
-  // }, [documentListsData]);
-
   const changeJobStage = async (stageId: string) => {
     try {
       setLoading(true);
@@ -134,11 +109,7 @@ const JobDetailsPage = () => {
       });
       setLoading(false);
       setCurrentSavedJob(res.data);
-
-      // await refetchApplicationStagesData(queryClient);
-      // await refetchSavedJobsData(queryClient);
-      // await refetchJobDetailsData(queryClient, id!);
-      // refetchJobDetails();
+      //TODO: refetch data?
     } catch (error) {
       console.log(error);
     }
@@ -149,9 +120,7 @@ const JobDetailsPage = () => {
       const res = await axios.delete(`/saved-jobs/${id}`);
       setCurrentSavedJob(null);
       navigate("/saved-jobs");
-
-      // await refetchApplicationStagesData(queryClient);
-      // await refetchSavedJobsData(queryClient);
+      //TODO: refetch data?
     } catch (error) {
       console.log(error);
     }

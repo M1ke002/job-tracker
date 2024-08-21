@@ -20,7 +20,6 @@ import { Button } from "../ui/button";
 import axios from "@/lib/axiosConfig";
 import SavedJob from "@/types/SavedJob";
 
-import { useSavedJobsQuery } from "@/hooks/queries/useSavedJobsQuery";
 import { useModal } from "@/stores/useModal";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -30,13 +29,12 @@ import {
 } from "@/utils/refetch";
 
 const AddJobToStageModal = () => {
-  const { data: savedJobs, status: savedJobsStatus } = useSavedJobsQuery();
   const [filteredJobs, setFilteredJobs] = useState<SavedJob[]>([]);
   const { type, isOpen, onClose, data } = useModal();
   const queryClient = useQueryClient();
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
 
-  const { stageId, setApplicationStageColumns } = data;
+  const { stageId, setApplicationStageColumns, savedJobs } = data;
   const isModalOpen = isOpen && type === "addJobToStage";
 
   useEffect(() => {
@@ -69,15 +67,17 @@ const AddJobToStageModal = () => {
       }
 
       //update saved jobs
-      queryClient.setQueryData(
-        ["saved-jobs"],
-        (oldData: SavedJob[] | undefined) => {
-          if (!oldData) return oldData;
-          return oldData.map((job) =>
-            job.id === updatedJob.id ? updatedJob : job
-          );
-        }
-      );
+      await queryClient.invalidateQueries({ queryKey: ["saved-jobs"] });
+
+      // queryClient.setQueryData(
+      //   ["saved-jobs"],
+      //   (oldData: SavedJob[] | undefined) => {
+      //     if (!oldData) return oldData;
+      //     return oldData.map((job) =>
+      //       job.id === updatedJob.id ? updatedJob : job
+      //     );
+      //   }
+      // );
     } catch (error) {
       console.log(error);
     } finally {

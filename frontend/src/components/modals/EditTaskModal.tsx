@@ -136,6 +136,7 @@ const EditTaskModal = () => {
           ...currentSavedJob,
           tasks: updatedTasks,
         });
+        //TODO: refetch data?
       }
     } catch (error) {
       console.log(error);

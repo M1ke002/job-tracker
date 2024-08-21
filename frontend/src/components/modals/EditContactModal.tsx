@@ -100,6 +100,7 @@ const EditContactModal = () => {
           contacts: updatedContacts,
         };
         setCurrentSavedJob(updatedJob);
+        //TODO: refetch data?
       }
     } catch (error) {
     } finally {

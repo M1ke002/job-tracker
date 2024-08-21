@@ -23,8 +23,8 @@ import { useDocumentsQuery } from "@/hooks/queries/useDocumentsQuery";
 import { useQueryClient } from "@tanstack/react-query";
 
 const ActionCell = ({ row }: { row: Row<Document> }) => {
-  // const { data: documentLists, status: documentListsStatus } =
-  //   useDocumentsQuery();
+  const { data: documentLists, status: documentListsStatus } =
+    useDocumentsQuery();
   const { onOpen } = useModal();
   const queryClient = useQueryClient();
   const { id, file_url, document_type_id } = row.original;
@@ -69,6 +69,7 @@ const ActionCell = ({ row }: { row: Row<Document> }) => {
           onOpen("editDocument", {
             documentId: id.toString(),
             documentType: document_type_id.toString(),
+            documentLists,
           });
         }}
       >

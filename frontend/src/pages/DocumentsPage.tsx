@@ -30,18 +30,6 @@ const DocumentsPage = () => {
   const { data: documentLists, status: documentListsStatus } =
     useDocumentsQuery();
 
-  // useEffect(() => {
-  //   if (savedJobsData) {
-  //     setSavedJobs(savedJobsData);
-  //   }
-  // }, [savedJobsData]);
-
-  // useEffect(() => {
-  //   if (documentListsData) {
-  //     setDocumentLists(documentListsData);
-  //   }
-  // }, [documentListsData]);
-
   return (
     <div className="mx-auto px-4 flex flex-col items-center max-w-[1450px]">
       {/* <div className="flex items-center justify-between border-[1px] border-[#c3dafe] bg-[#f0f4f7] p-4 mt-3 rounded-md w-full"> */}
@@ -84,9 +72,16 @@ const DocumentsPage = () => {
       </div>
 
       <div className="mt-3 w-full mb-2 space-y-2">
-        {(documentListsStatus === "pending" ||
-          documentListsStatus === "error") &&
-          ""}
+        {documentListsStatus === "pending" && (
+          <div className="flex flex-col items-center justify-center space-y-3 min-h-[400px] h-full">
+            <p className="text-xl text-gray-500">Loading Documents...</p>
+          </div>
+        )}
+        {documentListsStatus === "error" && (
+          <div className="flex flex-col items-center justify-center space-y-3 min-h-[400px] h-full">
+            <p className="text-xl text-gray-500">Error loading documents</p>
+          </div>
+        )}
         {documentListsStatus === "success" &&
           documentLists.length > 0 &&
           documentLists.map((documentList) => (
@@ -96,17 +91,6 @@ const DocumentsPage = () => {
               <DataTable columns={columns} data={documentList.documents} />
             </div>
           ))}
-        {/* <div>
-          <DocumentListTitle title="Resume" />
-          <Separator className="mt-1 mb-3 bg-[#d6eaff]" />
-          <DataTable columns={columns} data={fakeData} />
-        </div>
-
-        <div>
-          <DocumentListTitle title="Cover letter" />
-          <Separator className="mt-1 mb-3 bg-[#d6eaff]" />
-          <DataTable columns={columns} data={fakeData} />
-        </div> */}
       </div>
     </div>
   );

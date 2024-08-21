@@ -34,7 +34,6 @@ import axios from "@/lib/axiosConfig";
 import DocumentType from "@/types/DocumentType";
 
 import { useModal } from "@/stores/useModal";
-import { useDocumentsQuery } from "@/hooks/queries/useDocumentsQuery";
 import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
@@ -44,11 +43,9 @@ const formSchema = z.object({
 const EditDocumentModal = () => {
   const [isSaving, setIsSaving] = useState(false);
   const { type, isOpen, onClose, data } = useModal();
-  const { data: documentLists, status: documentListsStatus } =
-    useDocumentsQuery();
   const queryClient = useQueryClient();
 
-  const { documentId, documentType } = data;
+  const { documentId, documentType, documentLists } = data;
   const isModalOpen = isOpen && type === "editDocument";
 
   const form = useForm({
@@ -63,10 +60,6 @@ const EditDocumentModal = () => {
       form.setValue("documentType", documentType);
     }
   }, [documentType]);
-
-  useEffect(() => {
-    console.log(documentLists);
-  }, [documentLists]);
 
   const resetForm = () => {
     if (documentType) {

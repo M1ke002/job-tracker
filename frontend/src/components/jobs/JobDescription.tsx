@@ -48,6 +48,7 @@ const JobDescription = ({ jobDescription, isLoading }: JobDescriptionProps) => {
       );
       const updatedSavedJob = res.data;
       setCurrentSavedJob(updatedSavedJob);
+      //TODO: refetch saved jobs?
       setIsEditMode(false);
     } catch (error) {
       console.log(error);

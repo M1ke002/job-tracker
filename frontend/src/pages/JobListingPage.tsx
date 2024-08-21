@@ -66,8 +66,11 @@ const JobListingPage = () => {
   const { data: scrapedSites, status: scrapedSitesStatus } =
     useScrapedSitesQuery();
   // Fetch job listings for the selected site
-  const { data: jobListingsData, status: jobListingsStatus } =
-    useJobListingsQuery(selectedSiteId, pageNum, debouncedSearchText);
+  const {
+    data: jobListingsData,
+    status: jobListingsStatus,
+    isPlaceholderData,
+  } = useJobListingsQuery(selectedSiteId, pageNum, debouncedSearchText);
   const { data: savedJobs, status: savedJobsStatus } = useSavedJobsQuery();
 
   // Find the selected site’s details
@@ -80,7 +83,7 @@ const JobListingPage = () => {
     if (scrapedSites && scrapedSites.length > 0 && !selectedSiteId) {
       setSelectedSiteId(scrapedSites[0].id.toString()); // Default to the first site
     }
-  }, [scrapedSites, selectedSiteId]);
+  }, [scrapedSites]);
 
   useEffect(() => {
     //scroll to top of page when currentScrapedSite changes
@@ -171,6 +174,7 @@ const JobListingPage = () => {
       alertSetting: currentScrapedSite?.scraped_site_settings,
       websiteName: currentScrapedSite?.website_name,
       currentScrapedSiteId: currentScrapedSite.id.toString(),
+      scrapedSites,
     });
   };
 
@@ -183,6 +187,7 @@ const JobListingPage = () => {
               disabled={
                 isLoading ||
                 isSearching ||
+                isPlaceholderData ||
                 scrapedSitesStatus === "pending" ||
                 jobListingsStatus === "pending"
               }
@@ -270,8 +275,7 @@ const JobListingPage = () => {
 
         <div className="grid md:grid-cols-2 gap-2 grid-cols-1 justify-items-center">
           {scrapedSitesStatus === "pending" ||
-          jobListingsStatus === "pending" ||
-          savedJobsStatus === "pending" ? (
+          jobListingsStatus === "pending" ? (
             <>
               <JobItemSkeleton />
               <JobItemSkeleton />
@@ -293,6 +297,7 @@ const JobListingPage = () => {
                   jobDate={job.job_date}
                   salary={job.salary}
                   isNewJob={job.is_new}
+                  savedJobsStatus={savedJobsStatus}
                   isSaved={savedJobs?.some(
                     (savedJob) =>
                       savedJob.job_url === job.job_url &&
@@ -311,15 +316,14 @@ const JobListingPage = () => {
               <p className="text-lg font-medium text-gray-400">No jobs found</p>
             </div>
           )}
-        {jobListingsData &&
-          jobListingsData.total_pages > 1 &&
-          scrapedSitesStatus !== "pending" && (
-            <PaginationBox
-              totalPages={jobListingsData.total_pages || 1}
-              currentPage={pageNum}
-              fetchPage={fetchPage}
-            />
-          )}
+        {jobListingsData && jobListingsData.total_pages > 1 && (
+          <PaginationBox
+            totalPages={jobListingsData.total_pages || 1}
+            currentPage={pageNum}
+            fetchPage={fetchPage}
+            disabled={isPlaceholderData}
+          />
+        )}
       </div>
 
       <div className="fixed bottom-4 right-4">

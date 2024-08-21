@@ -312,6 +312,7 @@ const SavedJobsPage = () => {
           totalPages={pages.totalPages || 1}
           currentPage={pages.currentPage || 1}
           fetchPage={fetchPage}
+          disabled={false}
         />
       )}
     </div>

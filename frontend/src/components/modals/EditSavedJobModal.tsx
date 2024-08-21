@@ -89,9 +89,7 @@ const EditSavedJobModal = () => {
     try {
       const res = await axios.put(`/saved-jobs/${currentSavedJob?.id}`, values);
       setCurrentSavedJob(res.data);
-
-      // await refetchJobDetailsData(queryClient, currentSavedJob?.id.toString()!);
-      // await refetchSavedJobsData(queryClient);
+      //TODO: refetch data?
     } catch (error) {
       console.log(error);
     } finally {

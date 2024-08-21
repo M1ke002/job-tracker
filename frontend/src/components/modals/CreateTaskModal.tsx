@@ -82,6 +82,7 @@ const CreateTaskModal = () => {
       if (currentSavedJob) {
         const newTasks = [...currentSavedJob.tasks, newTask];
         setCurrentSavedJob({ ...currentSavedJob, tasks: newTasks });
+        //TODO: refetch data (saved jobs, application stages?)
       }
     } catch (error) {
       console.log(error);

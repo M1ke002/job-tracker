@@ -5,7 +5,7 @@ import { Link, PlusCircle, UserSearch } from "lucide-react";
 import { Button } from "../ui/button";
 
 import Contact from "@/types/Contact";
-import ContactItem from "../contact/ContactItemNew";
+import ContactItem from "../contact/ContactItem";
 
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 import { useModal } from "@/stores/useModal";

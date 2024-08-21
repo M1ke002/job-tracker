@@ -1,6 +1,6 @@
 import axios from "@/lib/axiosConfig";
 import JobListingData from "@/types/JobListingData";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 export const useJobListingsQuery = (
   siteId: string | undefined,
@@ -17,10 +17,11 @@ export const useJobListingsQuery = (
       return res.data;
     },
     enabled: !!siteId, //query runs only when siteId is defined,
-    refetchOnMount: "always",
+    refetchOnMount: true,
     retry: false,
     retryOnMount: false,
     refetchOnWindowFocus: false,
-    staleTime: Infinity,
+    staleTime: 60 * 1000 * 5,
+    placeholderData: keepPreviousData,
   });
 };

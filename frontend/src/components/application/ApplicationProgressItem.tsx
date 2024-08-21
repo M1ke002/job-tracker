@@ -42,10 +42,7 @@ const ApplicationProgressItem = ({
       });
       setLoading(false);
       setCurrentSavedJob(res.data);
-
-      // await refetchApplicationStagesData(queryClient);
-      // await refetchSavedJobsData(queryClient);
-      // await refetchJobDetailsData(queryClient, currentSavedJob?.id.toString()!);
+      //TODO: need to refetch / invalidate saved jobs and application stages here
     } catch (error) {
       console.log(error);
     }

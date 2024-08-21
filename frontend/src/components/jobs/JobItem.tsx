@@ -39,7 +39,7 @@ import SavedJob from "@/types/SavedJob";
 
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { useSavedJobsQuery } from "@/hooks/queries/useSavedJobsQuery";
+// import { useSavedJobsQuery } from "@/hooks/queries/useSavedJobsQuery";
 import { useModal } from "@/stores/useModal";
 
 interface JobItemProps {
@@ -56,6 +56,7 @@ interface JobItemProps {
   isNewJob?: boolean;
   stage?: ApplicationStage;
   isSaved?: boolean;
+  savedJobsStatus?: string;
 }
 
 const JobItem = ({
@@ -72,8 +73,9 @@ const JobItem = ({
   isNewJob,
   stage,
   isSaved,
+  savedJobsStatus,
 }: JobItemProps) => {
-  // const { data: savedJobs, status: savedJobsStatus } = useSavedJobsQuery();
+  // const { status: savedJobsStatus } = useSavedJobsQuery();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const { onOpen } = useModal();
@@ -94,15 +96,15 @@ const JobItem = ({
       });
 
       //update cache
-      // await queryClient.invalidateQueries({ queryKey: ["saved-jobs"] });
+      await queryClient.invalidateQueries({ queryKey: ["saved-jobs"] });
 
-      queryClient.setQueryData(
-        ["saved-jobs"],
-        (oldData: SavedJob[] | undefined) => {
-          if (!oldData) return oldData;
-          return [...oldData, res.data];
-        }
-      );
+      // queryClient.setQueryData(
+      //   ["saved-jobs"],
+      //   (oldData: SavedJob[] | undefined) => {
+      //     if (!oldData) return oldData;
+      //     return [...oldData, res.data];
+      //   }
+      // );
     } catch (error) {
       console.log(error);
     } finally {
@@ -115,15 +117,15 @@ const JobItem = ({
       setIsLoading(true);
       const res = await axios.delete(`/saved-jobs/${id}`);
 
-      // await queryClient.invalidateQueries({ queryKey: ["saved-jobs"] });
+      await queryClient.invalidateQueries({ queryKey: ["saved-jobs"] });
 
-      queryClient.setQueryData<SavedJob[] | undefined>(
-        ["saved-jobs"],
-        (oldData) => {
-          if (!oldData) return oldData;
-          return oldData.filter((job) => job.id !== id); // Filter out the deleted job
-        }
-      );
+      // queryClient.setQueryData<SavedJob[] | undefined>(
+      //   ["saved-jobs"],
+      //   (oldData) => {
+      //     if (!oldData) return oldData;
+      //     return oldData.filter((job) => job.id !== id); // Filter out the deleted job
+      //   }
+      // );
     } catch (error) {
       console.log(error);
     } finally {
@@ -197,7 +199,7 @@ const JobItem = ({
               <Button
                 variant="primary"
                 className="mr-2 flex items-center justify-center"
-                disabled={isLoading}
+                disabled={type === "savedJob" && isLoading}
                 onClick={() => {
                   if (type === "savedJob") {
                     navigate(`/saved-jobs/${id}`);
@@ -227,7 +229,7 @@ const JobItem = ({
                     "mr-2 flex items-center justify-center",
                     isSaved && "bg-blue-500/10"
                   )}
-                  disabled={isLoading}
+                  disabled={isLoading || savedJobsStatus === "pending"}
                   onClick={() => {
                     !isSaved && onSave();
                   }}

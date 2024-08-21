@@ -49,6 +49,7 @@ const TaskItem = ({ task }: TaskItemProps) => {
           (currTask) => currTask.id !== task.id
         );
         setCurrentSavedJob({ ...currentSavedJob, tasks: updatedTasks });
+        //TODO: refetch data?
       }
     } catch (error) {
       console.log(error);
@@ -69,6 +70,7 @@ const TaskItem = ({ task }: TaskItemProps) => {
           return currTask;
         });
         setCurrentSavedJob({ ...currentSavedJob, tasks: updatedTasks });
+        //TODO: refetch data?
       }
     } catch (error) {
       console.log(error);
@@ -89,6 +91,7 @@ const TaskItem = ({ task }: TaskItemProps) => {
           return currTask;
         });
         setCurrentSavedJob({ ...currentSavedJob, tasks: updatedTasks });
+        //TODO: refetch data?
       }
     } catch (error) {
       console.log(error);

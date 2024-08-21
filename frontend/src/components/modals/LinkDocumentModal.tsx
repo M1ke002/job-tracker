@@ -24,7 +24,6 @@ import DocumentType from "@/types/DocumentType";
 
 import { useModal } from "@/stores/useModal";
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
-import { useDocumentsQuery } from "@/hooks/queries/useDocumentsQuery";
 import { useQueryClient } from "@tanstack/react-query";
 
 import {
@@ -34,9 +33,7 @@ import {
 
 const LinkDocumentModal = () => {
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
-  const { data: documentLists, status: documentListsStatus } =
-    useDocumentsQuery();
-  const { type, isOpen, onClose } = useModal();
+  const { type, isOpen, onClose, data } = useModal();
   const queryClient = useQueryClient();
   const [filteredDocumentLists, setFilteredDocumentLists] = useState<
     DocumentType[]
@@ -46,6 +43,7 @@ const LinkDocumentModal = () => {
   );
 
   const isModalOpen = isOpen && type === "linkDocument";
+  const { documentLists } = data;
 
   useEffect(() => {
     if (documentLists && documentLists.length > 0 && currentSavedJob) {

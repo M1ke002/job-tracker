@@ -10,12 +10,14 @@ interface PaginationBoxProps {
   currentPage: number;
   totalPages: number;
   fetchPage: (page: number) => void;
+  disabled: boolean;
 }
 
 const PaginationBox = ({
   currentPage,
   totalPages,
   fetchPage,
+  disabled,
 }: PaginationBoxProps) => {
   const [pageButtons, setPageButtons] = useState<
     {
@@ -107,7 +109,7 @@ const PaginationBox = ({
           currentPage === 1 &&
             "cursor-not-allowed text-zinc-500 dark:text-zinc-500"
         )}
-        disabled={currentPage === 1}
+        disabled={currentPage === 1 || disabled}
         onClick={() => {
           if (currentPage !== 1) {
             onPageButtonClick(currentPage - 1);
@@ -128,6 +130,7 @@ const PaginationBox = ({
               currentPage === button.value &&
                 "bg-blue-500 text-white hover:bg-blue-600 hover:text-white"
             )}
+            disabled={disabled}
             onClick={() => {
               if (button.value !== null) {
                 onPageButtonClick(button.value);
@@ -146,7 +149,7 @@ const PaginationBox = ({
           currentPage === totalPages &&
             "cursor-not-allowed text-zinc-500 dark:text-zinc-500"
         )}
-        disabled={currentPage === totalPages}
+        disabled={currentPage === totalPages || disabled}
         onClick={() => {
           if (currentPage !== totalPages) {
             onPageButtonClick(currentPage + 1);
