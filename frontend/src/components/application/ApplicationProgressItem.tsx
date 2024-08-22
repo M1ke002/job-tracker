@@ -40,7 +40,7 @@ const ApplicationProgressItem = ({
       });
 
       await queryClient.invalidateQueries({
-        queryKey: ["job-details", currentSavedJob.id],
+        queryKey: ["job-details", currentSavedJob.id.toString()],
       });
       setLoading(false);
       //TODO: need to refetch / invalidate saved jobs and application stages here

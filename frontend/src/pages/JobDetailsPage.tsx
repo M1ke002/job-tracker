@@ -98,7 +98,7 @@ const JobDetailsPage = () => {
         stageId: stageId,
       });
       await queryClient.invalidateQueries({
-        queryKey: ["job-details", currentSavedJob.id],
+        queryKey: ["job-details", currentSavedJob.id.toString()],
       });
 
       setLoading(false);
@@ -114,7 +114,7 @@ const JobDetailsPage = () => {
 
       const res = await axios.delete(`/saved-jobs/${currentSavedJob.id}`);
       queryClient.removeQueries({
-        queryKey: ["job-details", currentSavedJob.id],
+        queryKey: ["job-details", currentSavedJob.id.toString()],
       });
       navigate("/saved-jobs");
       //TODO: refetch data?
@@ -162,21 +162,19 @@ const JobDetailsPage = () => {
 
           <Select
             onValueChange={(value) => changeJobStage(value)}
-            defaultValue={currentSavedJob?.stage?.id.toString()}
             disabled={applicationStagesStatus === "pending"}
+            value={currentSavedJob?.stage?.id.toString()}
           >
             <SelectTrigger
               className={cn(
                 "w-[150px] border-blue-200",
-                currentSavedJob?.stage?.stage_name &&
-                  currentSavedJob?.stage?.stage_name ===
-                    ApplicationStageNames.OA &&
-                  "border-[#a3e8f8]",
-                currentSavedJob?.stage?.stage_name ===
+                currentSavedJob?.stage?.stage_name ==
+                  ApplicationStageNames.OA && "border-[#a3e8f8]",
+                currentSavedJob?.stage?.stage_name ==
                   ApplicationStageNames.INTERVIEW && "border-amber-200",
-                currentSavedJob?.stage?.stage_name ===
+                currentSavedJob?.stage?.stage_name ==
                   ApplicationStageNames.OFFER && "border-green-300",
-                currentSavedJob?.stage?.stage_name ===
+                currentSavedJob?.stage?.stage_name ==
                   ApplicationStageNames.REJECTED && "border-rose-300"
                 // `border-${
                 //   applicationStageColors[

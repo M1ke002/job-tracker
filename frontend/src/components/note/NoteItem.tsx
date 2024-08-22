@@ -39,7 +39,7 @@ const Note = () => {
       });
 
       await queryClient.invalidateQueries({
-        queryKey: ["job-details", currentSavedJob.id],
+        queryKey: ["job-details", currentSavedJob.id.toString()],
       });
       // const updatedSavedJob = res.data;
       // setCurrentSavedJob(updatedSavedJob);
@@ -67,7 +67,7 @@ const Note = () => {
       });
 
       await queryClient.invalidateQueries({
-        queryKey: ["job-details", currentSavedJob.id],
+        queryKey: ["job-details", currentSavedJob.id.toString()],
       });
       // const updatedSavedJob = res.data;
       // setCurrentSavedJob(updatedSavedJob);

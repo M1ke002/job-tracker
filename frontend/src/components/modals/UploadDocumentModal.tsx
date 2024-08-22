@@ -107,7 +107,7 @@ const UploadDocumentModal = () => {
       //only update if we're in JobDetailsPage (currentSavedJob variable is defined)
       if (currentSavedJob) {
         await queryClient.invalidateQueries({
-          queryKey: ["job-details", currentSavedJob.id],
+          queryKey: ["job-details", currentSavedJob.id.toString()],
         });
       }
     } catch (error) {

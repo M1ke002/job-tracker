@@ -79,7 +79,7 @@ const LinkDocumentModal = () => {
 
           // update job with the new documents list
           await queryClient.invalidateQueries({
-            queryKey: ["job-details", currentSavedJob.id],
+            queryKey: ["job-details", currentSavedJob.id.toString()],
           });
         }
 

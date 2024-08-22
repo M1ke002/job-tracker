@@ -85,7 +85,7 @@ const EditSavedJobModal = () => {
       const res = await axios.put(`/saved-jobs/${currentSavedJob.id}`, values);
 
       await queryClient.invalidateQueries({
-        queryKey: ["job-details", currentSavedJob.id],
+        queryKey: ["job-details", currentSavedJob.id.toString()],
       });
       //TODO: refetch data?
     } catch (error) {
