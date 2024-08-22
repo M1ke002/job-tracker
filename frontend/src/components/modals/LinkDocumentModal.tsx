@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import {
   Dialog,
@@ -26,18 +26,10 @@ import { useModal } from "@/stores/useModal";
 import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 import { useQueryClient } from "@tanstack/react-query";
 
-import {
-  refetchApplicationStagesData,
-  refetchSavedJobsData,
-} from "@/utils/refetch";
-
 const LinkDocumentModal = () => {
   const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
   const { type, isOpen, onClose, data } = useModal();
   const queryClient = useQueryClient();
-  const [filteredDocumentLists, setFilteredDocumentLists] = useState<
-    DocumentType[]
-  >([]);
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(
     null
   );
@@ -45,12 +37,11 @@ const LinkDocumentModal = () => {
   const isModalOpen = isOpen && type === "linkDocument";
   const { documentLists } = data;
 
-  useEffect(() => {
+  const filteredDocumentLists = useMemo(() => {
     if (documentLists && documentLists.length > 0 && currentSavedJob) {
       //filter out the documents that are already linked to this job
-      const filtered = documentLists.map((documentList) => {
+      return documentLists.map((documentList) => {
         const filteredDocumentList = { ...documentList };
-
         filteredDocumentList.documents = documentList.documents.filter(
           (document) =>
             !document.jobs.some(
@@ -59,10 +50,8 @@ const LinkDocumentModal = () => {
         );
         return filteredDocumentList;
       });
-      setFilteredDocumentLists(filtered);
-    } else {
-      setFilteredDocumentLists([]);
     }
+    return [];
   }, [documentLists, currentSavedJob]);
 
   const linkDocument = async () => {

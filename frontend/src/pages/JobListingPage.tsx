@@ -35,6 +35,7 @@ import SearchBox from "@/components/search/SearchBox";
 
 import ScrapedSite from "@/types/ScrapedSite";
 import JobListing from "@/types/JobListing";
+import SavedJob from "@/types/SavedJob";
 
 import { debounce } from "lodash";
 import axios from "@/lib/axiosConfig";
@@ -178,6 +179,20 @@ const JobListingPage = () => {
     });
   };
 
+  const isJobSaved = (
+    savedJobs: SavedJob[] | undefined,
+    job: JobListing
+  ): boolean => {
+    if (!savedJobs) return false;
+
+    return savedJobs.some(
+      (savedJob) =>
+        savedJob.job_url === job.job_url &&
+        savedJob.company_name === job.company_name &&
+        savedJob.job_title === job.job_title
+    );
+  };
+
   return (
     <div className="h-full">
       <div className="border-[#dce6f8] border-b-[1px] bg-white h-[64px]">
@@ -298,12 +313,7 @@ const JobListingPage = () => {
                   salary={job.salary}
                   isNewJob={job.is_new}
                   savedJobsStatus={savedJobsStatus}
-                  isSaved={savedJobs?.some(
-                    (savedJob) =>
-                      savedJob.job_url === job.job_url &&
-                      savedJob.company_name === job.company_name &&
-                      savedJob.job_title === job.job_title
-                  )}
+                  isSaved={isJobSaved(savedJobs, job)}
                 />
               );
             })

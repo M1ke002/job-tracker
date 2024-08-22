@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
 import { Plus, SlidersHorizontal } from "lucide-react";
 
@@ -40,8 +40,6 @@ const SavedJobsPage = () => {
   //for searching jobs
   const [searchText, setSearchText] = useState<string>("");
   const [isSearching, setIsSearching] = useState<boolean>(false);
-  // Local state to display the filtered/paginated jobs
-  const [displayedJobs, setDisplayedJobs] = useState(savedJobs);
   //filtering stages
   const [filteringStages, setFilteringStages] = useState<FilteringStage[]>([
     { stageName: SAVED_STAGE, active: false, jobCount: 0 },
@@ -101,21 +99,6 @@ const SavedJobsPage = () => {
 
     console.log("rerun", savedJobs);
 
-    const filteredStages = filteringStages
-      .filter((stage) => stage.active)
-      .map((stage) => stage.stageName);
-
-    const displayedJobs = getDisplayedJobs(
-      savedJobs,
-      pages.currentPage,
-      searchText,
-      filteredStages,
-      true,
-      true,
-      true
-    );
-    setDisplayedJobs(displayedJobs);
-
     //update filteringStages stages with job counts
     const updatedStages = filteringStages.map((stage) => {
       const jobsInStage = getDisplayedJobs(
@@ -136,48 +119,32 @@ const SavedJobsPage = () => {
     setFilteringStages(updatedStages);
   }, [savedJobs]);
 
-  const handleSearchTextChange = (searchText: string) => {
-    setSearchText(searchText);
-    handleSearchJobs(searchText);
-  };
-
-  const handleSearchJobs = (query: string) => {
-    if (!savedJobs) return;
-
-    //after every search reset page number back to 1 (first page)
-    const filteredStages = filteringStages
-      .filter((stage) => stage.active)
-      .map((stage) => stage.stageName);
-
-    const displayedJobs = getDisplayedJobs(
-      savedJobs,
-      1,
-      query,
-      filteredStages,
-      true,
-      true,
-      true
-    );
-    setDisplayedJobs(displayedJobs);
-  };
-
-  const fetchPage = (page: number) => {
-    if (!savedJobs) return;
+  // Memoized filtered and paginated jobs
+  const displayedJobs = useMemo(() => {
+    if (!savedJobs) return [];
 
     const filteredStages = filteringStages
       .filter((stage) => stage.active)
       .map((stage) => stage.stageName);
 
-    const displayedJobs = getDisplayedJobs(
+    return getDisplayedJobs(
       savedJobs,
-      page,
+      pages.currentPage,
       searchText,
       filteredStages,
       true,
       true,
       true
     );
-    setDisplayedJobs(displayedJobs);
+  }, [savedJobs, pages.currentPage, searchText, filteringStages]);
+
+  const handleSearchTextChange = (searchText: string) => {
+    setSearchText(searchText);
+    setPages((prev) => ({ ...prev, currentPage: 1 }));
+  };
+
+  const fetchPage = (page: number) => {
+    setPages((prev) => ({ ...prev, currentPage: page }));
   };
 
   const handleFilterJobs = (modifiedStage: FilteringStage, active: boolean) => {
@@ -194,21 +161,8 @@ const SavedJobsPage = () => {
     //2. update filtering stages
     setFilteringStages(updatedFilteringStages);
 
-    //3. getDisplayedJobs and set displayed jobs stage
-    const filteredStages = updatedFilteringStages
-      .filter((stage) => stage.active)
-      .map((stage) => stage.stageName);
-
-    const displayedJobs = getDisplayedJobs(
-      savedJobs,
-      1,
-      searchText,
-      filteredStages,
-      true,
-      true,
-      true
-    );
-    setDisplayedJobs(displayedJobs);
+    //3. set page number back to 1
+    setPages((prev) => ({ ...prev, currentPage: 1 }));
   };
 
   return (

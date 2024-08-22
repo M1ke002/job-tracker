@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import {
   Dialog,
@@ -23,13 +23,7 @@ import SavedJob from "@/types/SavedJob";
 import { useModal } from "@/stores/useModal";
 import { useQueryClient } from "@tanstack/react-query";
 
-import {
-  refetchApplicationStagesData,
-  refetchSavedJobsData,
-} from "@/utils/refetch";
-
 const AddJobToStageModal = () => {
-  const [filteredJobs, setFilteredJobs] = useState<SavedJob[]>([]);
   const { type, isOpen, onClose, data } = useModal();
   const queryClient = useQueryClient();
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
@@ -37,13 +31,11 @@ const AddJobToStageModal = () => {
   const { stageId, setApplicationStageColumns, savedJobs } = data;
   const isModalOpen = isOpen && type === "addJobToStage";
 
-  useEffect(() => {
+  const filteredJobs = useMemo(() => {
     if (savedJobs && savedJobs.length > 0) {
-      const filtered = savedJobs.filter((job) => !job.stage);
-      setFilteredJobs(filtered);
-    } else {
-      setFilteredJobs([]);
+      return savedJobs.filter((job) => !job.stage);
     }
+    return [];
   }, [savedJobs]);
 
   const addJobToStage = async (jobId: string, stageId: string) => {
