@@ -9,6 +9,7 @@ export const useJobDetailsQuery = (id: string | undefined) => {
       const res = await axios.get<SavedJob>(`/saved-jobs/${id}`);
       return res.data;
     },
+    enabled: !!id,
     refetchOnMount: true,
     retry: false,
     retryOnMount: false,

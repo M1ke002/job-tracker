@@ -27,7 +27,8 @@ import { Textarea } from "../ui/textarea";
 import axios from "@/lib/axiosConfig";
 import Contact from "@/types/Contact";
 
-import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
+import { useParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { useModal } from "@/stores/useModal";
 
 const formSchema = z.object({
@@ -39,7 +40,8 @@ const formSchema = z.object({
 });
 
 const EditContactModal = () => {
-  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
+  const { id: currentSavedJobId } = useParams<{ id: string }>();
+  const queryClient = useQueryClient();
   const { type, isOpen, onClose, data } = useModal();
   const { contact } = data;
 
@@ -78,6 +80,8 @@ const EditContactModal = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
+      if (!currentSavedJobId) return;
+
       console.log(values);
       const res = await axios.put(`/contacts/${contact?.id}`, {
         personName: values.name,
@@ -86,22 +90,28 @@ const EditContactModal = () => {
         personEmail: values.email,
         note: values.note,
       });
-      const editedContact: Contact = res.data;
-      if (currentSavedJob) {
-        //find and replace contact
-        const updatedContacts = currentSavedJob.contacts.map((contact) => {
-          if (contact.id === editedContact.id) {
-            return editedContact;
-          }
-          return contact;
-        });
-        const updatedJob = {
-          ...currentSavedJob,
-          contacts: updatedContacts,
-        };
-        setCurrentSavedJob(updatedJob);
-        //TODO: refetch data?
-      }
+
+      //TODO: refetch data?
+
+      await queryClient.invalidateQueries({
+        queryKey: ["job-details", currentSavedJobId],
+      });
+
+      // const editedContact: Contact = res.data;
+      // if (currentSavedJob) {
+      //   //find and replace contact
+      //   const updatedContacts = currentSavedJob.contacts.map((contact) => {
+      //     if (contact.id === editedContact.id) {
+      //       return editedContact;
+      //     }
+      //     return contact;
+      //   });
+      //   const updatedJob = {
+      //     ...currentSavedJob,
+      //     contacts: updatedContacts,
+      //   };
+      //   setCurrentSavedJob(updatedJob);
+      // }
     } catch (error) {
     } finally {
       onClose();

@@ -39,7 +39,6 @@ import UploadFileZone from "../UploadFileZone";
 import DocumentType from "@/types/DocumentType";
 
 import { useModal } from "@/stores/useModal";
-import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
@@ -47,14 +46,13 @@ const formSchema = z.object({
 });
 
 const UploadDocumentModal = () => {
-  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
   const queryClient = useQueryClient();
   const { type, isOpen, onClose, data } = useModal();
   const [isSaving, setIsSaving] = useState(false);
   const [file, setFile] = useState<File | null>(null);
 
   const isModalOpen = isOpen && type === "uploadDocument";
-  const { documentLists } = data;
+  const { documentLists, currentSavedJob } = data;
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -108,9 +106,8 @@ const UploadDocumentModal = () => {
       //update currentSavedJob to include new linked document
       //only update if we're in JobDetailsPage (currentSavedJob variable is defined)
       if (currentSavedJob) {
-        setCurrentSavedJob({
-          ...currentSavedJob,
-          documents: [...currentSavedJob.documents, newDocument],
+        await queryClient.invalidateQueries({
+          queryKey: ["job-details", currentSavedJob.id],
         });
       }
     } catch (error) {

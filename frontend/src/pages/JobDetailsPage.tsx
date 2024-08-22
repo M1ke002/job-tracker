@@ -44,7 +44,6 @@ import ToolsTab from "@/components/tabs/ToolsTab";
 import { useQueryClient } from "@tanstack/react-query";
 import { useParams, useNavigate } from "react-router-dom";
 import { useModal } from "@/stores/useModal";
-import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 import { useJobDetailsQuery } from "@/hooks/queries/useJobDetailsQuery";
 import { useApplicationStagesQuery } from "@/hooks/queries/useApplicationStagesQuery";
 
@@ -79,36 +78,30 @@ const tabTriggers = [
 type ApplicationStageName = keyof typeof applicationStageColors;
 
 const JobDetailsPage = () => {
-  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
   const [isLoading, setLoading] = useState(false);
-  const { id } = useParams<{ id: string }>();
+  const { id: currentSavedJobId } = useParams<{ id: string }>();
   const { onOpen } = useModal();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const { data: jobDetailsData, status: jobDetailsStatus } =
-    useJobDetailsQuery(id);
+  const { data: currentSavedJob, status: jobDetailsStatus } =
+    useJobDetailsQuery(currentSavedJobId);
   const { data: applicationStages, status: applicationStagesStatus } =
     useApplicationStagesQuery();
 
-  useEffect(() => {
-    if (jobDetailsData) {
-      setCurrentSavedJob(jobDetailsData);
-    }
-
-    return () => {
-      setCurrentSavedJob(null);
-    };
-  }, [jobDetailsData]);
-
   const changeJobStage = async (stageId: string) => {
     try {
+      if (!currentSavedJob) return;
+
       setLoading(true);
-      const res = await axios.put(`/saved-jobs/${id}/stage`, {
+      const res = await axios.put(`/saved-jobs/${currentSavedJob.id}/stage`, {
         stageId: stageId,
       });
+      await queryClient.invalidateQueries({
+        queryKey: ["job-details", currentSavedJob.id],
+      });
+
       setLoading(false);
-      setCurrentSavedJob(res.data);
       //TODO: refetch data?
     } catch (error) {
       console.log(error);
@@ -117,8 +110,12 @@ const JobDetailsPage = () => {
 
   const handleDeleteJob = async () => {
     try {
-      const res = await axios.delete(`/saved-jobs/${id}`);
-      setCurrentSavedJob(null);
+      if (!currentSavedJob) return;
+
+      const res = await axios.delete(`/saved-jobs/${currentSavedJob.id}`);
+      queryClient.removeQueries({
+        queryKey: ["job-details", currentSavedJob.id],
+      });
       navigate("/saved-jobs");
       //TODO: refetch data?
     } catch (error) {
@@ -142,7 +139,7 @@ const JobDetailsPage = () => {
             <div className="flex items-center space-x-1">
               <button
                 className="border-none focus:outline-none text-blue-700 hover:text-blue-700/80"
-                onClick={() => onOpen("editJob")}
+                onClick={() => onOpen("editJob", { currentSavedJob })}
               >
                 <FileEdit size={20} />
               </button>
@@ -320,10 +317,7 @@ const JobDetailsPage = () => {
 
         <div>
           <TabsContent value="overview">
-            <OverviewTab
-              currentSavedJob={currentSavedJob}
-              jobDetailsStatus={jobDetailsStatus}
-            />
+            <OverviewTab />
           </TabsContent>
           <TabsContent value="tasks">
             <TasksTab />

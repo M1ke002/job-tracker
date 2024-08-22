@@ -6,11 +6,13 @@ import { Button } from "../ui/button";
 
 import TaskItem from "../task/TaskItem";
 
-import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
+import { useParams } from "react-router-dom";
+import { useJobDetailsQuery } from "@/hooks/queries/useJobDetailsQuery";
 import { useModal } from "@/stores/useModal";
 
 const TaskTab = () => {
-  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
+  const { id: currentSavedJobId } = useParams<{ id: string }>();
+  const { data: currentSavedJob } = useJobDetailsQuery(currentSavedJobId);
   const { onOpen } = useModal();
 
   const tasks = currentSavedJob?.tasks || [];
@@ -44,7 +46,7 @@ const TaskTab = () => {
         <Button
           variant="primary"
           className="ml-auto"
-          onClick={() => onOpen("createTask", { jobId })}
+          onClick={() => onOpen("createTask")}
         >
           <PlusCircle size={20} className="mr-2" />
           Add task

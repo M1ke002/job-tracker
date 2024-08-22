@@ -6,15 +6,17 @@ import { Button } from "../ui/button";
 
 import AttachedDocumentItem from "../document/AttachedDocumentItem";
 
-import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
+import { useParams } from "react-router-dom";
+import { useJobDetailsQuery } from "@/hooks/queries/useJobDetailsQuery";
 import { useDocumentsQuery } from "@/hooks/queries/useDocumentsQuery";
 import { useModal } from "@/stores/useModal";
 
 const DocumentsTab = () => {
-  const { onOpen } = useModal();
-  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
+  const { id: currentSavedJobId } = useParams<{ id: string }>();
+  const { data: currentSavedJob } = useJobDetailsQuery(currentSavedJobId);
   const { data: documentLists, status: documentListsStatus } =
     useDocumentsQuery();
+  const { onOpen } = useModal();
 
   const documents = currentSavedJob?.documents || [];
 
@@ -27,7 +29,7 @@ const DocumentsTab = () => {
             variant="primary"
             onClick={() => {
               if (currentSavedJob) {
-                onOpen("uploadDocument", { documentLists });
+                onOpen("uploadDocument", { documentLists, currentSavedJob });
               }
             }}
           >
@@ -39,7 +41,7 @@ const DocumentsTab = () => {
             className="text-[#3d3d3d] hover:text-[#3d3d3d] px-2 bg-white"
             onClick={() => {
               if (currentSavedJob) {
-                onOpen("linkDocument", { documentLists });
+                onOpen("linkDocument", { documentLists, currentSavedJob });
               }
             }}
           >

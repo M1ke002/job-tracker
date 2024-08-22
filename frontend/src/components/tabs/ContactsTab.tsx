@@ -5,14 +5,17 @@ import { Link, PlusCircle, UserSearch } from "lucide-react";
 import { Button } from "../ui/button";
 
 import Contact from "@/types/Contact";
+
 import ContactItem from "../contact/ContactItem";
 
-import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
+import { useParams } from "react-router-dom";
+import { useJobDetailsQuery } from "@/hooks/queries/useJobDetailsQuery";
 import { useModal } from "@/stores/useModal";
 
 const ContactTab = () => {
+  const { id: currentSavedJobId } = useParams<{ id: string }>();
+  const { data: currentSavedJob } = useJobDetailsQuery(currentSavedJobId);
   const { onOpen } = useModal();
-  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
 
   const contacts = currentSavedJob?.contacts || [];
   const jobId = currentSavedJob?.id.toString();
@@ -22,10 +25,7 @@ const ContactTab = () => {
       <div className="font-semibold flex items-center justify-between">
         <p className="text-lg">Contacts: {contacts.length}</p>
         <div className="space-x-3">
-          <Button
-            variant="primary"
-            onClick={() => onOpen("createContact", { jobId })}
-          >
+          <Button variant="primary" onClick={() => onOpen("createContact")}>
             <PlusCircle size={20} className="mr-2" />
             Add contact
           </Button>

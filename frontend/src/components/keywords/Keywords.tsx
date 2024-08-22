@@ -10,14 +10,12 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { useModal } from "@/stores/useModal";
-import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 
 interface TaskProps {
   jobId: string;
 }
 
 const Keywords = ({ jobId }: TaskProps) => {
-  // const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
   const { onOpen } = useModal();
   const [rotateChevron, setRotateChevron] = useState(false);
 

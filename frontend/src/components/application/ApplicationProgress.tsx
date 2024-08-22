@@ -7,7 +7,8 @@ import { ApplicationStageNames } from "@/constant/applicationStage";
 import ApplicationStage from "@/types/ApplicationStage";
 import SavedJob from "@/types/SavedJob";
 
-import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
+import { useParams } from "react-router-dom";
+import { useJobDetailsQuery } from "@/hooks/queries/useJobDetailsQuery";
 
 const sortApplicationStages = (applicationStages: ApplicationStage[]) => {
   //output: [Applied, O.A., Interview, Offer, Rejected]
@@ -90,13 +91,14 @@ const ApplicationProgress = ({
   isLoading,
   applicationStages,
 }: ApplicationProgressProps) => {
-  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
+  const { id: currentSavedJobId } = useParams<{ id: string }>();
+  const { data: currentSavedJob } = useJobDetailsQuery(currentSavedJobId);
 
   //useMemo to memoize the result of getApplicationProgressItems
-  const applicationProgressItems = useMemo(
-    () => getApplicationProgressItems(applicationStages, currentSavedJob),
-    [applicationStages, currentSavedJob]
-  );
+  const applicationProgressItems = useMemo(() => {
+    if (!currentSavedJob) return [];
+    return getApplicationProgressItems(applicationStages, currentSavedJob);
+  }, [applicationStages, currentSavedJob]);
 
   return (
     <div className="p-6 bg-white border border-[#dbe9ff] w-full shadow-sm overflow-auto">

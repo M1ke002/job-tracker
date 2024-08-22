@@ -10,27 +10,39 @@ import axios from "@/lib/axiosConfig";
 import { isTextEmpty } from "@/utils/utils";
 
 import { useModal } from "@/stores/useModal";
-import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
+import { useQueryClient } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
+import { useJobDetailsQuery } from "@/hooks/queries/useJobDetailsQuery";
 
 const Note = () => {
-  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
+  const { id: currentSavedJobId } = useParams<{ id: string }>();
+  const { data: currentSavedJob } = useJobDetailsQuery(currentSavedJobId);
+  const queryClient = useQueryClient();
   const { onOpen } = useModal();
   const [isEditMode, setIsEditMode] = useState(false);
   const [value, setValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setValue(currentSavedJob?.notes || "");
+    if (!currentSavedJob) return;
+
+    setValue(currentSavedJob.notes || "");
   }, [currentSavedJob]);
 
   const handleSaveNote = async () => {
     try {
+      if (!currentSavedJob) return;
+
       setIsLoading(true);
-      const res = await axios.put(`/saved-jobs/${currentSavedJob?.id}/notes`, {
+      const res = await axios.put(`/saved-jobs/${currentSavedJob.id}/notes`, {
         notes: value,
       });
-      const updatedSavedJob = res.data;
-      setCurrentSavedJob(updatedSavedJob);
+
+      await queryClient.invalidateQueries({
+        queryKey: ["job-details", currentSavedJob.id],
+      });
+      // const updatedSavedJob = res.data;
+      // setCurrentSavedJob(updatedSavedJob);
       setIsEditMode(false);
     } catch (error) {
       console.log(error);
@@ -40,17 +52,25 @@ const Note = () => {
   };
 
   const handleCancel = () => {
-    setValue(currentSavedJob?.notes || "");
+    if (!currentSavedJob) return;
+
+    setValue(currentSavedJob.notes || "");
     setIsEditMode(false);
   };
 
   const handleDeleteNote = async () => {
     try {
-      const res = await axios.put(`/saved-jobs/${currentSavedJob?.id}/notes`, {
+      if (!currentSavedJob) return;
+
+      const res = await axios.put(`/saved-jobs/${currentSavedJob.id}/notes`, {
         notes: "",
       });
-      const updatedSavedJob = res.data;
-      setCurrentSavedJob(updatedSavedJob);
+
+      await queryClient.invalidateQueries({
+        queryKey: ["job-details", currentSavedJob.id],
+      });
+      // const updatedSavedJob = res.data;
+      // setCurrentSavedJob(updatedSavedJob);
     } catch (error) {
       console.log(error);
     }
@@ -86,6 +106,7 @@ const Note = () => {
               variant="ghost"
               size="sm"
               className="text-blue-600 hover:text-blue-700"
+              disabled={isLoading}
               onClick={handleCancel}
             >
               Cancel

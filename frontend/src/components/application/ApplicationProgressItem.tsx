@@ -5,14 +5,9 @@ import { Check } from "lucide-react";
 
 import axios from "@/lib/axiosConfig";
 
-import {
-  refetchApplicationStagesData,
-  refetchSavedJobsData,
-  refetchJobDetailsData,
-} from "@/utils/refetch";
-
 import { useQueryClient } from "@tanstack/react-query";
-import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
+import { useParams } from "react-router-dom";
+import { useJobDetailsQuery } from "@/hooks/queries/useJobDetailsQuery";
 
 interface ApplicationProgressItemProps {
   stageId: string;
@@ -29,19 +24,25 @@ const ApplicationProgressItem = ({
   isCurrentStage,
   isRejected = false,
 }: ApplicationProgressItemProps) => {
-  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
+  const { id: currentSavedJobId } = useParams<{ id: string }>();
+  const { data: currentSavedJob } = useJobDetailsQuery(currentSavedJobId);
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
 
   const changeJobStage = async (stageId: string) => {
     try {
+      if (!currentSavedJob) return;
+
       console.log(stageId);
       setLoading(true);
-      const res = await axios.put(`/saved-jobs/${currentSavedJob?.id}/stage`, {
+      const res = await axios.put(`/saved-jobs/${currentSavedJob.id}/stage`, {
         stageId: stageId,
       });
+
+      await queryClient.invalidateQueries({
+        queryKey: ["job-details", currentSavedJob.id],
+      });
       setLoading(false);
-      setCurrentSavedJob(res.data);
       //TODO: need to refetch / invalidate saved jobs and application stages here
     } catch (error) {
       console.log(error);
@@ -70,7 +71,7 @@ const ApplicationProgressItem = ({
           "border-[#a8c4f1] text-white bg-[#a8c4f1] after:border-l-[#a8c4f1] hover:bg-[#a8c4f1] hover:after:border-l-[#a8c4f1] after:[filter:drop-shadow(1px_0px_0px_#a8c4f1)]"
       )}
       onClick={() => {
-        if (isRejected) return;
+        if (isRejected || loading) return;
         changeJobStage(stageId);
       }}
     >

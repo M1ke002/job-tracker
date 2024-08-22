@@ -28,7 +28,8 @@ import axios from "@/lib/axiosConfig";
 
 import Contact from "@/types/Contact";
 
-import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
+import { useParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { useModal } from "@/stores/useModal";
 
 const formSchema = z.object({
@@ -40,9 +41,9 @@ const formSchema = z.object({
 });
 
 const AddContactModal = () => {
-  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
+  const { id: currentSavedJobId } = useParams<{ id: string }>();
+  const queryClient = useQueryClient();
   const { type, isOpen, onClose, data } = useModal();
-  const { jobId } = data;
 
   const isModalOpen = isOpen && type === "createContact";
 
@@ -59,25 +60,33 @@ const AddContactModal = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      console.log(values, data.jobId);
+      if (!currentSavedJobId) return;
+
+      console.log(values, currentSavedJobId);
       const res = await axios.post("/contacts", {
-        jobId: data.jobId,
+        jobId: currentSavedJobId,
         personName: values.name,
         personPosition: values.position,
         personLinkedin: values.linkedin,
         personEmail: values.email,
         note: values.notes,
       });
-      const contact: Contact = res.data;
-      if (currentSavedJob) {
-        contact.job_id = currentSavedJob.id;
-        const updatedJob = {
-          ...currentSavedJob,
-          contacts: [...currentSavedJob.contacts, contact],
-        };
-        setCurrentSavedJob(updatedJob);
-        //TODO: refetch data?
-      }
+
+      //TODO: refetch data?
+
+      await queryClient.invalidateQueries({
+        queryKey: ["job-details", currentSavedJobId],
+      });
+
+      // const contact: Contact = res.data;
+      // if (currentSavedJob) {
+      //   contact.job_id = currentSavedJob.id;
+      //   const updatedJob = {
+      //     ...currentSavedJob,
+      //     contacts: [...currentSavedJob.contacts, contact],
+      //   };
+      //   setCurrentSavedJob(updatedJob);
+      // }
     } catch (error) {
     } finally {
       onClose();

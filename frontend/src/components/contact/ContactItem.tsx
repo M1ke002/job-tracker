@@ -23,7 +23,8 @@ import axios from "@/lib/axiosConfig";
 
 import Contact from "@/types/Contact";
 
-import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
+import { useParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { useModal } from "@/stores/useModal";
 
 interface ContactItemProps {
@@ -31,21 +32,27 @@ interface ContactItemProps {
 }
 
 const ContactItem = ({ contact }: ContactItemProps) => {
-  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
+  const { id: currentSavedJobId } = useParams<{ id: string }>();
   const { onOpen } = useModal();
+  const queryClient = useQueryClient();
 
   const handleDeleteContact = async () => {
     try {
+      if (!currentSavedJobId) return;
+
       const res = await axios.delete(`/contacts/${contact.id}`);
-      if (currentSavedJob) {
-        const updatedJob = {
-          ...currentSavedJob,
-          contacts: currentSavedJob.contacts.filter(
-            (currContact) => currContact.id !== contact.id
-          ),
-        };
-        setCurrentSavedJob(updatedJob);
-      }
+
+      await queryClient.invalidateQueries({
+        queryKey: ["job-details", currentSavedJobId],
+      });
+      // if (currentSavedJob) {
+      //   const updatedJob = {
+      //     ...currentSavedJob,
+      //     contacts: currentSavedJob.contacts.filter(
+      //       (currContact) => currContact.id !== contact.id
+      //     ),
+      //   };
+      // }
       //TODO: refetch data?
     } catch (error) {
       console.log(error);

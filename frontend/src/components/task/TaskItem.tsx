@@ -19,15 +19,17 @@ import axios from "@/lib/axiosConfig";
 import Task from "@/types/Task";
 
 import { useModal } from "@/stores/useModal";
-import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
+import { useQueryClient } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
 
 interface TaskItemProps {
   task: Task;
 }
 
 const TaskItem = ({ task }: TaskItemProps) => {
+  const { id: currentSavedJobId } = useParams<{ id: string }>();
+  const queryClient = useQueryClient();
   const { onOpen } = useModal();
-  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
 
   let type = "incomplete";
   let dueDate = null;
@@ -42,15 +44,23 @@ const TaskItem = ({ task }: TaskItemProps) => {
 
   const deleteTask = async () => {
     try {
+      if (!currentSavedJobId) return;
+
       const res = await axios.delete(`/tasks/${task.id}`);
+
       //update current saved job
-      if (currentSavedJob) {
-        const updatedTasks = currentSavedJob.tasks.filter(
-          (currTask) => currTask.id !== task.id
-        );
-        setCurrentSavedJob({ ...currentSavedJob, tasks: updatedTasks });
-        //TODO: refetch data?
-      }
+      //TODO: refetch data?
+
+      await queryClient.invalidateQueries({
+        queryKey: ["job-details", currentSavedJobId],
+      });
+
+      // if (currentSavedJob) {
+      //   const updatedTasks = currentSavedJob.tasks.filter(
+      //     (currTask) => currTask.id !== task.id
+      //   );
+      //   setCurrentSavedJob({ ...currentSavedJob, tasks: updatedTasks });
+      // }
     } catch (error) {
       console.log(error);
     }
@@ -58,20 +68,28 @@ const TaskItem = ({ task }: TaskItemProps) => {
 
   const toggleTaskCompleted = async (isCompleted: boolean) => {
     try {
+      if (!currentSavedJobId) return;
+
       const res = await axios.put(`/tasks/${task.id}/complete`, {
         isCompleted,
       });
+
       //update current saved job
-      if (currentSavedJob) {
-        const updatedTasks = currentSavedJob.tasks.map((currTask) => {
-          if (currTask.id === task.id) {
-            return { ...currTask, is_completed: isCompleted };
-          }
-          return currTask;
-        });
-        setCurrentSavedJob({ ...currentSavedJob, tasks: updatedTasks });
-        //TODO: refetch data?
-      }
+      //TODO: refetch data?
+
+      await queryClient.invalidateQueries({
+        queryKey: ["job-details", currentSavedJobId],
+      });
+
+      // if (currentSavedJob) {
+      //   const updatedTasks = currentSavedJob.tasks.map((currTask) => {
+      //     if (currTask.id === task.id) {
+      //       return { ...currTask, is_completed: isCompleted };
+      //     }
+      //     return currTask;
+      //   });
+      //   setCurrentSavedJob({ ...currentSavedJob, tasks: updatedTasks });
+      // }
     } catch (error) {
       console.log(error);
     }
@@ -79,20 +97,28 @@ const TaskItem = ({ task }: TaskItemProps) => {
 
   const toggleReminder = async (isReminderEnabled: boolean) => {
     try {
+      if (!currentSavedJobId) return;
+
       const res = await axios.put(`/tasks/${task.id}/reminder`, {
         isReminderEnabled,
       });
+
       //update current saved job
-      if (currentSavedJob) {
-        const updatedTasks = currentSavedJob.tasks.map((currTask) => {
-          if (currTask.id === task.id) {
-            return { ...currTask, is_reminder_enabled: isReminderEnabled };
-          }
-          return currTask;
-        });
-        setCurrentSavedJob({ ...currentSavedJob, tasks: updatedTasks });
-        //TODO: refetch data?
-      }
+      //TODO: refetch data?
+
+      await queryClient.invalidateQueries({
+        queryKey: ["job-details", currentSavedJobId],
+      });
+
+      // if (currentSavedJob) {
+      //   const updatedTasks = currentSavedJob.tasks.map((currTask) => {
+      //     if (currTask.id === task.id) {
+      //       return { ...currTask, is_reminder_enabled: isReminderEnabled };
+      //     }
+      //     return currTask;
+      //   });
+      //   setCurrentSavedJob({ ...currentSavedJob, tasks: updatedTasks });
+      // }
     } catch (error) {
       console.log(error);
     }

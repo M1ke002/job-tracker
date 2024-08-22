@@ -23,11 +23,9 @@ import axios from "@/lib/axiosConfig";
 import DocumentType from "@/types/DocumentType";
 
 import { useModal } from "@/stores/useModal";
-import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 import { useQueryClient } from "@tanstack/react-query";
 
 const LinkDocumentModal = () => {
-  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
   const { type, isOpen, onClose, data } = useModal();
   const queryClient = useQueryClient();
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(
@@ -35,7 +33,7 @@ const LinkDocumentModal = () => {
   );
 
   const isModalOpen = isOpen && type === "linkDocument";
-  const { documentLists } = data;
+  const { documentLists, currentSavedJob } = data;
 
   const filteredDocumentLists = useMemo(() => {
     if (documentLists && documentLists.length > 0 && currentSavedJob) {
@@ -77,10 +75,12 @@ const LinkDocumentModal = () => {
         );
 
         if (linkedDocument) {
-          const updatedDocuments = [...updatedJob.documents, linkedDocument];
+          // const updatedDocuments = [...updatedJob.documents, linkedDocument];
 
           // update job with the new documents list
-          setCurrentSavedJob({ ...updatedJob, documents: updatedDocuments });
+          await queryClient.invalidateQueries({
+            queryKey: ["job-details", currentSavedJob.id],
+          });
         }
 
         // update documentLists cache with new linked job

@@ -8,17 +8,14 @@ import Keywords from "../keywords/Keywords";
 
 import { format } from "date-fns";
 
-import SavedJob from "@/types/SavedJob";
+import { useParams } from "react-router-dom";
+import { useJobDetailsQuery } from "@/hooks/queries/useJobDetailsQuery";
 
-interface OverviewTabProps {
-  currentSavedJob: SavedJob | null;
-  jobDetailsStatus: "error" | "success" | "pending";
-}
+const OverviewTab = () => {
+  const { id: currentSavedJobId } = useParams<{ id: string }>();
+  const { data: currentSavedJob, status: jobDetailsStatus } =
+    useJobDetailsQuery(currentSavedJobId);
 
-const OverviewTab = ({
-  currentSavedJob,
-  jobDetailsStatus,
-}: OverviewTabProps) => {
   return (
     <div className="lg:grid grid-cols-5 gap-4 w-full">
       {/* left col */}

@@ -40,21 +40,21 @@ interface ModalData {
   confirmModalMessage?: string;
   confirmModalConfirmButtonText?: string;
   confirmModalAction?: () => void;
-  jobId?: string;
   currentScrapedSiteId?: string;
   contact?: Contact;
   alertSetting?: ScrapedSiteSettings;
   websiteName?: string;
   task?: Task;
   stageId?: string;
-  setApplicationStageColumns?: React.Dispatch<
-    React.SetStateAction<ApplicationStage[]>
-  >;
   documentType?: string;
   documentId?: string;
+  currentSavedJob?: SavedJob;
   savedJobs?: SavedJob[];
   documentLists?: DocumentType[];
   scrapedSites?: ScrapedSite[];
+  setApplicationStageColumns?: React.Dispatch<
+    React.SetStateAction<ApplicationStage[]>
+  >;
 }
 
 interface ModalStore {

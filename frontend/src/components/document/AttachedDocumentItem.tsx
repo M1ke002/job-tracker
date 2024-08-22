@@ -28,8 +28,7 @@ import DocumentTypeTag from "./DocumentTypeTag";
 import DocumentType from "@/types/DocumentType";
 
 import { useModal } from "@/stores/useModal";
-import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
-import { useDocumentsQuery } from "@/hooks/queries/useDocumentsQuery";
+import { useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface AttachedDocumentItemProps {
@@ -52,10 +51,8 @@ const AttachedDocumentItem = ({
   dateUploaded,
   attachedJobs,
 }: AttachedDocumentItemProps) => {
+  const { id: currentSavedJobId } = useParams<{ id: string }>();
   const { onOpen } = useModal();
-  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
-  // const { data: documentLists, status: documentListsStatus } =
-  //   useDocumentsQuery();
   const queryClient = useQueryClient();
 
   //must - 10 hours to get the correct date
@@ -63,47 +60,51 @@ const AttachedDocumentItem = ({
 
   const unlinkDocument = async (documentId: string) => {
     try {
-      if (currentSavedJob) {
-        const res = await axios.put(
-          `/saved-jobs/${currentSavedJob.id}/unlink-document`,
-          {
-            documentId,
-          }
-        );
+      if (!currentSavedJobId) return;
 
-        //update currentSavedJob
-        const updatedJob = {
-          ...currentSavedJob,
-          documents: currentSavedJob.documents.filter(
-            (document) => document.id.toString() !== documentId
-          ),
-        };
-        setCurrentSavedJob(updatedJob);
+      const res = await axios.put(
+        `/saved-jobs/${currentSavedJobId}/unlink-document`,
+        {
+          documentId,
+        }
+      );
 
-        //update documentLists in cache
-        queryClient.setQueryData<DocumentType[] | undefined>(
-          ["document-lists"],
-          (oldData) => {
-            if (!oldData) return oldData;
+      //update currentSavedJob
+      await queryClient.invalidateQueries({
+        queryKey: ["job-details", currentSavedJobId],
+      });
 
-            return oldData.map((documentList) => ({
-              ...documentList,
-              documents: documentList.documents.map((document) => {
-                if (document.id.toString() === documentId) {
-                  return {
-                    ...document,
-                    jobs: document.jobs.filter(
-                      (job) => job.id !== currentSavedJob.id
-                    ),
-                  };
-                } else {
-                  return document;
-                }
-              }),
-            }));
-          }
-        );
-      }
+      // const updatedJob = {
+      //   ...currentSavedJob,
+      //   documents: currentSavedJob.documents.filter(
+      //     (document) => document.id.toString() !== documentId
+      //   ),
+      // };
+      // setCurrentSavedJob(updatedJob);
+
+      //update documentLists in cache
+      queryClient.setQueryData<DocumentType[] | undefined>(
+        ["document-lists"],
+        (oldData) => {
+          if (!oldData) return oldData;
+
+          return oldData.map((documentList) => ({
+            ...documentList,
+            documents: documentList.documents.map((document) => {
+              if (document.id.toString() === documentId) {
+                return {
+                  ...document,
+                  jobs: document.jobs.filter(
+                    (job) => job.id.toString() !== currentSavedJobId
+                  ),
+                };
+              } else {
+                return document;
+              }
+            }),
+          }));
+        }
+      );
     } catch (error) {
       console.log(error);
     }

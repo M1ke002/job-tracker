@@ -47,7 +47,8 @@ import axios from "@/lib/axiosConfig";
 import { cn } from "@/lib/utils";
 
 import { useModal } from "@/stores/useModal";
-import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
+import { useParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   taskName: z.string(),
@@ -60,8 +61,9 @@ const formSchema = z.object({
 //TODO: bug with due_date selection
 
 const EditTaskModal = () => {
+  const { id: currentSavedJobId } = useParams<{ id: string }>();
+  const queryClient = useQueryClient();
   const { type, isOpen, onOpen, onClose, data } = useModal();
-  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
 
   const isModalOpen = isOpen && type === "editTask";
   const { task } = data;
@@ -102,42 +104,49 @@ const EditTaskModal = () => {
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
+      if (!currentSavedJobId || !task) return;
+
       console.log(data);
       //compare data.dueDate with task.due_date, in Date format
       let isDueDateChanged = false;
 
-      if (task?.due_date && data.dueDate) {
+      if (task.due_date && data.dueDate) {
         const taskDueDate = new Date(task.due_date);
         isDueDateChanged = taskDueDate.getDay() !== data.dueDate.getDay();
       } else if (
-        (task?.due_date && !data.dueDate) ||
-        (!task?.due_date && data.dueDate)
+        (task.due_date && !data.dueDate) ||
+        (!task.due_date && data.dueDate)
       ) {
         isDueDateChanged = true;
       }
       console.log("isDueDateChanged", isDueDateChanged);
 
-      const res = await axios.put(`/tasks/${task?.id}`, {
+      const res = await axios.put(`/tasks/${task.id}`, {
         taskName: data.taskName,
         dueDate: data.dueDate,
         isReminderEnabled: data.isReminderEnabled,
-        isReminded: isDueDateChanged ? false : task?.is_reminded,
+        isReminded: isDueDateChanged ? false : task.is_reminded,
         isNotifyEmail: data.isNotifyEmail,
         isNotifyOnWebsite: data.isNotifyOnWebsite,
       });
       console.log(res.data);
 
-      const editedTask = res.data;
-      if (currentSavedJob) {
-        const updatedTasks = currentSavedJob.tasks.map((task) =>
-          task.id === editedTask.id ? editedTask : task
-        );
-        setCurrentSavedJob({
-          ...currentSavedJob,
-          tasks: updatedTasks,
-        });
-        //TODO: refetch data?
-      }
+      //TODO: refetch data?
+
+      await queryClient.invalidateQueries({
+        queryKey: ["job-details", currentSavedJobId],
+      });
+
+      // const editedTask = res.data;
+      // if (currentSavedJob) {
+      //   const updatedTasks = currentSavedJob.tasks.map((task) =>
+      //     task.id === editedTask.id ? editedTask : task
+      //   );
+      //   setCurrentSavedJob({
+      //     ...currentSavedJob,
+      //     tasks: updatedTasks,
+      //   });
+      // }
     } catch (error) {
       console.log(error);
     } finally {

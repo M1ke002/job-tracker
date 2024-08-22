@@ -25,14 +25,7 @@ import { Input } from "../ui/input";
 
 import axios from "@/lib/axiosConfig";
 
-import {
-  refetchApplicationStagesData,
-  refetchSavedJobsData,
-  refetchJobDetailsData,
-} from "@/utils/refetch";
-
 import { useQueryClient } from "@tanstack/react-query";
-import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
 import { useModal } from "@/stores/useModal";
 
 const formSchema = z.object({
@@ -45,11 +38,11 @@ const formSchema = z.object({
 });
 
 const EditSavedJobModal = () => {
-  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
-  const { type, isOpen, onClose } = useModal();
+  const { type, isOpen, onClose, data } = useModal();
   const queryClient = useQueryClient();
 
   const isModalOpen = isOpen && type === "editJob";
+  const { currentSavedJob } = data;
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -87,8 +80,13 @@ const EditSavedJobModal = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const res = await axios.put(`/saved-jobs/${currentSavedJob?.id}`, values);
-      setCurrentSavedJob(res.data);
+      if (!currentSavedJob) return;
+
+      const res = await axios.put(`/saved-jobs/${currentSavedJob.id}`, values);
+
+      await queryClient.invalidateQueries({
+        queryKey: ["job-details", currentSavedJob.id],
+      });
       //TODO: refetch data?
     } catch (error) {
       console.log(error);

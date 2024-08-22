@@ -39,7 +39,8 @@ import {
 } from "@/components/ui/popover";
 
 import { useModal } from "@/stores/useModal";
-import { useCurrentSavedJob } from "@/stores/useCurrentSavedJob";
+import { useParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   taskName: z.string(),
@@ -50,11 +51,11 @@ const formSchema = z.object({
 });
 
 const CreateTaskModal = () => {
-  const { type, isOpen, onOpen, onClose, data } = useModal();
-  const { currentSavedJob, setCurrentSavedJob } = useCurrentSavedJob();
+  const { id: currentSavedJobId } = useParams<{ id: string }>();
+  const queryClient = useQueryClient();
+  const { type, isOpen, onOpen, onClose } = useModal();
 
   const isModalOpen = isOpen && type === "createTask";
-  const { jobId } = data;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -68,22 +69,29 @@ const CreateTaskModal = () => {
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
-      console.log(data, jobId);
+      if (!currentSavedJobId) return;
+
+      console.log(data, currentSavedJobId);
       const res = await axios.post("/tasks", {
-        jobId,
+        jobId: currentSavedJobId,
         taskName: data.taskName,
         dueDate: data.dueDate,
         isReminderEnabled: data.isReminderEnabled,
         isNotifyEmail: data.isNotifyEmail,
         isNotifyOnWebsite: data.isNotifyOnWebsite,
       });
-      const newTask = res.data;
-      //update current saved job
-      if (currentSavedJob) {
-        const newTasks = [...currentSavedJob.tasks, newTask];
-        setCurrentSavedJob({ ...currentSavedJob, tasks: newTasks });
-        //TODO: refetch data (saved jobs, application stages?)
-      }
+
+      //TODO: refetch data (saved jobs, application stages?)
+      await queryClient.invalidateQueries({
+        queryKey: ["job-details", currentSavedJobId],
+      });
+
+      // const newTask = res.data;
+      // //update current saved job
+      // if (currentSavedJob) {
+      //   const newTasks = [...currentSavedJob.tasks, newTask];
+      //   setCurrentSavedJob({ ...currentSavedJob, tasks: newTasks });
+      // }
     } catch (error) {
       console.log(error);
     } finally {
