@@ -19,7 +19,7 @@ import {
   setNotificationToReadCache,
   useGetNotifications,
 } from "@/hooks/queries/useNotificationsQuery";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const Navbar = () => {
   const { data: notificationsData } = useGetNotifications();
@@ -47,14 +47,22 @@ const Navbar = () => {
     [notifications]
   );
 
-  const setNotificationToRead = async () => {
-    try {
+  const readNotificationsMutation = useMutation({
+    mutationFn: async () => {
       const res = await axios.put("/notifications/read");
-      console.log(res.data);
-
+      return res.data;
+    },
+    onSuccess: () => {
       setNotificationToReadCache(queryClient);
-    } catch (error) {
-      console.log(error);
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
+  const setNotificationToRead = async () => {
+    if (notifications.some((notification) => !notification.is_read)) {
+      readNotificationsMutation.mutate();
     }
   };
 
@@ -153,8 +161,7 @@ const Navbar = () => {
           <Popover
             onOpenChange={(isOpen) => {
               if (!isOpen) {
-                if (notifications.some((notification) => !notification.is_read))
-                  setNotificationToRead();
+                setNotificationToRead();
               }
             }}
           >

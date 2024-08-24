@@ -5,7 +5,7 @@ import { Check } from "lucide-react";
 
 import axios from "@/lib/axiosConfig";
 
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { useJobDetailsQuery } from "@/hooks/queries/useJobDetailsQuery";
 
@@ -27,26 +27,36 @@ const ApplicationProgressItem = ({
   const { id: currentSavedJobId } = useParams<{ id: string }>();
   const { data: currentSavedJob } = useJobDetailsQuery(currentSavedJobId);
   const queryClient = useQueryClient();
-  const [loading, setLoading] = useState(false);
 
-  const changeJobStage = async (stageId: string) => {
-    try {
-      if (!currentSavedJob) return;
-
-      console.log(stageId);
-      setLoading(true);
-      const res = await axios.put(`/saved-jobs/${currentSavedJob.id}/stage`, {
+  const jobStageMutation = useMutation({
+    mutationFn: async ({
+      jobId,
+      stageId,
+    }: {
+      jobId: number;
+      stageId: string;
+    }) => {
+      const res = await axios.put(`/saved-jobs/${jobId}/stage`, {
         stageId: stageId,
       });
-
+      return res.data;
+    },
+    onSuccess: async (_, { jobId }) => {
       await queryClient.invalidateQueries({
-        queryKey: ["job-details", currentSavedJob.id.toString()],
+        queryKey: ["job-details", jobId.toString()],
       });
-      setLoading(false);
-      //TODO: need to refetch / invalidate saved jobs and application stages here
-    } catch (error) {
-      console.log(error);
-    }
+
+      queryClient.invalidateQueries({ queryKey: ["saved-jobs"] });
+      queryClient.invalidateQueries({ queryKey: ["application-stages"] });
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
+  const handleChangeJobStage = () => {
+    if (isRejected || jobStageMutation.isPending || !currentSavedJob) return;
+    jobStageMutation.mutate({ jobId: currentSavedJob.id, stageId });
   };
 
   return (
@@ -70,10 +80,7 @@ const ApplicationProgressItem = ({
           isRejected &&
           "border-[#a8c4f1] text-white bg-[#a8c4f1] after:border-l-[#a8c4f1] hover:bg-[#a8c4f1] hover:after:border-l-[#a8c4f1] after:[filter:drop-shadow(1px_0px_0px_#a8c4f1)]"
       )}
-      onClick={() => {
-        if (isRejected || loading) return;
-        changeJobStage(stageId);
-      }}
+      onClick={handleChangeJobStage}
     >
       {stageName}
       {isPassed && <Check size={16} className="ml-2" />}

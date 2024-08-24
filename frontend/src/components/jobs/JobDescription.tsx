@@ -18,7 +18,7 @@ import axios from "@/lib/axiosConfig";
 import JobDescriptionSkeleton from "../skeleton/JobDescriptionSkeleton";
 
 import { useParams } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface JobDescriptionProps {
   jobDescription: string;
@@ -31,7 +31,6 @@ const JobDescription = ({ jobDescription, isLoading }: JobDescriptionProps) => {
   const [rotateChevron, setRotateChevron] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [value, setValue] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
 
   const handleRotate = () => setRotateChevron(!rotateChevron);
   const rotate = rotateChevron ? "rotate(-180deg)" : "rotate(0)";
@@ -40,31 +39,35 @@ const JobDescription = ({ jobDescription, isLoading }: JobDescriptionProps) => {
     setValue(jobDescription);
   }, [jobDescription]);
 
-  const handleSaveJobDescription = async () => {
-    try {
-      if (!currentSavedJobId) return;
+  const saveJobDescriptionMutation = useMutation({
+    mutationFn: async (jobId: string) => {
+      const res = await axios.put(`/saved-jobs/${jobId}/job-description`, {
+        jobDescription: value,
+      });
 
-      console.log(value);
-      setIsSaving(true);
-      const res = await axios.put(
-        `/saved-jobs/${currentSavedJobId}/job-description`,
-        {
-          jobDescription: value,
-        }
-      );
-
+      return res.data;
+    },
+    onSuccess: async (_, jobId) => {
       await queryClient.invalidateQueries({
-        queryKey: ["job-details", currentSavedJobId],
+        queryKey: ["job-details", jobId],
       });
 
       //TODO: refetch saved jobs?
-
+      queryClient.invalidateQueries({
+        queryKey: ["saved-job"],
+      });
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+    onSettled: () => {
       setIsEditMode(false);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsSaving(false);
-    }
+    },
+  });
+
+  const handleSaveJobDescription = () => {
+    if (!currentSavedJobId) return;
+    saveJobDescriptionMutation.mutate(currentSavedJobId);
   };
 
   return (
@@ -137,7 +140,7 @@ const JobDescription = ({ jobDescription, isLoading }: JobDescriptionProps) => {
                       size="sm"
                       className="text-white bg-blue-600 hover:bg-blue-700 px-5"
                       onClick={handleSaveJobDescription}
-                      disabled={isSaving}
+                      disabled={saveJobDescriptionMutation.isPending}
                     >
                       Save
                     </Button>
@@ -146,7 +149,7 @@ const JobDescription = ({ jobDescription, isLoading }: JobDescriptionProps) => {
                       size="sm"
                       className="text-blue-600 hover:text-blue-700"
                       onClick={() => setIsEditMode(!isEditMode)}
-                      disabled={isSaving}
+                      disabled={saveJobDescriptionMutation.isPending}
                     >
                       Cancel
                     </Button>

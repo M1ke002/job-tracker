@@ -28,7 +28,7 @@ import axios from "@/lib/axiosConfig";
 import Contact from "@/types/Contact";
 
 import { useParams } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useModal } from "@/stores/useModal";
 
 const formSchema = z.object({
@@ -78,44 +78,58 @@ const EditContactModal = () => {
     }
   };
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      if (!currentSavedJobId) return;
+  const editContactMutation = useMutation({
+    mutationFn: async ({
+      jobId,
+      name,
+      position,
+      linkedin,
+      email,
+      notes,
+    }: {
+      jobId: string;
+      name: string;
+      position: string;
+      linkedin: string;
+      email: string;
+      notes: string;
+    }) => {
+      if (!contact) return;
 
-      console.log(values);
-      const res = await axios.put(`/contacts/${contact?.id}`, {
-        personName: values.name,
-        personPosition: values.position,
-        personLinkedin: values.linkedin,
-        personEmail: values.email,
-        note: values.note,
+      const res = await axios.put(`/contacts/${contact.id}`, {
+        personName: name,
+        personPosition: position,
+        personLinkedin: linkedin,
+        personEmail: email,
+        note: notes,
       });
-
+      return res.data;
+    },
+    onSuccess: async (_, { jobId }) => {
       //TODO: refetch data?
-
       await queryClient.invalidateQueries({
-        queryKey: ["job-details", currentSavedJobId],
+        queryKey: ["job-details", jobId],
       });
-
-      // const editedContact: Contact = res.data;
-      // if (currentSavedJob) {
-      //   //find and replace contact
-      //   const updatedContacts = currentSavedJob.contacts.map((contact) => {
-      //     if (contact.id === editedContact.id) {
-      //       return editedContact;
-      //     }
-      //     return contact;
-      //   });
-      //   const updatedJob = {
-      //     ...currentSavedJob,
-      //     contacts: updatedContacts,
-      //   };
-      //   setCurrentSavedJob(updatedJob);
-      // }
-    } catch (error) {
-    } finally {
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+    onSettled: () => {
       onClose();
-    }
+    },
+  });
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (!currentSavedJobId) return;
+
+    editContactMutation.mutate({
+      jobId: currentSavedJobId,
+      name: values.name,
+      position: values.position,
+      linkedin: values.linkedin,
+      email: values.email,
+      notes: values.note,
+    });
   };
 
   const handleCloseModal = () => {

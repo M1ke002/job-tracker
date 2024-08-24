@@ -29,7 +29,7 @@ import DocumentType from "@/types/DocumentType";
 
 import { useModal } from "@/stores/useModal";
 import { useParams } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface AttachedDocumentItemProps {
   documentId: string;
@@ -58,29 +58,25 @@ const AttachedDocumentItem = ({
   //must - 10 hours to get the correct date
   const convertedDate = sydneyToUTCTime(new Date(dateUploaded));
 
-  const unlinkDocument = async (documentId: string) => {
-    try {
-      if (!currentSavedJobId) return;
-
-      const res = await axios.put(
-        `/saved-jobs/${currentSavedJobId}/unlink-document`,
-        {
-          documentId,
-        }
-      );
-
-      //update currentSavedJob
-      await queryClient.invalidateQueries({
-        queryKey: ["job-details", currentSavedJobId],
+  const unlinkDocumentMutation = useMutation({
+    mutationFn: async ({
+      jobId,
+      documentId,
+    }: {
+      jobId: string;
+      documentId: string;
+    }) => {
+      const res = await axios.put(`/saved-jobs/${jobId}/unlink-document`, {
+        documentId,
       });
 
-      // const updatedJob = {
-      //   ...currentSavedJob,
-      //   documents: currentSavedJob.documents.filter(
-      //     (document) => document.id.toString() !== documentId
-      //   ),
-      // };
-      // setCurrentSavedJob(updatedJob);
+      return res.data;
+    },
+    onSuccess: async (_, { jobId }) => {
+      //update currentSavedJob
+      await queryClient.invalidateQueries({
+        queryKey: ["job-details", jobId],
+      });
 
       //update documentLists in cache
       queryClient.setQueryData<DocumentType[] | undefined>(
@@ -95,7 +91,7 @@ const AttachedDocumentItem = ({
                 return {
                   ...document,
                   jobs: document.jobs.filter(
-                    (job) => job.id.toString() !== currentSavedJobId
+                    (job) => job.id.toString() !== jobId
                   ),
                 };
               } else {
@@ -105,9 +101,15 @@ const AttachedDocumentItem = ({
           }));
         }
       );
-    } catch (error) {
-      console.log(error);
-    }
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
+  const handleUnlinkDocument = () => {
+    if (!currentSavedJobId) return;
+    unlinkDocumentMutation.mutate({ jobId: currentSavedJobId, documentId });
   };
 
   return (
@@ -156,7 +158,7 @@ const AttachedDocumentItem = ({
                   confirmModalMessage:
                     "Are you sure you want to remove this document from this job?",
                   confirmModalConfirmButtonText: "Remove",
-                  confirmModalAction: () => unlinkDocument(documentId),
+                  confirmModalAction: handleUnlinkDocument,
                 });
               }}
             >

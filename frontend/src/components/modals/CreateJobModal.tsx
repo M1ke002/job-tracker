@@ -29,7 +29,7 @@ import axios from "@/lib/axiosConfig";
 import SavedJob from "@/types/SavedJob";
 
 import { useModal } from "@/stores/useModal";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   jobTitle: z.string(),
@@ -59,11 +59,33 @@ const CreateJobModal = () => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      setIsSaving(true);
-      const res = await axios.post("/saved-jobs", values);
-
+  const createJobMutation = useMutation({
+    mutationFn: async ({
+      jobTitle,
+      companyName,
+      jobUrl,
+      location,
+      salary,
+      additionalInfo,
+    }: {
+      jobTitle: string;
+      companyName: string;
+      jobUrl: string;
+      location?: string | undefined;
+      salary?: string | undefined;
+      additionalInfo?: string | undefined;
+    }) => {
+      const res = await axios.post("/saved-jobs", {
+        jobTitle,
+        companyName,
+        jobUrl,
+        location,
+        salary,
+        additionalInfo,
+      });
+      return res.data;
+    },
+    onSuccess: (newJob: SavedJob) => {
       //update cache
       // await queryClient.invalidateQueries({ queryKey: ["saved-jobs"] });
 
@@ -71,15 +93,27 @@ const CreateJobModal = () => {
         ["saved-jobs"],
         (oldData: SavedJob[] | undefined) => {
           if (!oldData) return oldData;
-          return [...oldData, res.data];
+          return [...oldData, newJob];
         }
       );
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsSaving(false);
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+    onSettled: () => {
       onClose();
-    }
+    },
+  });
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    createJobMutation.mutate({
+      jobTitle: values.jobTitle,
+      companyName: values.companyName,
+      jobUrl: values.jobUrl,
+      location: values.location,
+      salary: values.salary,
+      additionalInfo: values.additionalInfo,
+    });
   };
 
   const handleCloseModal = () => {

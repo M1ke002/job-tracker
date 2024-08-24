@@ -43,9 +43,10 @@ import { ausgradUrlBuilder, seekUrlBuilder } from "@/utils/utils";
 import axios from "@/lib/axiosConfig";
 
 import ScrapedSite from "@/types/ScrapedSite";
+import ScrapedSiteSettings from "@/types/ScrapedSiteSettings";
 
 import { useModal } from "@/stores/useModal";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   keywords: z.string().optional(),
@@ -62,9 +63,7 @@ const JobAlertSettingModal = () => {
   // const { scrapedSites, setScrapedSites } = useScrapedSites();
   const { type, isOpen, onOpen, onClose, data } = useModal();
   const queryClient = useQueryClient();
-
   const [formedUrl, setFormedUrl] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const isModalOpen = isOpen && type === "editJobAlertSetting";
   const { alertSetting, websiteName, currentScrapedSiteId, scrapedSites } =
@@ -129,42 +128,40 @@ const JobAlertSettingModal = () => {
     },
   });
 
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    try {
-      console.log(data);
-      setIsLoading(true);
-      const res = await axios.put(
-        `/scraped-site-settings/${alertSetting?.id}`,
-        {
-          scrapeFrequency: data.frequency,
-          maxPagesToScrape: data.maxPages,
-          isNotifyEmail: data.isNotifyEmail,
-          isNotifyOnWebsite: data.isNotifyWebsite,
-          searchKeyword: data.keywords,
-          location: data.location,
-          jobType: data.jobType,
-          classification: data.classification,
+  const alertSettingMutation = useMutation({
+    mutationFn: async (data: z.infer<typeof formSchema>) => {
+      if (!alertSetting) return;
+
+      const res = await axios.put(`/scraped-site-settings/${alertSetting.id}`, {
+        scrapeFrequency: data.frequency,
+        maxPagesToScrape: data.maxPages,
+        isNotifyEmail: data.isNotifyEmail,
+        isNotifyOnWebsite: data.isNotifyWebsite,
+        searchKeyword: data.keywords,
+        location: data.location,
+        jobType: data.jobType,
+        classification: data.classification,
+      });
+      return res.data;
+    },
+    onSuccess: (updatedSettings: ScrapedSiteSettings) => {
+      if (!currentScrapedSiteId || !scrapedSites) return;
+
+      //update scrapedSites
+      queryClient.setQueryData(
+        ["scraped-sites"],
+        (oldData: ScrapedSite[] | undefined) => {
+          if (!oldData) return oldData;
+
+          return oldData.map((site) => {
+            if (site.id.toString() === currentScrapedSiteId) {
+              site.scraped_site_settings = updatedSettings;
+              return site;
+            }
+            return site;
+          });
         }
       );
-      const updatedSettings = res.data;
-
-      if (currentScrapedSiteId && scrapedSites) {
-        //update scrapedSites
-        queryClient.setQueryData(
-          ["scraped-sites"],
-          (oldData: ScrapedSite[] | undefined) => {
-            if (!oldData) return oldData;
-
-            return oldData.map((site) => {
-              if (site.id.toString() === currentScrapedSiteId) {
-                site.scraped_site_settings = updatedSettings;
-                return site;
-              }
-              return site;
-            });
-          }
-        );
-      }
 
       //update modal with new data
       onOpen("editJobAlertSetting", {
@@ -172,12 +169,17 @@ const JobAlertSettingModal = () => {
         websiteName,
         scrapedSites,
       });
-    } catch (error) {
-      console.log(error);
-    } finally {
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+    onSettled: () => {
       onClose();
-      setIsLoading(false);
-    }
+    },
+  });
+
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    alertSettingMutation.mutate(data);
   };
 
   const handleCloseModal = () => {
@@ -506,7 +508,7 @@ const JobAlertSettingModal = () => {
                   variant="ghost"
                   className="mr-2 hover:text-zinc-500"
                   onClick={handleCloseModal}
-                  disabled={isLoading}
+                  disabled={alertSettingMutation.isPending}
                   type="button"
                 >
                   Cancel
@@ -514,7 +516,7 @@ const JobAlertSettingModal = () => {
                 <Button
                   variant="primary"
                   className="text-white bg-blue-500 hover:bg-blue-600"
-                  disabled={isLoading}
+                  disabled={alertSettingMutation.isPending}
                 >
                   Save changes
                 </Button>

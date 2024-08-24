@@ -21,9 +21,10 @@ import { Button } from "../ui/button";
 
 import axios from "@/lib/axiosConfig";
 import DocumentType from "@/types/DocumentType";
+import SavedJob from "@/types/SavedJob";
 
 import { useModal } from "@/stores/useModal";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const LinkDocumentModal = () => {
   const { type, isOpen, onClose, data } = useModal();
@@ -52,70 +53,72 @@ const LinkDocumentModal = () => {
     return [];
   }, [documentLists, currentSavedJob]);
 
-  const linkDocument = async () => {
-    try {
-      if (currentSavedJob && documentLists) {
-        const res = await axios.put(
-          `/saved-jobs/${currentSavedJob.id}/link-document`,
-          {
-            documentId: selectedDocumentId,
-          }
-        );
-
-        //update currentSavedJob
-        const updatedJob = { ...currentSavedJob };
-
-        const documents = documentLists.flatMap(
-          (documentList) => documentList.documents
-        );
-
-        // Find the linked document
-        const linkedDocument = documents.find(
-          (document) => document.id.toString() === selectedDocumentId
-        );
-
-        if (linkedDocument) {
-          // const updatedDocuments = [...updatedJob.documents, linkedDocument];
-
-          // update job with the new documents list
-          await queryClient.invalidateQueries({
-            queryKey: ["job-details", currentSavedJob.id.toString()],
-          });
+  const linkDocumentMutation = useMutation({
+    mutationFn: async ({
+      currSavedJob,
+      documentId,
+    }: {
+      currSavedJob: SavedJob;
+      documentId: string;
+    }) => {
+      const res = await axios.put(
+        `/saved-jobs/${currSavedJob.id}/link-document`,
+        {
+          documentId,
         }
+      );
+      return res.data;
+    },
+    onSuccess: async (_, { currSavedJob, documentId }) => {
+      //update currentSavedJob
+      await queryClient.invalidateQueries({
+        queryKey: ["job-details", currSavedJob.id.toString()],
+      });
 
-        // update documentLists cache with new linked job
-        queryClient.setQueryData<DocumentType[] | undefined>(
-          ["document-lists"],
-          (oldData) => {
-            if (!oldData) return oldData;
+      //update application stages (necessary???)
+      queryClient.invalidateQueries({
+        queryKey: ["application-stages"],
+      });
 
-            return oldData.map((documentList) => ({
-              ...documentList,
-              documents: documentList.documents.map((document) => {
-                if (document.id.toString() === selectedDocumentId) {
-                  const updatedDocument = { ...document };
-                  updatedDocument.jobs.push({
-                    id: currentSavedJob.id,
-                    job_title: currentSavedJob.job_title,
-                  });
-                  return updatedDocument;
-                }
-                return document;
-              }),
-            }));
-          }
-        );
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
+      // update documentLists cache with new linked job
+      queryClient.setQueryData<DocumentType[] | undefined>(
+        ["document-lists"],
+        (oldData) => {
+          if (!oldData) return oldData;
+
+          return oldData.map((documentList) => ({
+            ...documentList,
+            documents: documentList.documents.map((document) => {
+              if (document.id.toString() === documentId) {
+                const updatedDocument = { ...document };
+                updatedDocument.jobs.push({
+                  id: currSavedJob.id,
+                  job_title: currSavedJob.job_title,
+                });
+                return updatedDocument;
+              }
+              return document;
+            }),
+          }));
+        }
+      );
+    },
+    onSettled: () => {
       handleCloseModal();
-    }
-  };
+    },
+  });
 
   const handleCloseModal = () => {
     setSelectedDocumentId(null);
     onClose();
+  };
+
+  const handleLinkDocument = () => {
+    if (!currentSavedJob || !selectedDocumentId) return;
+    linkDocumentMutation.mutate({
+      currSavedJob: currentSavedJob,
+      documentId: selectedDocumentId,
+    });
   };
 
   return (
@@ -163,7 +166,7 @@ const LinkDocumentModal = () => {
             <Button
               variant="primary"
               className="text-white bg-blue-500 hover:bg-blue-600"
-              onClick={linkDocument}
+              onClick={handleLinkDocument}
             >
               Link
             </Button>

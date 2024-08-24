@@ -16,7 +16,7 @@ import axios from "@/lib/axiosConfig";
 import { cn } from "@/lib/utils";
 
 import { useModal } from "@/stores/useModal";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteNotificationCache } from "@/hooks/queries/useNotificationsQuery";
 
 interface NotificationItemProps {
@@ -35,14 +35,22 @@ const NotificationItem = ({
   const { onOpen } = useModal();
   const queryClient = useQueryClient();
 
-  const handleDeleteNotification = async () => {
-    try {
-      await axios.delete(`/notifications/${id}`);
+  const deleteNotificationMutation = useMutation({
+    mutationFn: async () => {
+      const res = await axios.delete(`/notifications/${id}`);
+      return res.data;
+    },
+    onSuccess: () => {
       //delete the notification in cache
       deleteNotificationCache(queryClient, id);
-    } catch (error) {
-      console.log(error);
-    }
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
+  const handleDeleteNotification = async () => {
+    deleteNotificationMutation.mutate();
   };
 
   return (

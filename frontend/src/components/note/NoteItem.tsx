@@ -10,7 +10,7 @@ import axios from "@/lib/axiosConfig";
 import { isTextEmpty } from "@/utils/utils";
 
 import { useModal } from "@/stores/useModal";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { useJobDetailsQuery } from "@/hooks/queries/useJobDetailsQuery";
 
@@ -21,7 +21,6 @@ const Note = () => {
   const { onOpen } = useModal();
   const [isEditMode, setIsEditMode] = useState(false);
   const [value, setValue] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!currentSavedJob) return;
@@ -29,51 +28,57 @@ const Note = () => {
     setValue(currentSavedJob.notes || "");
   }, [currentSavedJob]);
 
-  const handleSaveNote = async () => {
-    try {
-      if (!currentSavedJob) return;
-
-      setIsLoading(true);
-      const res = await axios.put(`/saved-jobs/${currentSavedJob.id}/notes`, {
+  const saveNoteMutation = useMutation({
+    mutationFn: async (jobId: number) => {
+      const res = await axios.put(`/saved-jobs/${jobId}/notes`, {
         notes: value,
       });
-
+      return res.data;
+    },
+    onSuccess: async (_, jobId) => {
       await queryClient.invalidateQueries({
-        queryKey: ["job-details", currentSavedJob.id.toString()],
+        queryKey: ["job-details", jobId.toString()],
       });
-      // const updatedSavedJob = res.data;
-      // setCurrentSavedJob(updatedSavedJob);
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+    onSettled: () => {
       setIsEditMode(false);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
+    },
+  });
+
+  const deleteNoteMutation = useMutation({
+    mutationFn: async (jobId: number) => {
+      const res = await axios.put(`/saved-jobs/${jobId}/notes`, {
+        notes: "",
+      });
+      return res.data;
+    },
+    onSuccess: async (_, jobId) => {
+      await queryClient.invalidateQueries({
+        queryKey: ["job-details", jobId.toString()],
+      });
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
+  const handleSaveNote = async () => {
+    if (!currentSavedJob) return;
+    saveNoteMutation.mutate(currentSavedJob.id);
+  };
+
+  const handleDeleteNote = async () => {
+    if (!currentSavedJob) return;
+    deleteNoteMutation.mutate(currentSavedJob.id);
   };
 
   const handleCancel = () => {
     if (!currentSavedJob) return;
-
     setValue(currentSavedJob.notes || "");
     setIsEditMode(false);
-  };
-
-  const handleDeleteNote = async () => {
-    try {
-      if (!currentSavedJob) return;
-
-      const res = await axios.put(`/saved-jobs/${currentSavedJob.id}/notes`, {
-        notes: "",
-      });
-
-      await queryClient.invalidateQueries({
-        queryKey: ["job-details", currentSavedJob.id.toString()],
-      });
-      // const updatedSavedJob = res.data;
-      // setCurrentSavedJob(updatedSavedJob);
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   return (
@@ -97,7 +102,7 @@ const Note = () => {
               variant="primary"
               size="sm"
               className="text-white bg-blue-600 hover:bg-blue-700 px-5"
-              disabled={isLoading}
+              disabled={saveNoteMutation.isPending}
               onClick={handleSaveNote}
             >
               Save
@@ -106,7 +111,7 @@ const Note = () => {
               variant="ghost"
               size="sm"
               className="text-blue-600 hover:text-blue-700"
-              disabled={isLoading}
+              disabled={saveNoteMutation.isPending}
               onClick={handleCancel}
             >
               Cancel

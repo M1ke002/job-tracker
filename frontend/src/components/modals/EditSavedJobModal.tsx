@@ -25,7 +25,7 @@ import { Input } from "../ui/input";
 
 import axios from "@/lib/axiosConfig";
 
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useModal } from "@/stores/useModal";
 
 const formSchema = z.object({
@@ -78,21 +78,66 @@ const EditSavedJobModal = () => {
     }
   };
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      if (!currentSavedJob) return;
-
-      const res = await axios.put(`/saved-jobs/${currentSavedJob.id}`, values);
-
+  const editSavedJobMutation = useMutation({
+    mutationFn: async ({
+      jobId,
+      jobTitle,
+      companyName,
+      jobUrl,
+      location,
+      salary,
+      additionalInfo,
+    }: {
+      jobId: number;
+      jobTitle: string;
+      companyName: string;
+      jobUrl: string;
+      location?: string | undefined;
+      salary?: string | undefined;
+      additionalInfo?: string | undefined;
+    }) => {
+      const res = await axios.put(`/saved-jobs/${jobId}`, {
+        jobTitle,
+        companyName,
+        jobUrl,
+        location,
+        salary,
+        additionalInfo,
+      });
+      return res.data;
+    },
+    onSuccess: async (_, { jobId }) => {
       await queryClient.invalidateQueries({
-        queryKey: ["job-details", currentSavedJob.id.toString()],
+        queryKey: ["job-details", jobId.toString()],
       });
       //TODO: refetch data?
-    } catch (error) {
-      console.log(error);
-    } finally {
+      queryClient.invalidateQueries({
+        queryKey: ["saved-jobs"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["application-stages"],
+      });
+    },
+    onError: async (error) => {
+      console.error(error);
+    },
+    onSettled: () => {
       onClose();
-    }
+    },
+  });
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (!currentSavedJob) return;
+
+    editSavedJobMutation.mutate({
+      jobId: currentSavedJob.id,
+      jobTitle: values.jobTitle,
+      companyName: values.companyName,
+      jobUrl: values.jobUrl,
+      location: values.location,
+      salary: values.salary,
+      additionalInfo: values.additionalInfo,
+    });
   };
 
   const handleCloseModal = () => {

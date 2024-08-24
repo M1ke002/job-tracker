@@ -20,7 +20,7 @@ import DocumentType from "@/types/DocumentType";
 
 import { useModal } from "@/stores/useModal";
 import { useDocumentsQuery } from "@/hooks/queries/useDocumentsQuery";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const ActionCell = ({ row }: { row: Row<Document> }) => {
   const { data: documentLists, status: documentListsStatus } =
@@ -29,11 +29,14 @@ const ActionCell = ({ row }: { row: Row<Document> }) => {
   const queryClient = useQueryClient();
   const { id, file_url, document_type_id } = row.original;
 
-  const deleteDocument = async (id: number) => {
-    try {
+  const deleteDocumentMutation = useMutation({
+    mutationFn: async (id: number) => {
       console.log(id);
       const res = await axios.delete(`/documents/${id}`);
 
+      return res.data;
+    },
+    onSuccess: async () => {
       //update the documents list to remove the deleted document
       queryClient.setQueryData<DocumentType[] | undefined>(
         ["document-lists"],
@@ -48,10 +51,11 @@ const ActionCell = ({ row }: { row: Row<Document> }) => {
           }));
         }
       );
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
 
   return (
     <div className="flex items-center justify-center space-x-1">
@@ -87,7 +91,7 @@ const ActionCell = ({ row }: { row: Row<Document> }) => {
               "Are you sure you want to delete this document?",
             confirmModalConfirmButtonText: "Delete",
             confirmModalAction: () => {
-              deleteDocument(id);
+              deleteDocumentMutation.mutate(id);
             },
           });
         }}

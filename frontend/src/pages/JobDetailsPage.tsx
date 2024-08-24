@@ -41,7 +41,7 @@ import ContactsTab from "@/components/tabs/ContactsTab";
 import DocumentsTab from "@/components/tabs/DocumentsTab";
 import ToolsTab from "@/components/tabs/ToolsTab";
 
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, useNavigate } from "react-router-dom";
 import { useModal } from "@/stores/useModal";
 import { useJobDetailsQuery } from "@/hooks/queries/useJobDetailsQuery";
@@ -78,7 +78,6 @@ const tabTriggers = [
 type ApplicationStageName = keyof typeof applicationStageColors;
 
 const JobDetailsPage = () => {
-  const [isLoading, setLoading] = useState(false);
   const { id: currentSavedJobId } = useParams<{ id: string }>();
   const { onOpen } = useModal();
   const navigate = useNavigate();
@@ -89,38 +88,80 @@ const JobDetailsPage = () => {
   const { data: applicationStages, status: applicationStagesStatus } =
     useApplicationStagesQuery();
 
-  const changeJobStage = async (stageId: string) => {
-    try {
-      if (!currentSavedJob) return;
-
-      setLoading(true);
-      const res = await axios.put(`/saved-jobs/${currentSavedJob.id}/stage`, {
+  const changeJobStageMutation = useMutation({
+    mutationFn: async ({
+      jobId,
+      stageId,
+    }: {
+      jobId: number;
+      stageId: string;
+    }) => {
+      const res = await axios.put(`/saved-jobs/${jobId}/stage`, {
         stageId: stageId,
       });
+      return res.data;
+    },
+    onSuccess: async (_, { jobId }) => {
+      //TODO: refetch data?
+      //update job details cache
       await queryClient.invalidateQueries({
-        queryKey: ["job-details", currentSavedJob.id.toString()],
+        queryKey: ["job-details", jobId.toString()],
       });
 
-      setLoading(false);
+      //update saved jobs cache
+      queryClient.invalidateQueries({
+        queryKey: ["saved-jobs"],
+      });
+
+      //update application stages cache
+      queryClient.invalidateQueries({
+        queryKey: ["application-stages"],
+      });
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
+  const deleteJobMutation = useMutation({
+    mutationFn: async (jobId: number) => {
+      const res = await axios.delete(`/saved-jobs/${jobId}`);
+      return res.data;
+    },
+    onSuccess: async (_, jobId) => {
+      //remove deleted job details cache
+      queryClient.removeQueries({
+        queryKey: ["job-details", jobId.toString()],
+      });
+
+      //update saved jobs cache
+      queryClient.invalidateQueries({
+        queryKey: ["saved-jobs"],
+      });
+
+      //update application stages cache
+      queryClient.invalidateQueries({
+        queryKey: ["application-stages"],
+      });
+
+      //refetch document lists as well???
+
       //TODO: refetch data?
-    } catch (error) {
-      console.log(error);
-    }
+      navigate("/saved-jobs");
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
+  const changeJobStage = async (stageId: string) => {
+    if (!currentSavedJob) return;
+    changeJobStageMutation.mutate({ jobId: currentSavedJob.id, stageId });
   };
 
   const handleDeleteJob = async () => {
-    try {
-      if (!currentSavedJob) return;
-
-      const res = await axios.delete(`/saved-jobs/${currentSavedJob.id}`);
-      queryClient.removeQueries({
-        queryKey: ["job-details", currentSavedJob.id.toString()],
-      });
-      navigate("/saved-jobs");
-      //TODO: refetch data?
-    } catch (error) {
-      console.log(error);
-    }
+    if (!currentSavedJob) return;
+    deleteJobMutation.mutate(currentSavedJob.id);
   };
 
   return (
@@ -182,7 +223,7 @@ const JobDetailsPage = () => {
                 //   ]
                 // }`
               )}
-              disabled={isLoading}
+              disabled={changeJobStageMutation.isPending}
             >
               <SelectValue
                 placeholder={

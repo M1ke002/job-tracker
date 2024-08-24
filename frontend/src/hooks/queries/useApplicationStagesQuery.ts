@@ -6,7 +6,9 @@ export const useApplicationStagesQuery = () => {
   return useQuery({
     queryKey: ["application-stages"],
     queryFn: async () => {
+      console.log("fetching application-stages [START]");
       const res = await axios.get<ApplicationStage[]>("/application-stages");
+      console.log("fetching application-stages [FINISH]");
       return res.data;
     },
     refetchOnMount: true,

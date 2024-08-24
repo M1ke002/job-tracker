@@ -6,7 +6,9 @@ export const useDocumentsQuery = () => {
   return useQuery({
     queryKey: ["document-lists"],
     queryFn: async () => {
+      console.log("fetching document types [START]");
       const res = await axios.get<DocumentType[]>("/document-types");
+      console.log("fetching document types [FINISH]");
       return res.data;
     },
     refetchOnMount: true,

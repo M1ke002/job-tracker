@@ -21,7 +21,7 @@ import axios from "@/lib/axiosConfig";
 import SavedJob from "@/types/SavedJob";
 
 import { useModal } from "@/stores/useModal";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const AddJobToStageModal = () => {
   const { type, isOpen, onClose, data } = useModal();
@@ -38,13 +38,21 @@ const AddJobToStageModal = () => {
     return [];
   }, [savedJobs]);
 
-  const addJobToStage = async (jobId: string, stageId: string) => {
-    try {
+  const addJobToStageMutation = useMutation({
+    mutationFn: async ({
+      jobId,
+      stageId,
+    }: {
+      jobId: string;
+      stageId: string;
+    }) => {
       const res = await axios.put(`/saved-jobs/${jobId}/stage`, {
         stageId,
       });
-      const updatedJob = res.data;
 
+      return res.data;
+    },
+    onSuccess: async (updatedJob: SavedJob, { stageId }) => {
       //update application stage columns
       if (setApplicationStageColumns && stageId) {
         setApplicationStageColumns((prev) => {
@@ -58,24 +66,20 @@ const AddJobToStageModal = () => {
         });
       }
 
-      //update saved jobs
+      //update saved jobs, application-stages, job-details cache
       await queryClient.invalidateQueries({ queryKey: ["saved-jobs"] });
-
-      // queryClient.setQueryData(
-      //   ["saved-jobs"],
-      //   (oldData: SavedJob[] | undefined) => {
-      //     if (!oldData) return oldData;
-      //     return oldData.map((job) =>
-      //       job.id === updatedJob.id ? updatedJob : job
-      //     );
-      //   }
-      // );
-    } catch (error) {
-      console.log(error);
-    } finally {
+      queryClient.invalidateQueries({ queryKey: ["application-stages"] });
+      queryClient.invalidateQueries({
+        queryKey: ["job-details", updatedJob.id.toString()],
+      });
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+    onSettled: () => {
       handleCloseModal();
-    }
-  };
+    },
+  });
 
   const handleCloseModal = () => {
     setSelectedJobId(null);
@@ -112,6 +116,7 @@ const AddJobToStageModal = () => {
             <Button
               variant="ghost"
               className="mr-2 hover:text-zinc-500"
+              disabled={addJobToStageMutation.isPending}
               onClick={handleCloseModal}
             >
               Cancel
@@ -119,9 +124,13 @@ const AddJobToStageModal = () => {
             <Button
               variant="primary"
               className="text-white bg-blue-500 hover:bg-blue-600"
+              disabled={addJobToStageMutation.isPending}
               onClick={() => {
                 if (selectedJobId && stageId) {
-                  addJobToStage(selectedJobId, stageId);
+                  addJobToStageMutation.mutate({
+                    jobId: selectedJobId,
+                    stageId,
+                  });
                 }
               }}
             >

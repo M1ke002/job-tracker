@@ -37,7 +37,7 @@ import { ApplicationStageNames } from "@/constant/applicationStage";
 import ApplicationStage from "@/types/ApplicationStage";
 import SavedJob from "@/types/SavedJob";
 
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 // import { useSavedJobsQuery } from "@/hooks/queries/useSavedJobsQuery";
 import { useModal } from "@/stores/useModal";
@@ -75,15 +75,12 @@ const JobItem = ({
   isSaved,
   savedJobsStatus,
 }: JobItemProps) => {
-  // const { status: savedJobsStatus } = useSavedJobsQuery();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const { onOpen } = useModal();
   const queryClient = useQueryClient();
 
-  const onSave = async () => {
-    try {
-      setIsLoading(true);
+  const saveJobMutation = useMutation({
+    mutationFn: async () => {
       const res = await axios.post("/saved-jobs", {
         jobTitle,
         companyName,
@@ -94,44 +91,47 @@ const JobItem = ({
         jobUrl,
         jobDate,
       });
+      return res.data;
+    },
+    onSuccess: async () => {
+      //update cache
+      await queryClient.invalidateQueries({ queryKey: ["saved-jobs"] });
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
 
+  const deleteJobMutation = useMutation({
+    mutationFn: async (jobId: number) => {
+      const res = await axios.delete(`/saved-jobs/${jobId}`);
+      return res.data;
+    },
+    onSuccess: async (_, jobId) => {
       //update cache
       await queryClient.invalidateQueries({ queryKey: ["saved-jobs"] });
 
-      // queryClient.setQueryData(
-      //   ["saved-jobs"],
-      //   (oldData: SavedJob[] | undefined) => {
-      //     if (!oldData) return oldData;
-      //     return [...oldData, res.data];
-      //   }
-      // );
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
+      //remove cached job details of the deleted job
+      queryClient.removeQueries({
+        queryKey: ["job-details", jobId.toString()],
+      });
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
+  const handleSaveJob = () => {
+    if (isSaved) return;
+    saveJobMutation.mutate();
   };
 
-  const handleDeleteJob = async () => {
-    try {
-      setIsLoading(true);
-      const res = await axios.delete(`/saved-jobs/${id}`);
-
-      await queryClient.invalidateQueries({ queryKey: ["saved-jobs"] });
-
-      // queryClient.setQueryData<SavedJob[] | undefined>(
-      //   ["saved-jobs"],
-      //   (oldData) => {
-      //     if (!oldData) return oldData;
-      //     return oldData.filter((job) => job.id !== id); // Filter out the deleted job
-      //   }
-      // );
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleDeleteJob = () => {
+    if (!id) return;
+    deleteJobMutation.mutate(id);
   };
+
+  const isLoading = saveJobMutation.isPending || deleteJobMutation.isPending;
 
   return (
     <Card
@@ -230,9 +230,7 @@ const JobItem = ({
                     isSaved && "bg-blue-500/10"
                   )}
                   disabled={isLoading || savedJobsStatus === "pending"}
-                  onClick={() => {
-                    !isSaved && onSave();
-                  }}
+                  onClick={handleSaveJob}
                 >
                   {isSaved ? (
                     <>

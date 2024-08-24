@@ -14,6 +14,8 @@ import ProtectedRoutes from "./components/routes/ProtectedRoutes";
 import ModalProvider from "./components/providers/ModalProvider";
 import { QueryProvider } from "./components/providers/QueryProvider";
 
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+
 function App() {
   return (
     <>
@@ -33,6 +35,7 @@ function App() {
           </Routes>
         </Router>
         <ModalProvider />
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryProvider>
     </>
   );

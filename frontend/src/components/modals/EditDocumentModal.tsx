@@ -32,16 +32,16 @@ import { Button } from "../ui/button";
 import axios from "@/lib/axiosConfig";
 
 import DocumentType from "@/types/DocumentType";
+import Document from "@/types/Document";
 
 import { useModal } from "@/stores/useModal";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   documentType: z.string(),
 });
 
 const EditDocumentModal = () => {
-  const [isSaving, setIsSaving] = useState(false);
   const { type, isOpen, onClose, data } = useModal();
   const queryClient = useQueryClient();
 
@@ -67,17 +67,14 @@ const EditDocumentModal = () => {
     }
   };
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      setIsSaving(true);
-      console.log(values);
+  const editDocumentMutation = useMutation({
+    mutationFn: async (documentType: string) => {
       const res = await axios.put(`/documents/${documentId}`, {
-        documentTypeId: values.documentType,
+        documentTypeId: documentType,
       });
-
-      //update the documents list to reflect the changes
-      const updatedDocument = res.data;
-
+      return res.data;
+    },
+    onSuccess: async (updatedDocument: Document) => {
       queryClient.setQueryData<DocumentType[] | undefined>(
         ["document-lists"],
         (oldData) => {
@@ -118,12 +115,17 @@ const EditDocumentModal = () => {
           });
         }
       );
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsSaving(false);
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+    onSettled: () => {
       handleCloseModal();
-    }
+    },
+  });
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    editDocumentMutation.mutate(values.documentType);
   };
 
   const handleCloseModal = () => {
@@ -221,7 +223,7 @@ const EditDocumentModal = () => {
                   variant="primary"
                   className="text-white bg-blue-500 hover:bg-blue-600"
                   type="submit"
-                  disabled={isSaving}
+                  disabled={editDocumentMutation.isPending}
                 >
                   Save changes
                 </Button>

@@ -29,7 +29,7 @@ import axios from "@/lib/axiosConfig";
 import Contact from "@/types/Contact";
 
 import { useParams } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useModal } from "@/stores/useModal";
 
 const formSchema = z.object({
@@ -58,39 +58,59 @@ const AddContactModal = () => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      if (!currentSavedJobId) return;
-
-      console.log(values, currentSavedJobId);
+  const addContactMutation = useMutation({
+    mutationFn: async ({
+      jobId,
+      name,
+      position,
+      linkedin,
+      email,
+      notes,
+    }: {
+      jobId: string;
+      name: string;
+      position: string;
+      linkedin: string;
+      email: string;
+      notes: string;
+    }) => {
       const res = await axios.post("/contacts", {
-        jobId: currentSavedJobId,
-        personName: values.name,
-        personPosition: values.position,
-        personLinkedin: values.linkedin,
-        personEmail: values.email,
-        note: values.notes,
+        jobId,
+        personName: name,
+        personPosition: position,
+        personLinkedin: linkedin,
+        personEmail: email,
+        note: notes,
       });
-
-      //TODO: refetch data?
+      return res.data;
+    },
+    onSuccess: async (_, { jobId }) => {
+      //TODO: refetch data? (applicationStages?)
 
       await queryClient.invalidateQueries({
-        queryKey: ["job-details", currentSavedJobId],
+        queryKey: ["job-details", jobId],
       });
-
-      // const contact: Contact = res.data;
-      // if (currentSavedJob) {
-      //   contact.job_id = currentSavedJob.id;
-      //   const updatedJob = {
-      //     ...currentSavedJob,
-      //     contacts: [...currentSavedJob.contacts, contact],
-      //   };
-      //   setCurrentSavedJob(updatedJob);
-      // }
-    } catch (error) {
-    } finally {
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+    onSettled: () => {
       onClose();
-    }
+    },
+  });
+
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    if (!currentSavedJobId) return;
+
+    console.log(values, currentSavedJobId);
+    addContactMutation.mutate({
+      jobId: currentSavedJobId,
+      name: values.name,
+      position: values.position,
+      linkedin: values.linkedin,
+      email: values.email,
+      notes: values.notes,
+    });
   };
 
   const handleCloseModal = () => {
@@ -183,6 +203,7 @@ const AddContactModal = () => {
                   variant="ghost"
                   className="mr-2 hover:text-zinc-500"
                   onClick={handleCloseModal}
+                  disabled={addContactMutation.isPending}
                   type="button"
                 >
                   Cancel
@@ -190,6 +211,7 @@ const AddContactModal = () => {
                 <Button
                   variant="primary"
                   className="text-white bg-blue-500 hover:bg-blue-600"
+                  disabled={addContactMutation.isPending}
                 >
                   Save contact
                 </Button>

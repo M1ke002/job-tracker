@@ -29,7 +29,7 @@ import { getApplicationStatusCount } from "@/utils/utils";
 import SavedJob from "@/types/SavedJob";
 import axios from "@/lib/axiosConfig";
 
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSavedJobsQuery } from "@/hooks/queries/useSavedJobsQuery";
 import { useApplicationStagesQuery } from "@/hooks/queries/useApplicationStagesQuery";
 
@@ -48,7 +48,6 @@ const ApplicationsPage = () => {
   const [applicationStageColumns, setApplicationStageColumns] = useState<
     ApplicationStageType[]
   >([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   //the data of the item being dragged
   const [activeColumnData, setActiveColumnData] =
     useState<ApplicationStageType | null>(null);
@@ -57,7 +56,7 @@ const ApplicationsPage = () => {
   const [initialJobColumnId, setInitialJobColumnId] = useState<string>("");
   const [targetJobColumnId, setTargetJobColumnId] = useState<string>("");
 
-  const { data: savedJobs, status: savedJobsStatus } = useSavedJobsQuery();
+  // const { data: savedJobs } = useSavedJobsQuery();
   const { data: applicationStages, status: applicationStagesStatus } =
     useApplicationStagesQuery();
 
@@ -97,152 +96,181 @@ const ApplicationsPage = () => {
   });
   const sensors = useSensors(mouseSensor, touchSensor);
 
-  const updateStageOrder = async (newStageColumns: ApplicationStageType[]) => {
-    //TODO: update tanstack query cache after calling api. do same for other functions as well
-    try {
-      //send an array of [{id: 1, position: 0}, {id: 2, position: 1}, ...]
-      const stagePositions = newStageColumns.map((stage) => ({
-        id: stage.id,
-        position: stage.position,
-      }));
-      console.log(stagePositions);
-
-      // Cancel any ongoing queries for "application-stages" and "saved-jobs"
-      await queryClient.cancelQueries({ queryKey: ["application-stages"] });
-      await queryClient.cancelQueries({ queryKey: ["saved-jobs"] });
-
+  const updateStageOrderMutation = useMutation({
+    mutationFn: async (
+      stagePositions: {
+        id: number;
+        position: number;
+      }[]
+    ) => {
       const res = await axios.put("/application-stages/reorder-stages", {
         stagePositions,
       });
-
+      return res.data;
+    },
+    onMutate: async () => {
+      // Cancel any ongoing queries for "application-stages" and "saved-jobs"
+      await queryClient.cancelQueries({ queryKey: ["application-stages"] });
+      await queryClient.cancelQueries({ queryKey: ["saved-jobs"] });
+    },
+    onSuccess: async () => {
       //update application stages cache
       queryClient.invalidateQueries({ queryKey: ["application-stages"] });
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
 
-  const updateJobOrder = async (affectedStages: ApplicationStageType[]) => {
-    try {
-      //send an array of jobs [{id: 1, stage_id: 1, position: 0}, {id: 2, stage_id: 1, position: 1}, ...]
-      const jobPositions: {
+  const updateJobOrderMutation = useMutation({
+    mutationFn: async (
+      jobPositions: {
         id: number;
         stage_id: number;
         rejected_at_stage_id: number | null;
         position: number;
-      }[] = [];
-      affectedStages.forEach((stage) => {
-        stage.jobs.forEach((job, index) => {
-          let rejected_at_stage_id = job.rejected_at_stage_id;
-          if (stage.stage_name !== "Rejected") {
-            //if job doesnt belong to a stage yet
-            rejected_at_stage_id = stage.id;
-          }
-          jobPositions.push({
-            id: job.id,
-            stage_id: stage.id,
-            rejected_at_stage_id: rejected_at_stage_id,
-            position: index,
-          });
-        });
-      });
-      console.log(jobPositions);
-
-      // Cancel any ongoing queries for "application-stages" and "saved-jobs"
-      await queryClient.cancelQueries({ queryKey: ["application-stages"] });
-      await queryClient.cancelQueries({ queryKey: ["saved-jobs"] });
-
+      }[]
+    ) => {
       const res = await axios.put("/saved-jobs/reorder-jobs", {
         jobPositions,
       });
-
+      return res.data;
+    },
+    onMutate: async () => {
+      // Cancel any ongoing queries for "application-stages" and "saved-jobs"
+      await queryClient.cancelQueries({ queryKey: ["application-stages"] });
+      await queryClient.cancelQueries({ queryKey: ["saved-jobs"] });
+    },
+    onSuccess: (_, jobPositions) => {
       //update application stages cache
       //TODO: should add await for the queryClient.invalidateQueries???
       queryClient.invalidateQueries({ queryKey: ["application-stages"] });
 
       //update the saved jobs
       queryClient.invalidateQueries({ queryKey: ["saved-jobs"] });
-    } catch (error) {
-      console.log(error);
-    }
+
+      // Invalidate job details for each job ID in jobPositions
+      jobPositions.forEach((job) => {
+        queryClient.invalidateQueries({
+          queryKey: ["job-details", job.id.toString()],
+        });
+      });
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
+  const removeJobFromStagesMutation = useMutation({
+    mutationFn: async ({
+      jobId,
+      jobPositions,
+    }: {
+      jobId: number;
+      jobPositions: {
+        id: number;
+        position: number;
+      }[];
+    }) => {
+      const res = await axios.put(`/saved-jobs/${jobId}/remove-stage`, {
+        jobPositions,
+      });
+      return res.data;
+    },
+    onMutate: async () => {
+      // Cancel any ongoing queries for "application-stages" and "saved-jobs"
+      await queryClient.cancelQueries({ queryKey: ["application-stages"] });
+      await queryClient.cancelQueries({ queryKey: ["saved-jobs"] });
+    },
+    onSuccess: (_, { jobId }) => {
+      //update application stages cache
+      queryClient.invalidateQueries({
+        queryKey: ["application-stages"],
+      });
+
+      //update the saved jobs
+      queryClient.invalidateQueries({ queryKey: ["saved-jobs"] });
+
+      //update currentSavedJob
+      queryClient.invalidateQueries({
+        queryKey: ["job-details", jobId.toString()],
+      });
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
+  const updateStageOrder = (newStageColumns: ApplicationStageType[]) => {
+    //send an array of [{id: 1, position: 0}, {id: 2, position: 1}, ...]
+    const stagePositions = newStageColumns.map((stage) => ({
+      id: stage.id,
+      position: stage.position,
+    }));
+    console.log(stagePositions);
+
+    updateStageOrderMutation.mutate(stagePositions);
   };
 
-  const removeJobFromStages = useCallback(
-    async (jobId: number) => {
-      try {
-        if (!savedJobs) return;
-
-        //find the column that contains the job
-        const column = findColumnByJobId(jobId);
-        if (!column) return;
-
-        //remove the job from the column
-        column.jobs = column.jobs.filter((job) => job.id !== jobId);
-
-        //update the position of jobs
-        column.jobs = column.jobs.map((job, index) => ({
-          ...job,
-          position: index,
-        }));
-
-        setApplicationStageColumns((prev) => {
-          const newColumns = [...prev];
-          const index = newColumns.findIndex((stage) => stage.id === column.id);
-          newColumns[index] = column;
-          return newColumns;
-        });
-
-        //send an array of [{id: 1, position: 0}, {id: 2, position: 1}, ...]: positions of the remaining jobs in the column
-        const jobPositions = column.jobs.map((job) => ({
+  const updateJobOrder = (affectedStages: ApplicationStageType[]) => {
+    //send an array of jobs [{id: 1, stage_id: 1, position: 0}, {id: 2, stage_id: 1, position: 1}, ...]
+    const jobPositions: {
+      id: number;
+      stage_id: number;
+      rejected_at_stage_id: number | null;
+      position: number;
+    }[] = [];
+    affectedStages.forEach((stage) => {
+      stage.jobs.forEach((job, index) => {
+        let rejected_at_stage_id = job.rejected_at_stage_id;
+        if (stage.stage_name !== "Rejected") {
+          //if job doesnt belong to a stage yet
+          rejected_at_stage_id = stage.id;
+        }
+        jobPositions.push({
           id: job.id,
-          position: job.position,
-        }));
-
-        // Cancel any ongoing queries for "application-stages" and "saved-jobs"
-        await queryClient.cancelQueries({ queryKey: ["application-stages"] });
-        await queryClient.cancelQueries({ queryKey: ["saved-jobs"] });
-
-        const res = await axios.put(`/saved-jobs/${jobId}/remove-stage`, {
-          jobPositions,
+          stage_id: stage.id,
+          rejected_at_stage_id: rejected_at_stage_id,
+          position: index,
         });
-        console.log(res.data);
+      });
+    });
+    console.log(jobPositions);
 
-        //update application stages cache
-        queryClient.invalidateQueries({
-          queryKey: ["application-stages"],
-        });
+    updateJobOrderMutation.mutate(jobPositions);
+  };
 
-        //update the saved jobs
-        queryClient.invalidateQueries({ queryKey: ["saved-jobs"] });
+  const removeJobFromStages = (jobId: number) => {
+    // if (!savedJobs) return;
 
-        // queryClient.setQueryData<SavedJob[] | undefined>(
-        //   ["saved-jobs"],
-        //   (oldData) => {
-        //     if (!oldData) return oldData;
+    //find the column that contains the job
+    const column = findColumnByJobId(jobId);
+    if (!column) return;
 
-        //     return oldData.map((job) =>
-        //       job.id === jobId
-        //         ? {
-        //             ...job,
-        //             stage: null,
-        //             stage_id: null,
-        //             rejected_at_stage_id: null,
-        //           }
-        //         : job
-        //     );
-        //   }
-        // );
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    [
-      savedJobs,
-      queryClient,
-      applicationStageColumns,
-      setApplicationStageColumns,
-    ]
-  );
+    //remove the job from the column
+    column.jobs = column.jobs.filter((job) => job.id !== jobId);
+
+    //update the position of jobs
+    column.jobs = column.jobs.map((job, index) => ({
+      ...job,
+      position: index,
+    }));
+
+    setApplicationStageColumns((prev) => {
+      const newColumns = [...prev];
+      const index = newColumns.findIndex((stage) => stage.id === column.id);
+      newColumns[index] = column;
+      return newColumns;
+    });
+
+    //send an array of [{id: 1, position: 0}, {id: 2, position: 1}, ...]: positions of the remaining jobs in the column
+    const jobPositions = column.jobs.map((job) => ({
+      id: job.id,
+      position: job.position,
+    }));
+
+    removeJobFromStagesMutation.mutate({ jobId, jobPositions });
+  };
 
   const dropAnimation: DropAnimation = {
     sideEffects: defaultDropAnimationSideEffects({
@@ -482,7 +510,7 @@ const ApplicationsPage = () => {
     }
   };
 
-  const handleDragEnd = async (e: any) => {
+  const handleDragEnd = (e: any) => {
     //clear previous data
     setActiveColumnData(null);
     setActiveCardData(null);
@@ -524,9 +552,8 @@ const ApplicationsPage = () => {
         });
       }
 
-      setIsLoading(true);
-      await updateJobOrder(affectedStages);
-      setIsLoading(false);
+      //call api to update job orders
+      updateJobOrder(affectedStages);
     } else if (activeColumnData) {
       if (active.data.current.type !== over.data.current.type) {
         // console.log("not the same type");
@@ -558,11 +585,14 @@ const ApplicationsPage = () => {
       setApplicationStageColumns(reorderedColumns);
 
       //call api
-      setIsLoading(true);
-      await updateStageOrder(reorderedColumns);
-      setIsLoading(false);
+      updateStageOrder(reorderedColumns);
     }
   };
+
+  const isLoading =
+    updateJobOrderMutation.isPending ||
+    updateStageOrderMutation.isPending ||
+    removeJobFromStagesMutation.isPending;
 
   return (
     <div className="bg-[#f7fafc]">

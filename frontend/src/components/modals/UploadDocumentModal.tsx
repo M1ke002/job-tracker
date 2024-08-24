@@ -37,9 +37,10 @@ import axios from "@/lib/axiosConfig";
 import UploadFileZone from "../UploadFileZone";
 
 import DocumentType from "@/types/DocumentType";
+import Document from "@/types/Document";
 
 import { useModal } from "@/stores/useModal";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   documentType: z.string(),
@@ -48,7 +49,6 @@ const formSchema = z.object({
 const UploadDocumentModal = () => {
   const queryClient = useQueryClient();
   const { type, isOpen, onClose, data } = useModal();
-  const [isSaving, setIsSaving] = useState(false);
   const [file, setFile] = useState<File | null>(null);
 
   const isModalOpen = isOpen && type === "uploadDocument";
@@ -61,30 +61,16 @@ const UploadDocumentModal = () => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      setIsSaving(true);
-      console.log(values);
-      if (!file) {
-        console.log("No file selected");
-        return;
-      }
-      const formData = new FormData();
-      formData.append("file", file as File);
-      formData.append("documentTypeId", values.documentType);
-      if (currentSavedJob) {
-        formData.append("jobId", currentSavedJob.id.toString());
-      }
+  const uploadDocumentMutation = useMutation({
+    mutationFn: async (formData: FormData) => {
       const res = await axios.post("/documents", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log(res.data);
-
-      //update the documents list to add the new document
-      const newDocument = res.data;
-
+      return res.data;
+    },
+    onSuccess: async (newDocument: Document) => {
       //update cache with new data
       queryClient.setQueryData(
         ["document-lists"],
@@ -109,13 +95,29 @@ const UploadDocumentModal = () => {
         await queryClient.invalidateQueries({
           queryKey: ["job-details", currentSavedJob.id.toString()],
         });
+
+        //update application stages here as well???
       }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsSaving(false);
+    },
+    onSettled: () => {
       handleCloseModal();
+    },
+  });
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log(values);
+    if (!file) {
+      console.log("No file selected");
+      return;
     }
+    const formData = new FormData();
+    formData.append("file", file as File);
+    formData.append("documentTypeId", values.documentType);
+    if (currentSavedJob) {
+      formData.append("jobId", currentSavedJob.id.toString());
+    }
+
+    uploadDocumentMutation.mutate(formData);
   };
 
   const handleCloseModal = () => {
@@ -244,7 +246,7 @@ const UploadDocumentModal = () => {
                   variant="primary"
                   className="text-white bg-blue-500 hover:bg-blue-600"
                   type="submit"
-                  disabled={isSaving}
+                  disabled={uploadDocumentMutation.isPending}
                 >
                   Save
                 </Button>

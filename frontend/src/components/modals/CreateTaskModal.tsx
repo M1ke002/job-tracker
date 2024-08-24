@@ -40,7 +40,7 @@ import {
 
 import { useModal } from "@/stores/useModal";
 import { useParams } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   taskName: z.string(),
@@ -67,36 +67,55 @@ const CreateTaskModal = () => {
     },
   });
 
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    try {
-      if (!currentSavedJobId) return;
-
-      console.log(data, currentSavedJobId);
+  const createTaskMutation = useMutation({
+    mutationFn: async ({
+      jobId,
+      taskName,
+      dueDate,
+      isReminderEnabled,
+      isNotifyEmail,
+      isNotifyOnWebsite,
+    }: {
+      jobId: string;
+      taskName: string;
+      dueDate: Date | undefined;
+      isReminderEnabled: boolean;
+      isNotifyEmail: boolean;
+      isNotifyOnWebsite: boolean;
+    }) => {
       const res = await axios.post("/tasks", {
-        jobId: currentSavedJobId,
-        taskName: data.taskName,
-        dueDate: data.dueDate,
-        isReminderEnabled: data.isReminderEnabled,
-        isNotifyEmail: data.isNotifyEmail,
-        isNotifyOnWebsite: data.isNotifyOnWebsite,
+        jobId,
+        taskName,
+        dueDate,
+        isReminderEnabled,
+        isNotifyEmail,
+        isNotifyOnWebsite,
       });
-
+      return res.data;
+    },
+    onSuccess: async (_, { jobId }) => {
       //TODO: refetch data (saved jobs, application stages?)
       await queryClient.invalidateQueries({
-        queryKey: ["job-details", currentSavedJobId],
+        queryKey: ["job-details", jobId],
       });
-
-      // const newTask = res.data;
-      // //update current saved job
-      // if (currentSavedJob) {
-      //   const newTasks = [...currentSavedJob.tasks, newTask];
-      //   setCurrentSavedJob({ ...currentSavedJob, tasks: newTasks });
-      // }
-    } catch (error) {
-      console.log(error);
-    } finally {
+      queryClient.invalidateQueries({ queryKey: ["application-stages"] });
+    },
+    onSettled: () => {
       onClose();
-    }
+    },
+  });
+
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    if (!currentSavedJobId) return;
+
+    createTaskMutation.mutate({
+      jobId: currentSavedJobId,
+      taskName: data.taskName,
+      dueDate: data.dueDate,
+      isReminderEnabled: data.isReminderEnabled,
+      isNotifyEmail: data.isNotifyEmail,
+      isNotifyOnWebsite: data.isNotifyOnWebsite,
+    });
   };
 
   const handleCloseModal = () => {

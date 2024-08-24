@@ -19,7 +19,7 @@ import axios from "@/lib/axiosConfig";
 import Task from "@/types/Task";
 
 import { useModal } from "@/stores/useModal";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 
 interface TaskItemProps {
@@ -42,86 +42,88 @@ const TaskItem = ({ task }: TaskItemProps) => {
   }
   if (task.is_completed) type = "completed";
 
-  const deleteTask = async () => {
-    try {
-      if (!currentSavedJobId) return;
-
+  const deleteTaskMutation = useMutation({
+    mutationFn: async (jobId: string) => {
       const res = await axios.delete(`/tasks/${task.id}`);
-
-      //update current saved job
-      //TODO: refetch data?
-
+      return res.data;
+    },
+    onSuccess: async (_, jobId) => {
       await queryClient.invalidateQueries({
-        queryKey: ["job-details", currentSavedJobId],
+        queryKey: ["job-details", jobId],
       });
 
-      // if (currentSavedJob) {
-      //   const updatedTasks = currentSavedJob.tasks.filter(
-      //     (currTask) => currTask.id !== task.id
-      //   );
-      //   setCurrentSavedJob({ ...currentSavedJob, tasks: updatedTasks });
-      // }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+      //update application-stages as well???
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
 
-  const toggleTaskCompleted = async (isCompleted: boolean) => {
-    try {
-      if (!currentSavedJobId) return;
-
+  const completeTaskMutation = useMutation({
+    mutationFn: async ({
+      jobId,
+      isCompleted,
+    }: {
+      jobId: string;
+      isCompleted: boolean;
+    }) => {
       const res = await axios.put(`/tasks/${task.id}/complete`, {
         isCompleted,
       });
-
-      //update current saved job
-      //TODO: refetch data?
-
+      return res.data;
+    },
+    onSuccess: async (_, { jobId }) => {
       await queryClient.invalidateQueries({
-        queryKey: ["job-details", currentSavedJobId],
+        queryKey: ["job-details", jobId],
       });
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
 
-      // if (currentSavedJob) {
-      //   const updatedTasks = currentSavedJob.tasks.map((currTask) => {
-      //     if (currTask.id === task.id) {
-      //       return { ...currTask, is_completed: isCompleted };
-      //     }
-      //     return currTask;
-      //   });
-      //   setCurrentSavedJob({ ...currentSavedJob, tasks: updatedTasks });
-      // }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const toggleReminder = async (isReminderEnabled: boolean) => {
-    try {
-      if (!currentSavedJobId) return;
-
+  const toggleTaskReminderMutation = useMutation({
+    mutationFn: async ({
+      jobId,
+      isReminderEnabled,
+    }: {
+      jobId: string;
+      isReminderEnabled: boolean;
+    }) => {
       const res = await axios.put(`/tasks/${task.id}/reminder`, {
         isReminderEnabled,
       });
-
+      return res.data;
+    },
+    onSuccess: async (_, { jobId }) => {
       //update current saved job
       //TODO: refetch data?
 
       await queryClient.invalidateQueries({
-        queryKey: ["job-details", currentSavedJobId],
+        queryKey: ["job-details", jobId],
       });
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
 
-      // if (currentSavedJob) {
-      //   const updatedTasks = currentSavedJob.tasks.map((currTask) => {
-      //     if (currTask.id === task.id) {
-      //       return { ...currTask, is_reminder_enabled: isReminderEnabled };
-      //     }
-      //     return currTask;
-      //   });
-      //   setCurrentSavedJob({ ...currentSavedJob, tasks: updatedTasks });
-      // }
-    } catch (error) {
-      console.log(error);
-    }
+  const deleteTask = async () => {
+    if (!currentSavedJobId) return;
+    deleteTaskMutation.mutate(currentSavedJobId);
+  };
+
+  const toggleTaskCompleted = async (isCompleted: boolean) => {
+    if (!currentSavedJobId) return;
+    completeTaskMutation.mutate({ jobId: currentSavedJobId, isCompleted });
+  };
+
+  const toggleReminder = async (isReminderEnabled: boolean) => {
+    if (!currentSavedJobId) return;
+    toggleTaskReminderMutation.mutate({
+      jobId: currentSavedJobId,
+      isReminderEnabled,
+    });
   };
 
   return (

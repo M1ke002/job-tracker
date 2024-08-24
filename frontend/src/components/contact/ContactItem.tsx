@@ -24,7 +24,7 @@ import axios from "@/lib/axiosConfig";
 import Contact from "@/types/Contact";
 
 import { useParams } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useModal } from "@/stores/useModal";
 
 interface ContactItemProps {
@@ -36,27 +36,29 @@ const ContactItem = ({ contact }: ContactItemProps) => {
   const { onOpen } = useModal();
   const queryClient = useQueryClient();
 
-  const handleDeleteContact = async () => {
-    try {
-      if (!currentSavedJobId) return;
-
+  const deleteContactMutation = useMutation({
+    mutationFn: async () => {
       const res = await axios.delete(`/contacts/${contact.id}`);
-
+      return res.data;
+    },
+    onSuccess: async () => {
+      if (!currentSavedJobId) return;
       await queryClient.invalidateQueries({
         queryKey: ["job-details", currentSavedJobId],
       });
-      // if (currentSavedJob) {
-      //   const updatedJob = {
-      //     ...currentSavedJob,
-      //     contacts: currentSavedJob.contacts.filter(
-      //       (currContact) => currContact.id !== contact.id
-      //     ),
-      //   };
-      // }
       //TODO: refetch data?
-    } catch (error) {
-      console.log(error);
-    }
+      queryClient.invalidateQueries({
+        queryKey: ["saved-job"],
+      });
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
+  const handleDeleteContact = async () => {
+    if (!currentSavedJobId) return;
+    deleteContactMutation.mutate();
   };
 
   return (

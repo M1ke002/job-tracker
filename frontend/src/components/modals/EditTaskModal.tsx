@@ -48,7 +48,7 @@ import { cn } from "@/lib/utils";
 
 import { useModal } from "@/stores/useModal";
 import { useParams } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   taskName: z.string(),
@@ -102,39 +102,41 @@ const EditTaskModal = () => {
     }
   };
 
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    try {
-      if (!currentSavedJobId || !task) return;
-
-      console.log(data);
-      //compare data.dueDate with task.due_date, in Date format
-      let isDueDateChanged = false;
-
-      if (task.due_date && data.dueDate) {
-        const taskDueDate = new Date(task.due_date);
-        isDueDateChanged = taskDueDate.getDay() !== data.dueDate.getDay();
-      } else if (
-        (task.due_date && !data.dueDate) ||
-        (!task.due_date && data.dueDate)
-      ) {
-        isDueDateChanged = true;
-      }
-      console.log("isDueDateChanged", isDueDateChanged);
-
-      const res = await axios.put(`/tasks/${task.id}`, {
-        taskName: data.taskName,
-        dueDate: data.dueDate,
-        isReminderEnabled: data.isReminderEnabled,
-        isReminded: isDueDateChanged ? false : task.is_reminded,
-        isNotifyEmail: data.isNotifyEmail,
-        isNotifyOnWebsite: data.isNotifyOnWebsite,
+  const editTaskMutation = useMutation({
+    mutationFn: async ({
+      jobId,
+      taskId,
+      taskName,
+      dueDate,
+      isReminderEnabled,
+      isReminded,
+      isNotifyEmail,
+      isNotifyOnWebsite,
+    }: {
+      jobId: string;
+      taskId: number;
+      taskName: string;
+      dueDate: Date | undefined;
+      isReminderEnabled: boolean;
+      isReminded: boolean;
+      isNotifyEmail: boolean;
+      isNotifyOnWebsite: boolean;
+    }) => {
+      const res = await axios.put(`/tasks/${taskId}`, {
+        taskName,
+        dueDate,
+        isReminderEnabled,
+        isReminded,
+        isNotifyEmail,
+        isNotifyOnWebsite,
       });
-      console.log(res.data);
-
+      return res.data;
+    },
+    onSuccess: async (_, { jobId }) => {
       //TODO: refetch data?
 
       await queryClient.invalidateQueries({
-        queryKey: ["job-details", currentSavedJobId],
+        queryKey: ["job-details", jobId],
       });
 
       // const editedTask = res.data;
@@ -147,11 +149,43 @@ const EditTaskModal = () => {
       //     tasks: updatedTasks,
       //   });
       // }
-    } catch (error) {
-      console.log(error);
-    } finally {
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+    onSettled: () => {
       onClose();
+    },
+  });
+
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    if (!currentSavedJobId || !task) return;
+
+    console.log(data);
+    //compare data.dueDate with task.due_date, in Date format
+    let isDueDateChanged = false;
+
+    if (task.due_date && data.dueDate) {
+      const taskDueDate = new Date(task.due_date);
+      isDueDateChanged = taskDueDate.getDay() !== data.dueDate.getDay();
+    } else if (
+      (task.due_date && !data.dueDate) ||
+      (!task.due_date && data.dueDate)
+    ) {
+      isDueDateChanged = true;
     }
+    console.log("isDueDateChanged", isDueDateChanged);
+
+    editTaskMutation.mutate({
+      jobId: currentSavedJobId,
+      taskId: task.id,
+      taskName: data.taskName,
+      dueDate: data.dueDate,
+      isReminderEnabled: data.isReminderEnabled,
+      isReminded: isDueDateChanged ? false : task.is_reminded,
+      isNotifyEmail: data.isNotifyEmail,
+      isNotifyOnWebsite: data.isNotifyOnWebsite,
+    });
   };
 
   const handleCloseModal = () => {

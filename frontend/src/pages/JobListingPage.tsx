@@ -126,11 +126,11 @@ const JobListingPage = () => {
 
   const scrapeSite = async () => {
     try {
-      if (!scrapedSites) return;
+      if (!scrapedSites || !currentScrapedSite) return;
 
       setIsLoading(true);
       const res = await axios.get(
-        `/scraped-sites/${currentScrapedSite?.id}/scrape`
+        `/scraped-sites/${currentScrapedSite.id}/scrape`
       );
       setIsLoading(false);
       const updatedScrapedSite = res.data;
@@ -172,8 +172,8 @@ const JobListingPage = () => {
     if (!currentScrapedSite) return;
 
     onOpen("editJobAlertSetting", {
-      alertSetting: currentScrapedSite?.scraped_site_settings,
-      websiteName: currentScrapedSite?.website_name,
+      alertSetting: currentScrapedSite.scraped_site_settings,
+      websiteName: currentScrapedSite.website_name,
       currentScrapedSiteId: currentScrapedSite.id.toString(),
       scrapedSites,
     });
