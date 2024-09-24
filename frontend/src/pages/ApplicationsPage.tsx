@@ -589,15 +589,27 @@ const ApplicationsPage = () => {
     }
   };
 
+  const updateStageWithNewJob = (newJob: SavedJob, stageId: string) => {
+    setApplicationStageColumns((prev) => {
+      const updatedColumns = prev.map((stage) => {
+        if (stage.id.toString() === stageId) {
+          stage.jobs.push(newJob);
+        }
+        return stage;
+      });
+      return updatedColumns;
+    });
+  };
+
   const isLoading =
     updateJobOrderMutation.isPending ||
     updateStageOrderMutation.isPending ||
     removeJobFromStagesMutation.isPending;
 
   return (
-    <div className="bg-[#f7fafc]">
+    <>
       <div className="border-[#dce6f8] border-b-[1px] bg-white">
-        <div className="flex items-center justify-between max-w-[1450px] px-4 mx-auto py-2 overflow-y-auto h-[100px]">
+        <div className="flex items-center justify-between max-w-[1450px] px-4 mx-auto overflow-y-auto py-4">
           {applicationStagesStatus === "pending" ? (
             <>
               <ApplicationStage stage="Applied" count={0} />
@@ -619,9 +631,9 @@ const ApplicationsPage = () => {
           )}
         </div>
       </div>
-      <div className="overflow-x-auto h-[calc(100vh-60px-101px)]">
+      <div className="overflow-x-auto min-h-[calc(100vh-60px-97px)]">
         {applicationStagesStatus === "pending" ? (
-          <div className=" mx-auto flex items-start mt-5 max-w-[1450px]">
+          <div className="mx-auto flex items-start mt-5 max-w-[1450px]">
             <ApplicationStageColumnSkeleton jobNumber={4} />
             <ApplicationStageColumnSkeleton jobNumber={1} />
             <ApplicationStageColumnSkeleton jobNumber={1} />
@@ -644,7 +656,7 @@ const ApplicationsPage = () => {
             >
               <div
                 ref={setNodeRef}
-                className=" mx-auto flex items-start mt-5 max-w-[1450px]"
+                className="mx-auto flex items-start mt-5 max-w-[1450px]"
               >
                 {applicationStageColumns.map((stage, index) => (
                   <ApplicationStageColumn
@@ -653,7 +665,7 @@ const ApplicationsPage = () => {
                     stage_name={stage.stage_name}
                     jobs={stage.jobs}
                     removeJobFromStages={removeJobFromStages}
-                    setApplicationStageColumns={setApplicationStageColumns}
+                    updateStageWithNewJob={updateStageWithNewJob}
                     isLoading={isLoading}
                   />
                 ))}
@@ -665,6 +677,7 @@ const ApplicationsPage = () => {
                       isLoading={isLoading}
                       jobs={activeColumnData.jobs}
                       removeJobFromStages={removeJobFromStages}
+                      updateStageWithNewJob={updateStageWithNewJob}
                     />
                   )}
                   {activeCardData && (
@@ -689,7 +702,7 @@ const ApplicationsPage = () => {
           </DndContext>
         )}
       </div>
-    </div>
+    </>
   );
 };
 

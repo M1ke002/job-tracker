@@ -194,8 +194,8 @@ const JobListingPage = () => {
   };
 
   return (
-    <div className="h-full">
-      <div className="border-[#dce6f8] border-b-[1px] bg-white h-[64px]">
+    <>
+      <div className="border-[#dce6f8] border-b-[1px] bg-white">
         <div className="flex items-center justify-between max-w-[1450px] w-full px-4 mx-auto py-3">
           <div className="flex items-center space-x-3">
             <Select
@@ -239,9 +239,9 @@ const JobListingPage = () => {
         </div>
       </div>
 
-      <div className="max-w-[1450px] mx-auto py-3 px-4 min-h-[calc(100vh-60px-24px-64px)]">
+      <div className="max-w-[1450px] mx-auto py-3 px-4">
         <div className="w-full flex items-center justify-between">
-          <div>
+          <>
             {scrapedSitesStatus === "pending" ? (
               <Skeleton className="w-40 h-8 bg-zinc-200" />
             ) : (
@@ -260,7 +260,7 @@ const JobListingPage = () => {
                 </a>
               </p>
             )}
-          </div>
+          </>
           <div className="flex items-center space-x-2">
             {scrapedSitesStatus === "pending" ? (
               <Skeleton className="bg-zinc-200 w-60 h-8" />
@@ -339,7 +339,7 @@ const JobListingPage = () => {
       <div className="fixed bottom-4 right-4">
         <ScrollToTopBtn />
       </div>
-    </div>
+    </>
   );
 };
 

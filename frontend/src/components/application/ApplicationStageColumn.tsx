@@ -40,9 +40,7 @@ interface ApplicationStageColumnProps {
   jobs: SavedJob[];
   isLoading: boolean;
   removeJobFromStages: (jobId: number) => void;
-  setApplicationStageColumns?: React.Dispatch<
-    React.SetStateAction<ApplicationStage[]>
-  >;
+  updateStageWithNewJob: (job: SavedJob, stageId: string) => void;
 }
 
 const ApplicationStageColumn = ({
@@ -51,7 +49,7 @@ const ApplicationStageColumn = ({
   jobs,
   isLoading,
   removeJobFromStages,
-  setApplicationStageColumns,
+  updateStageWithNewJob,
 }: ApplicationStageColumnProps) => {
   const {
     attributes,
@@ -178,7 +176,7 @@ const ApplicationStageColumn = ({
           onClick={() => {
             onOpen("addJobToStage", {
               stageId: id.toString(),
-              setApplicationStageColumns: setApplicationStageColumns,
+              updateStageWithNewJob: updateStageWithNewJob,
               savedJobs,
             });
           }}

@@ -41,9 +41,9 @@ const formSchema = z.object({
 });
 
 const AddContactModal = () => {
-  const { id: currentSavedJobId } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
   const { type, isOpen, onClose, data } = useModal();
+  const { jobId } = data;
 
   const isModalOpen = isOpen && type === "createContact";
 
@@ -100,11 +100,11 @@ const AddContactModal = () => {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    if (!currentSavedJobId) return;
+    if (!jobId) return;
 
-    console.log(values, currentSavedJobId);
+    console.log(values, jobId);
     addContactMutation.mutate({
-      jobId: currentSavedJobId,
+      jobId: jobId,
       name: values.name,
       position: values.position,
       linkedin: values.linkedin,

@@ -46,15 +46,14 @@ interface ModalData {
   websiteName?: string;
   task?: Task;
   stageId?: string;
+  updateStageWithNewJob?: (job: SavedJob, stageId: string) => void;
   documentType?: string;
   documentId?: string;
+  jobId?: string;
   currentSavedJob?: SavedJob;
   savedJobs?: SavedJob[];
   documentLists?: DocumentType[];
   scrapedSites?: ScrapedSite[];
-  setApplicationStageColumns?: React.Dispatch<
-    React.SetStateAction<ApplicationStage[]>
-  >;
 }
 
 interface ModalStore {

@@ -46,7 +46,7 @@ const TaskTab = () => {
         <Button
           variant="primary"
           className="ml-auto"
-          onClick={() => onOpen("createTask")}
+          onClick={() => onOpen("createTask", { jobId: currentSavedJobId })}
         >
           <PlusCircle size={20} className="mr-2" />
           Add task

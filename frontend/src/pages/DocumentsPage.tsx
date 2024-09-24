@@ -48,7 +48,7 @@ const DocumentsPage = () => {
             <DropdownMenuContent side="bottom">
               <DropdownMenuItem
                 className="flex items-center"
-                onClick={() => onOpen("uploadDocument")}
+                onClick={() => onOpen("uploadDocument", { documentLists })}
               >
                 <Plus size={18} className="mr-2 text-blue-500" />
                 Upload document

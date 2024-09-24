@@ -61,12 +61,11 @@ const formSchema = z.object({
 //TODO: bug with due_date selection
 
 const EditTaskModal = () => {
-  const { id: currentSavedJobId } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
   const { type, isOpen, onOpen, onClose, data } = useModal();
 
   const isModalOpen = isOpen && type === "editTask";
-  const { task } = data;
+  const { task, jobId } = data;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -159,7 +158,7 @@ const EditTaskModal = () => {
   });
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    if (!currentSavedJobId || !task) return;
+    if (!jobId || !task) return;
 
     console.log(data);
     //compare data.dueDate with task.due_date, in Date format
@@ -177,7 +176,7 @@ const EditTaskModal = () => {
     console.log("isDueDateChanged", isDueDateChanged);
 
     editTaskMutation.mutate({
-      jobId: currentSavedJobId,
+      jobId: jobId,
       taskId: task.id,
       taskName: data.taskName,
       dueDate: data.dueDate,

@@ -179,7 +179,9 @@ const TaskItem = ({ task }: TaskItemProps) => {
           <DropdownMenuContent side="right">
             <DropdownMenuItem
               className="flex items-center cursor-pointer"
-              onClick={() => onOpen("editTask", { task })}
+              onClick={() =>
+                onOpen("editTask", { task, jobId: currentSavedJobId })
+              }
             >
               <FileEdit size={18} className="mr-2 text-blue-500" />
               Edit

@@ -40,10 +40,9 @@ const formSchema = z.object({
 });
 
 const EditContactModal = () => {
-  const { id: currentSavedJobId } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
   const { type, isOpen, onClose, data } = useModal();
-  const { contact } = data;
+  const { contact, jobId } = data;
 
   const isModalOpen = isOpen && type === "editContact";
 
@@ -120,10 +119,10 @@ const EditContactModal = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (!currentSavedJobId) return;
+    if (!jobId) return;
 
     editContactMutation.mutate({
-      jobId: currentSavedJobId,
+      jobId: jobId,
       name: values.name,
       position: values.position,
       linkedin: values.linkedin,

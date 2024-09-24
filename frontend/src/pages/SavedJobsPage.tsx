@@ -166,8 +166,8 @@ const SavedJobsPage = () => {
   };
 
   return (
-    <div className="h-full">
-      <div className="border-[#dce6f8] border-b-[1px] bg-white h-[64px]">
+    <>
+      <div className="border-[#dce6f8] border-b-[1px] bg-white">
         <div className="flex items-center justify-between max-w-[1450px] w-full px-4 mx-auto py-3">
           <div className="w-full flex items-center justify-between">
             <Popover>
@@ -205,7 +205,7 @@ const SavedJobsPage = () => {
         </div>
       </div>
 
-      <div className="max-w-[1450px] mx-auto py-3 px-4 min-h-[calc(100vh-60px-24px-64px)]">
+      <div className="max-w-[1450px] mx-auto py-3 px-4">
         <div className="flex items-center w-full justify-between space-x-2">
           {savedJobsStatus === "pending" ? (
             <Skeleton className="w-28 h-6 bg-zinc-200" />
@@ -269,7 +269,7 @@ const SavedJobsPage = () => {
           disabled={false}
         />
       )}
-    </div>
+    </>
   );
 };
 

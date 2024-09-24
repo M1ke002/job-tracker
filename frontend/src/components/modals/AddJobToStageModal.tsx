@@ -28,7 +28,7 @@ const AddJobToStageModal = () => {
   const queryClient = useQueryClient();
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
 
-  const { stageId, setApplicationStageColumns, savedJobs } = data;
+  const { stageId, updateStageWithNewJob, savedJobs } = data;
   const isModalOpen = isOpen && type === "addJobToStage";
 
   const filteredJobs = useMemo(() => {
@@ -54,16 +54,8 @@ const AddJobToStageModal = () => {
     },
     onSuccess: async (updatedJob: SavedJob, { stageId }) => {
       //update application stage columns
-      if (setApplicationStageColumns && stageId) {
-        setApplicationStageColumns((prev) => {
-          const updatedColumns = prev.map((stage) => {
-            if (stage.id.toString() === stageId) {
-              stage.jobs.push(updatedJob);
-            }
-            return stage;
-          });
-          return updatedColumns;
-        });
+      if (updateStageWithNewJob) {
+        updateStageWithNewJob(updatedJob, stageId);
       }
 
       //update saved jobs, application-stages, job-details cache
@@ -80,6 +72,14 @@ const AddJobToStageModal = () => {
       handleCloseModal();
     },
   });
+
+  const handleAddJobToStage = () => {
+    if (!selectedJobId || !stageId) return;
+    addJobToStageMutation.mutate({
+      jobId: selectedJobId,
+      stageId,
+    });
+  };
 
   const handleCloseModal = () => {
     setSelectedJobId(null);
@@ -125,14 +125,7 @@ const AddJobToStageModal = () => {
               variant="primary"
               className="text-white bg-blue-500 hover:bg-blue-600"
               disabled={addJobToStageMutation.isPending}
-              onClick={() => {
-                if (selectedJobId && stageId) {
-                  addJobToStageMutation.mutate({
-                    jobId: selectedJobId,
-                    stageId,
-                  });
-                }
-              }}
+              onClick={handleAddJobToStage}
             >
               Add
             </Button>

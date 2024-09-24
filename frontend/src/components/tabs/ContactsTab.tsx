@@ -25,7 +25,12 @@ const ContactTab = () => {
       <div className="font-semibold flex items-center justify-between">
         <p className="text-lg">Contacts: {contacts.length}</p>
         <div className="space-x-3">
-          <Button variant="primary" onClick={() => onOpen("createContact")}>
+          <Button
+            variant="primary"
+            onClick={() =>
+              onOpen("createContact", { jobId: currentSavedJobId })
+            }
+          >
             <PlusCircle size={20} className="mr-2" />
             Add contact
           </Button>

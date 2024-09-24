@@ -51,9 +51,9 @@ const formSchema = z.object({
 });
 
 const CreateTaskModal = () => {
-  const { id: currentSavedJobId } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
-  const { type, isOpen, onOpen, onClose } = useModal();
+  const { type, isOpen, onOpen, onClose, data } = useModal();
+  const { jobId } = data;
 
   const isModalOpen = isOpen && type === "createTask";
 
@@ -106,10 +106,10 @@ const CreateTaskModal = () => {
   });
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    if (!currentSavedJobId) return;
+    if (!jobId) return;
 
     createTaskMutation.mutate({
-      jobId: currentSavedJobId,
+      jobId: jobId,
       taskName: data.taskName,
       dueDate: data.dueDate,
       isReminderEnabled: data.isReminderEnabled,

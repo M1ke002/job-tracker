@@ -354,23 +354,21 @@ const JobDetailsPage = () => {
           ))}
         </TabsList>
 
-        <div>
-          <TabsContent value="overview">
-            <OverviewTab />
-          </TabsContent>
-          <TabsContent value="tasks">
-            <TasksTab />
-          </TabsContent>
-          <TabsContent value="contacts">
-            <ContactsTab />
-          </TabsContent>
-          <TabsContent value="documents">
-            <DocumentsTab />
-          </TabsContent>
-          <TabsContent value="tools">
-            <ToolsTab />
-          </TabsContent>
-        </div>
+        <TabsContent value="overview">
+          <OverviewTab />
+        </TabsContent>
+        <TabsContent value="tasks">
+          <TasksTab />
+        </TabsContent>
+        <TabsContent value="contacts">
+          <ContactsTab />
+        </TabsContent>
+        <TabsContent value="documents">
+          <DocumentsTab />
+        </TabsContent>
+        <TabsContent value="tools">
+          <ToolsTab />
+        </TabsContent>
       </Tabs>
     </div>
   );

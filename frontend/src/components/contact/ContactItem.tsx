@@ -125,7 +125,7 @@ const ContactItem = ({ contact }: ContactItemProps) => {
               className="flex items-center cursor-pointer"
               onClick={() => {
                 console.log(contact);
-                onOpen("editContact", { contact });
+                onOpen("editContact", { contact, jobId: currentSavedJobId });
               }}
             >
               <FileEdit size={18} className="mr-2 text-blue-500" />
