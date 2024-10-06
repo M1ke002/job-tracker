@@ -1,4 +1,5 @@
 from datetime import timezone, timedelta, datetime
+from dateutil import parser
 
 
 def utc_to_vietnam_time(utc_time: datetime):
@@ -6,7 +7,23 @@ def utc_to_vietnam_time(utc_time: datetime):
 
 
 def utc_to_sydney_time(utc_time: datetime):
-    return utc_time.astimezone(timezone(timedelta(hours=10)))
+    return utc_time.astimezone(timezone(timedelta(hours=11)))
+
+
+def get_current_utc_time():
+    return datetime.now(timezone.utc)
+
+
+def is_date_iso_format(date_string: str):
+    print(f"testing: {date_string}")
+    try:
+        # parse the date string
+        parsed_date = parser.isoparse(date_string)
+        # Convert to UTC and return
+        return parsed_date.astimezone(timezone.utc)
+    except ValueError:
+        print("Invalid isoformat string")
+        return None
 
 
 # compare the newly scraped job listings with the existing job listings in the db

@@ -12,7 +12,6 @@ import {
 import { Button } from "../ui/button";
 
 import { format } from "date-fns";
-import { sydneyToUTCTime } from "@/utils/utils";
 import axios from "@/lib/axiosConfig";
 
 import Document from "@/types/Document";
@@ -169,10 +168,12 @@ export const columns: ColumnDef<Document>[] = [
     },
     cell: ({ row }) => {
       const { date_uploaded } = row.original;
-      //must - 10 hours to get the correct date
-      const convertedDate = sydneyToUTCTime(new Date(date_uploaded));
-      // console.log(date_uploaded, convertedDate);
-      return <div className="px-1">{format(convertedDate, "dd/MM/yyyy")}</div>;
+
+      return (
+        <div className="px-1">
+          {format(new Date(date_uploaded), "dd/MM/yyyy")}
+        </div>
+      );
     },
   },
   {

@@ -21,7 +21,10 @@ const TaskTab = () => {
   const dueTasks = useMemo(
     () =>
       tasks.filter(
-        (task) => !task.is_completed && new Date(task.due_date) < new Date()
+        (task) =>
+          !task.is_completed &&
+          task.due_date &&
+          new Date(task.due_date) < new Date()
       ),
     [tasks]
   );
@@ -29,7 +32,10 @@ const TaskTab = () => {
   const onGoingTasks = useMemo(
     () =>
       tasks.filter(
-        (task) => !task.is_completed && new Date(task.due_date) >= new Date()
+        (task) =>
+          !task.is_completed &&
+          (!task.due_date ||
+            (task.due_date && new Date(task.due_date) >= new Date()))
       ),
     [tasks]
   );

@@ -1,6 +1,4 @@
 from app.model import db, Task
-from dateutil.parser import parse
-from datetime import timedelta, timezone
 from sqlalchemy.orm.session import Session
 
 
@@ -28,16 +26,6 @@ def create_task(data):
     is_notify_email = data.get("isNotifyEmail")
     is_notify_on_website = data.get("isNotifyOnWebsite")
 
-    if due_date:
-        # Parse the due_date string into a datetime object
-        due_date = parse(due_date)
-
-        # Adjust the datetime object to GMT+7
-        due_date = due_date.astimezone(timezone(timedelta(hours=7)))
-
-        # Format the datetime object into the desired format
-        due_date = due_date.strftime("%Y-%m-%d %H:%M:%S")
-
     task = Task(
         job_id=job_id,
         task_name=task_name,
@@ -62,16 +50,6 @@ def edit_task(task_id, data):
     is_reminded = data.get("isReminded")
     is_notify_email = data.get("isNotifyEmail")
     is_notify_on_website = data.get("isNotifyOnWebsite")
-
-    if due_date:
-        # Parse the due_date string into a datetime object
-        due_date = parse(due_date)
-
-        # Adjust the datetime object to GMT+7
-        due_date = due_date.astimezone(timezone(timedelta(hours=7)))
-
-        # Format the datetime object into the desired format
-        due_date = due_date.strftime("%Y-%m-%d %H:%M:%S")
 
     task = Task.query.get(task_id)
     if task is None:

@@ -1,5 +1,5 @@
 from datetime import datetime
-from app.utils.utils import utc_to_sydney_time
+from app.utils.utils import get_current_utc_time
 from app.model import Task
 from app.service.task_service import set_tasks_reminded_in_db, get_all_due_tasks_in_db
 from app.service.notification_service import create_notification_in_db
@@ -55,7 +55,7 @@ def create_notification(session: Session, task_name: str, due_date: str, date_me
 
 async def check_due_tasks(session: Session):
     email_data = {"type": "tasks", "data": []}
-    current_date = utc_to_sydney_time(datetime.now())
+    current_date = get_current_utc_time()
 
     # fetch all tasks
     tasks = fetch_all_due_tasks(session)

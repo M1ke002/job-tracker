@@ -3,7 +3,7 @@ from sqlalchemy import or_, and_
 from sqlalchemy.orm.session import Session
 from datetime import datetime, timedelta
 
-from app.utils.utils import find_new_job_listings
+from app.utils.utils import find_new_job_listings, get_current_utc_time
 
 
 def get_all_job_listings_paginated(scraped_site_id, page=1, per_page=30):
@@ -108,7 +108,7 @@ def get_new_job_listings(scraped_site_id, scraped_jobs):
     set_job_listings_is_new_in_db(db.session, current_new_jobs, False)
 
     # delete old job listings older than 7 days
-    cut_off_date = datetime.now() - timedelta(days=7)
+    cut_off_date = get_current_utc_time() - timedelta(days=7)
     delete_old_job_listings_in_db_for_site(db.session, scraped_site_id, cut_off_date)
 
     # find new job listings

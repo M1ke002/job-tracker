@@ -1,6 +1,7 @@
 from app.model import db, Notification
 from sqlalchemy.orm.session import Session
 from datetime import datetime
+from app.utils.utils import get_current_utc_time
 
 
 def get_all_notifications(limit, page):
@@ -37,7 +38,7 @@ def set_notifications_to_read(unread_notifications):
 def create_notification_in_db(
     session: Session,
     message: str,
-    created_at: datetime = datetime.now(),
+    created_at: datetime = get_current_utc_time(),
 ):
     notification = Notification(
         message=message,

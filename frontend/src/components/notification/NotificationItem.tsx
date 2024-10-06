@@ -22,7 +22,7 @@ import { deleteNotificationCache } from "@/hooks/queries/useNotificationsQuery";
 interface NotificationItemProps {
   id: number;
   message: string;
-  createdAt: string;
+  createdAt: Date;
   isRead: boolean;
 }
 

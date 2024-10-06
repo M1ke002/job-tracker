@@ -146,11 +146,6 @@ export const getTimeDifference = (startDate: Date, endDate: Date) => {
   }
 };
 
-export const sydneyToUTCTime = (date: Date) => {
-  //minus 10 hours to get correct time
-  return new Date(date.getTime() - 10 * 60 * 60 * 1000);
-};
-
 export const ausgradUrlBuilder = (
   keyword: string,
   jobType: string,

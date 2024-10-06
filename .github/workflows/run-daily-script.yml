@@ -3,12 +3,13 @@
 #requirements.txt located in backend/requirements.txt
 name: daily report
 
-#run twice a day, at 6:13 AM and 18:13 PM (Sydney time) -> 20:13 PM UTC, 8:13 AM UTC
-#Vietnam time - 7 hours -> UTC time
-#Sydney time - 10 hours -> UTC time
+#run twice a day, at 6:13 AM and 18:13 PM (Sydney time) -> 19:13 PM UTC, 7:13 AM UTC
+# or 20:13 PM UTC, 8:13 AM UTC if not in daylight saving time
+#Vietnam time - 7 (or 8 in daylight saving) hours -> UTC time
+#Sydney time - 11 (or 10 in daylight saving) hours -> UTC time
 on:
   schedule:
-    - cron: "13 8 * * *" # "13 8,20 * * *"
+    - cron: "13 7 * * *" # "13 7,19 * * *"
   workflow_dispatch:
 
 jobs:

@@ -4,8 +4,7 @@ from dotenv import load_dotenv
 import smtplib
 from email.mime.text import MIMEText
 
-from datetime import datetime
-from app.utils.utils import utc_to_sydney_time
+from app.utils.utils import utc_to_sydney_time, get_current_utc_time
 
 load_dotenv()
 
@@ -28,7 +27,7 @@ def create_subject_and_body(email_data):
 
     has_previous_data = False
 
-    now = datetime.now()  # UTC time
+    now = get_current_utc_time()  # UTC time
     local_time = utc_to_sydney_time(now)
     local_time_dt_string = local_time.strftime("%d/%m/%Y %H:%M:%S")
     body += f"Scheduled job ran at {local_time_dt_string}.\n\n"

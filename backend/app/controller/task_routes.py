@@ -7,6 +7,8 @@ from app.service.task_service import edit_task
 from app.service.task_service import set_task_complete
 from app.service.task_service import toggle_task_reminder
 
+from app.utils.utils import is_date_iso_format
+
 task_routes = Blueprint("task_routes", __name__)
 
 
@@ -27,6 +29,15 @@ def handle_create_task():
 
     job_id = data.get("jobId")
     task_name = data.get("taskName")
+    due_date = data.get("dueDate")
+
+    if due_date:
+        # check if due_date is iso format (utc)
+        parsed_due_date = is_date_iso_format(due_date)
+
+        if not parsed_due_date:
+            return jsonify({"error": "Invalid dueDate format, must be UTC"}), 400
+        data["dueDate"] = parsed_due_date
 
     if not job_id or not task_name:
         return jsonify({"error": "Missing required fields"}), 400
@@ -45,8 +56,19 @@ def handle_edit_task(task_id):
     if not data:
         return jsonify({"error": "No data provided"}), 400
 
-    if not data.get("taskName"):
+    task_name = data.get("taskName")
+    due_date = data.get("dueDate")
+
+    if not task_name:
         return jsonify({"error": "Missing required fields"}), 400
+
+    if due_date:
+        # check if due_date is iso format (utc)
+        parsed_due_date = is_date_iso_format(due_date)
+
+        if not parsed_due_date:
+            return jsonify({"error": "Invalid dueDate format, must be UTC"}), 400
+        data["dueDate"] = parsed_due_date
 
     task = edit_task(task_id, data)
     if task is None:

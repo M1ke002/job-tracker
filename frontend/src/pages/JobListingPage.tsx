@@ -51,6 +51,7 @@ import { useScrapedSitesQuery } from "@/hooks/queries/useScrapedSitesQuery";
 import { useSavedJobsQuery } from "@/hooks/queries/useSavedJobsQuery";
 import { useQueryClient } from "@tanstack/react-query";
 import { useJobListingsQuery } from "@/hooks/queries/useJobListingsQuery";
+import { format } from "date-fns";
 
 const JobListingPage = () => {
   const queryClient = useQueryClient();
@@ -266,7 +267,12 @@ const JobListingPage = () => {
               <Skeleton className="bg-zinc-200 w-60 h-8" />
             ) : (
               <p className="text-sm font-medium">
-                Last updated: {currentScrapedSite?.last_scrape_date}
+                Last updated:{" "}
+                {currentScrapedSite?.last_scrape_date &&
+                  format(
+                    new Date(currentScrapedSite?.last_scrape_date),
+                    "dd/MM/yyyy HH:mm:ss"
+                  )}
               </p>
             )}
             <Button

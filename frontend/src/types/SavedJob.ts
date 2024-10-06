@@ -13,9 +13,9 @@ interface SavedJob extends Job {
   stage_id: number | null;
   stage: ApplicationStage | null;
   rejected_at_stage_id: number | null;
-  applied_date: string | null;
+  applied_date: Date | null;
   is_favorite: boolean;
-  created_at: string;
+  created_at: Date;
 }
 
 export default SavedJob;

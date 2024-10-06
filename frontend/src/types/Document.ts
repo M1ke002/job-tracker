@@ -7,7 +7,7 @@ interface Document {
   file_name: string;
   file_url: string;
   document_type_name: string;
-  date_uploaded: string;
+  date_uploaded: Date;
 }
 
 export default Document;

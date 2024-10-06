@@ -20,7 +20,6 @@ import {
 } from "lucide-react";
 
 import axios from "@/lib/axiosConfig";
-import { sydneyToUTCTime } from "@/utils/utils";
 import { format } from "date-fns";
 
 import DocumentTypeTag from "./DocumentTypeTag";
@@ -36,7 +35,7 @@ interface AttachedDocumentItemProps {
   documentName: string;
   documentType: string;
   documentUrl: string;
-  dateUploaded: string;
+  dateUploaded: Date;
   attachedJobs: {
     id: number;
     job_title: string;
@@ -54,9 +53,6 @@ const AttachedDocumentItem = ({
   const { id: currentSavedJobId } = useParams<{ id: string }>();
   const { onOpen } = useModal();
   const queryClient = useQueryClient();
-
-  //must - 10 hours to get the correct date
-  const convertedDate = sydneyToUTCTime(new Date(dateUploaded));
 
   const unlinkDocumentMutation = useMutation({
     mutationFn: async ({
@@ -137,8 +133,8 @@ const AttachedDocumentItem = ({
       <hr className="border-[#d5e4fc] my-2" />
       <div className="flex items-center space-x-1 px-3 py-1">
         <p className="text-sm text-gray-500">
-          Uploaded on {format(convertedDate, "dd/MM/yyyy")}. Attached to{" "}
-          {attachedJobs.length} job(s).
+          Uploaded on {format(new Date(dateUploaded), "dd/MM/yyyy")}. Attached
+          to {attachedJobs.length} job(s).
         </p>
       </div>
 

@@ -3,7 +3,7 @@ import sqlalchemy as sa
 import sqlalchemy.orm as so
 from .db import db
 from .associations import job_document_association
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class Document(db.Model):
@@ -13,7 +13,7 @@ class Document(db.Model):
     document_type_id: so.Mapped[int] = so.mapped_column(sa.Integer, sa.ForeignKey("document_types.id"))
     file_name: so.Mapped[str] = so.mapped_column(sa.String(150))
     file_url: so.Mapped[str] = so.mapped_column(sa.String(500))
-    date_uploaded: so.Mapped[datetime] = so.mapped_column(default=lambda: datetime.now())
+    date_uploaded: so.Mapped[datetime] = so.mapped_column(sa.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     # relationship
     document_type: so.Mapped["DocumentType"] = so.relationship("DocumentType", back_populates="documents")

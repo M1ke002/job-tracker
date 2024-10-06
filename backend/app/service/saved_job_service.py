@@ -1,5 +1,5 @@
 from app.model import db, SavedJob, ApplicationStage, Document
-from datetime import datetime
+from app.utils.utils import get_current_utc_time
 
 
 def get_all_saved_jobs():
@@ -107,6 +107,7 @@ def update_job_stage(job_id, stage_id):
     if job is None:
         return None
 
+    # job is set to not being in any stages
     if stage_id == "None":
         job.stage_id = None
         job.rejected_at_stage_id = None
@@ -123,7 +124,7 @@ def update_job_stage(job_id, stage_id):
 
     # if job doesnt have a stage yet -> set applied_date to current date
     if job.stage_id is None:
-        job.applied_date = datetime.now()
+        job.applied_date = get_current_utc_time()
 
     # if stage is rejected, and job doesnt have a stage yet -> set default to stage with name = 'Applied'
     if stage.stage_name == "Rejected":

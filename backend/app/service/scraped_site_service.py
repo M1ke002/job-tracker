@@ -5,6 +5,7 @@ from app.utils.scrapers.grad_connection_scraper import GradConnectionScraper, GR
 from app.utils.scrapers.seek_scraper import SeekScraper, SEEK
 
 from datetime import datetime
+from app.utils.utils import get_current_utc_time
 
 
 def get_all_scraped_sites_in_db(session: Session):
@@ -88,7 +89,7 @@ async def scrape_site(scrape_site_id):
     # scrape site
     scraped_jobs = await scraper.scrape()
 
-    # update scraped site last scrape date to db
-    update_last_scraped_date_in_db(db.session, scrapedSite, datetime.now())
+    # update scraped site last scrape date in db
+    update_last_scraped_date_in_db(db.session, scrapedSite, get_current_utc_time())
 
     return scraped_jobs
