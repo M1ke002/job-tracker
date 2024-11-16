@@ -48,8 +48,8 @@ def setup_data(database):
 
 
 @pytest.fixture
-def mock_datetime():
-    mock_datetime = patch("app.scripts.tasks.remind_tasks.datetime").start()
+def mock_get_current_utc_time():
+    mock_datetime = patch("app.scripts.tasks.remind_tasks.get_current_utc_time").start()
     yield mock_datetime
     mock_datetime.stop()
 
@@ -57,10 +57,10 @@ def mock_datetime():
 @pytest.mark.asyncio
 @pytest.mark.usefixtures("setup_data")
 # patch datetime.now to return a specific date
-async def test_check_due_tasks(database, mock_datetime):
+async def test_check_due_tasks(database, mock_get_current_utc_time):
     # mock the current date
     current_date = datetime.strptime("2024-02-14", "%Y-%m-%d")
-    mock_datetime.now.return_value = current_date
+    mock_get_current_utc_time.return_value = current_date
 
     email_data = await check_due_tasks(database.session)
 

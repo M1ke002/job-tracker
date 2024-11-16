@@ -8,17 +8,10 @@ from app.model import ScrapedSiteSettings, ScrapedSite, JobListing, Notification
 
 
 @pytest.fixture
-def mock_datetime():
-    mock_datetime = patch("app.scripts.tasks.scrape_new_jobs.datetime").start()
+def mock_get_current_utc_time():
+    mock_datetime = patch("app.scripts.tasks.scrape_new_jobs.get_current_utc_time").start()
     yield mock_datetime
     mock_datetime.stop()
-
-
-@pytest.fixture
-def mock_write_to_log():
-    mock_write_to_log = patch("app.scripts.tasks.scrape_new_jobs.write_to_log").start()
-    yield mock_write_to_log
-    mock_write_to_log.stop()
 
 
 @pytest.fixture
@@ -85,12 +78,11 @@ def setup_job_listings_data(database):
 async def test_new_jobs_found(
     mock_scrape,
     database,
-    mock_datetime,
-    mock_write_to_log,
+    mock_get_current_utc_time,
 ):
     # mock the current date
     current_date = datetime.strptime("2024-02-14", "%Y-%m-%d")
-    mock_datetime.now.return_value = current_date
+    mock_get_current_utc_time.return_value = current_date
 
     # mock the return value of scrape_all_job_listings to be a list of dicts
     # scraped res: 1 new job(job4) and 1 old job(job3)
@@ -115,7 +107,7 @@ async def test_new_jobs_found(
             "job_description": "description4",
             "additional_info": "",
             "salary": "salary4",
-            "is_new": False,
+            "is_new": True,
         },
     ]
     mock_scrape.return_value = scraped_jobs
@@ -146,17 +138,14 @@ async def test_new_jobs_found(
     scraped_site = database.session.query(ScrapedSite).filter_by(id=1).first()
     assert scraped_site.last_scrape_date == current_date
 
-    # check that the write_to_log function was called
-    mock_write_to_log.assert_called_once()
-
 
 @pytest.mark.asyncio
 @pytest.mark.usefixtures("setup_scraped_site_and_settings", "setup_job_listings_data")
 @patch.object(SeekScraper, "scrape")
-async def test_no_new_jobs_found(mock_scrape, database, mock_datetime, mock_write_to_log):
+async def test_no_new_jobs_found(mock_scrape, database, mock_get_current_utc_time):
     # mock the current date
     current_date = datetime.strptime("2024-02-14", "%Y-%m-%d")
-    mock_datetime.now.return_value = current_date
+    mock_get_current_utc_time.return_value = current_date
 
     # mock the return value of scrape_all_job_listings to be a list of dicts
     # scraped res: 1 old job(job2)
@@ -192,6 +181,3 @@ async def test_no_new_jobs_found(mock_scrape, database, mock_datetime, mock_writ
     # check that the last scraped date is updated
     scraped_site = database.session.query(ScrapedSite).filter_by(id=1).first()
     assert scraped_site.last_scrape_date == current_date
-
-    # check that the write_to_log function was called
-    mock_write_to_log.assert_called_once()

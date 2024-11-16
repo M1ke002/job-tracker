@@ -69,20 +69,6 @@ def create_notification(session: Session, website_name: str, new_jobs_count: int
     )
 
 
-def write_to_log(found_jobs_dict: dict[str, list], current_date: datetime):
-    dt_string = current_date.strftime("%d/%m/%Y %H:%M:%S")
-
-    text = f"Scheduled job ran at {dt_string}. Found "
-    for site_name, jobs in found_jobs_dict.items():
-        text += f"{len(jobs)} new jobs for site: {site_name}, "
-
-    # remove the last 2 characters, which are ', '
-    text = text[:-2]
-    text += "."
-    with open("log.txt", "a") as f:
-        f.write(text + "\n")
-
-
 # main function
 async def web_scraper(session: Session):
     email_data = {"type": "web_scraper", "data": []}
@@ -178,8 +164,5 @@ async def web_scraper(session: Session):
 
         # update the last scraped date
         update_last_scraped_date(session, scraped_site, current_date)
-
-    # write to a log.txt file
-    write_to_log(found_jobs_dict, current_date)
 
     return email_data

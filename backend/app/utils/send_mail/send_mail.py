@@ -4,7 +4,10 @@ from dotenv import load_dotenv
 import smtplib
 from email.mime.text import MIMEText
 
-from app.utils.utils import utc_to_sydney_time, get_current_utc_time
+from app.utils.utils import utc_to_sydney_time
+from app.utils.utils import get_current_utc_time
+from app.utils.utils import filter_jobs_by_keywords
+from app.utils.utils import get_all_jobs_data
 
 load_dotenv()
 
@@ -21,7 +24,7 @@ def should_send_email(email_data):
     return should_send_email
 
 
-def create_subject_and_body(email_data):
+def create_subject_and_body(email_data, keywords_in_title=[]):
     subject = ""
     body = ""
 
@@ -41,10 +44,22 @@ def create_subject_and_body(email_data):
             found_jobs = False
             has_previous_data = True
 
+            # display the filtered jobs with keywords in title
+            if len(keywords_in_title) > 0:
+                all_jobs = get_all_jobs_data(value)
+                filtered_jobs = filter_jobs_by_keywords(all_jobs, keywords_in_title)
+
+                body += f"{len(filtered_jobs)} jobs containing {keywords_in_title} in title.\n"
+
+                for job in filtered_jobs:
+                    body += f"{job['job_title']} - {job['job_url']}\n"
+                if len(filtered_jobs) > 0:
+                    body += "\n"
+
             # value: array of obj: {site_name: [jobs]}
-            for data in value:
-                site_name = data["site_name"]
-                jobs = data["jobs"]
+            for site_data in value:
+                site_name = site_data["site_name"]
+                jobs = site_data["jobs"]
                 if found_jobs:
                     subject += ","
                 subject += f" {len(jobs)} new jobs for {site_name}"

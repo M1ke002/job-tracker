@@ -16,6 +16,8 @@ from app.utils.send_mail.send_mail import (
     send_mail,
 )
 
+KEYWORDS = ["intern", "junior", "part time"]
+
 
 def construct_and_send_email(email_data):
     GMAIL_USERNAME = os.getenv("GMAIL_USERNAME")
@@ -25,7 +27,7 @@ def construct_and_send_email(email_data):
         print("No email to send", email_data)
         return
 
-    subject, body = create_subject_and_body(email_data)
+    subject, body = create_subject_and_body(email_data, KEYWORDS)
     # print(subject)
     # print(body)
 

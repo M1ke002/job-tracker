@@ -53,3 +53,26 @@ def find_new_job_listings(old_jobs, scraped_jobs):
             new_jobs.append(scraped_job)
 
     return new_jobs
+
+
+# jobs_data: [{"job_title": "job1", "job_url": "url1"}, ...]
+# keywords: ['keyword1', 'keyword2']
+# returns the list of jobs containing keywords in the title
+def filter_jobs_by_keywords(jobs_data, keywords):
+    filtered_jobs = []
+    for job in jobs_data:
+        job_title = job["job_title"].lower()
+        for keyword in keywords:
+            if keyword.lower() in job_title:
+                filtered_jobs.append(job)
+                break
+    return filtered_jobs
+
+
+# get all jobs data from web_scraper data
+def get_all_jobs_data(web_scraper_data):
+    all_jobs = []
+    for site in web_scraper_data:
+        for job in site["jobs"]:
+            all_jobs.append(job)
+    return all_jobs
