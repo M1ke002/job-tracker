@@ -77,6 +77,8 @@ class BaseScraper(ABC):
             async with aiohttp.ClientSession() as session:
                 tasks = [self.fetch_with_aiohttp(session, url) for url in urls]
                 result = await asyncio.gather(*tasks)
+                print("Scrape result: ")
+                print(result)
                 for page in result:
                     jobs.extend(page)
                 return jobs
