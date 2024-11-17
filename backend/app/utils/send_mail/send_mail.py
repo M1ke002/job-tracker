@@ -53,8 +53,8 @@ def create_subject_and_body(email_data, keywords_in_title=[]):
 
                 for job in filtered_jobs:
                     body += f"{job['job_title']} - {job['job_url']}\n"
-                if len(filtered_jobs) > 0:
-                    body += "\n"
+
+                body += "\n"
 
             # value: array of obj: {site_name: [jobs]}
             for site_data in value:

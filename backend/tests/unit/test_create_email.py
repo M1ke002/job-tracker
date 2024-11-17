@@ -130,7 +130,7 @@ def test_create_subject_and_body_not_found_jobs_with_keywords_title():
     keywords = ["senior", "part time"]
     subject, body = create_subject_and_body(email_data1, keywords)
 
-    jobs_containing_keywords_msg = f"0 jobs containing {keywords} in title.\n"
+    jobs_containing_keywords_msg = f"0 jobs containing {keywords} in title.\n\n"
     site1_jobs = "site1:\njunior developer - url1"
     site2_jobs = "site2:\nweb intern - url2\njob3 - url3"
 
