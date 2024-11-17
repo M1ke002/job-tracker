@@ -109,7 +109,8 @@ async def web_scraper(session: Session):
 
         # scrape all job listings, return: list of dicts of scraped jobs
         scraped_jobs = await scraper.scrape()
-        # print(scraped_jobs)
+        print("Scraped jobs: ")
+        print(scraped_jobs)
 
         # get all job listings for a website from db
         old_job_objects = fetch_all_job_listings(session, scraped_site.id)
@@ -117,10 +118,15 @@ async def web_scraper(session: Session):
 
         # convert old job objects to list of dict
         old_jobs = [job.to_dict() for job in old_job_objects]
+        print("Old jobs: ")
+        print(old_jobs)
 
         # find new job listings. input: 2 lists of dicts. return: list of dicts
         new_jobs = find_new_job_listings(old_jobs, scraped_jobs)
         new_jobs_objects = []
+
+        print("New jobs: ")
+        print(new_jobs)
 
         # convert new jobs to list of JobListing objects
         for new_job in new_jobs:
